@@ -1,0 +1,7 @@
+/target/
+*/target/***.war
+*.war
+*.war
+target/*.war
+target/*.war
+target/*.war
