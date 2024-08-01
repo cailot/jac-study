@@ -41,6 +41,17 @@ public class EmailServiceImpl implements EmailService {
 	@Autowired
 	private ResourceLoader resourceLoader;
 
+
+	@Override
+	public void test(){
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setFrom("braybrook@jamesancollegevic.com.au");
+		message.setTo("jh05052008@gmail.com");
+		message.setSubject("gone??");
+		message.setText("can you see me?");
+		mailSender.send(message);
+	}
+
 	public void sendEmail(String to, String subject, String bodyContent) {
 		 // Create the client secret credential
 		 ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()

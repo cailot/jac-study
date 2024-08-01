@@ -2,6 +2,9 @@ package hyung.jin.seo.jae.service;
 
 public interface EmailService {
 
+	// test email
+	void test();
+
 	// send simple email
 	void sendEmail(String from, String to, String subject, String body);
 
