@@ -123,17 +123,18 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="listGrade" class="label-form">Grade</label>
+                    <label for="listGrade" class="label-form">Year</label>
                     <select id="listGrade" name="listGrade" class="form-control">
-                        <option value="1">P2</option>
-                        <option value="2">P3</option>
-                        <option value="3">P4</option>
-                        <option value="4">P5</option>
-                        <option value="5">P6</option>
-                        <option value="6">S7</option>
-                        <option value="7">S8</option>
-                        <option value="8">S9</option>
-                        <option value="9">S10</option>
+                        <option value="10">Year 1</option>
+                        <option value="1">Year 2</option>
+                        <option value="2">Year 3</option>
+                        <option value="3">Year 4</option>
+                        <option value="4">Year 5</option>
+                        <option value="5">Year 6</option>
+                        <option value="6">Year 7</option>
+                        <option value="7">Year 8</option>
+                        <option value="8">Year 9</option>
+                        <option value="9">Year 10</option>
                     </select>
                 </div>
             </div>

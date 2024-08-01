@@ -217,10 +217,6 @@
 	</definition>
 
 	<!-- ASSESSMET TEST MENU -->
-	<definition name="assessmentWelcomePage" extends="single.definition">
-		<put-attribute name="title" value="James An College Assessment Page" />
-		<put-attribute name="body" value="/WEB-INF/layouts/assessment/welcome.jsp" />
-	</definition>
 	<definition name="assessmentApplyPage" extends="single.definition">
 		<put-attribute name="title" value="James An College Assessment Page" />
 		<put-attribute name="body" value="/WEB-INF/layouts/assessment/application.jsp" />

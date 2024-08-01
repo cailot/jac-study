@@ -266,28 +266,6 @@ function determineLiveOrRecordedLesson(index) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 			Get time for live onair comparison
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-// function getTimeForDayAndTime(day, time) {
-// 	// Create an array of days to map them to corresponding indices
-// 	const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-// 	// Get the current date
-// 	const currentDate = new Date();
-// 	// Find the index of the specified day
-// 	const dayIndex = daysOfWeek.indexOf(day);
-// 	if (dayIndex === -1) {
-// 	console.error("Invalid day provided");
-// 	return null;
-// 	}
-// 	// Calculate the difference between the current day and the specified day
-// 	var dayOnMondayBase = currentDate.getDay();
-// 	dayOnMondayBase = (dayOnMondayBase===0) ? 6 : dayOnMondayBase-1;
-// 	let dayDifference = dayIndex - dayOnMondayBase;
-// 	currentDate.setDate(currentDate.getDate() + dayDifference);
-// 	// Parse the time string and set the hours and minutes
-// 	const [hours, minutes] = time.split(':');
-// 	currentDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
-// 	// Return the getTime() value
-// 	return currentDate.getTime();
-// }
 function getTimeForDayAndTime(day, time) {
     // Create an array of days to map them to corresponding indices
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -562,7 +540,6 @@ function displayMedia(videoUrl) {
 		</div>
 	</div>
 </div>
-
 
 <!-- Realtime Video Warning Modal -->
 <div class="modal fade" id="onleLessonWarning" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">

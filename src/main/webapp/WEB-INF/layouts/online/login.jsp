@@ -1,6 +1,22 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
+<script>
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 			Show Assessment Modal
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function displayAssessment() {
+	$('#assessmentWarning').modal('show');
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 			Move to Assessment Start Page
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function navigateToAssessment() {
+    window.location.href = '${pageContext.request.contextPath}/assessment/apply'; // Navigate to the new page
+}
+</script>
+
 <style>
 
 #background {
@@ -37,6 +53,10 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+
+.spaced-list li {
+    margin-bottom: 10px;
 }
 </style>
 <div id="background" class="col-md-12" style="padding-left: 0px; padding-right: 0px;">
@@ -106,6 +126,14 @@
 										</div>
 									</div>
 								</div>
+								<div class="row">
+									<div class="col-md-12">
+										<div class="text-primary text-right small">
+											<a id="assessmentLink" href="#" onclick="displayAssessment()">Assessment Test
+											</a>	
+										</div>
+									</div>
+								</div>
 							</form:form>
 						</div>
 					</div>		
@@ -117,4 +145,38 @@
 			</h6>		
 		</div><!-- end of left-container-->
 	</div>
+</div>
+
+<!-- Assessment Warning Modal -->
+<div class="modal fade" id="assessmentWarning" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border: 2px solid #ffc107; border-radius: 10px;">
+            <div class="modal-header bg-warning" style="display: block;">
+				<p style="text-align: center; margin-bottom: 0;"><span style="font-size:18px"><strong>James An Online Assessment Test</strong></span></p>
+			</div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="${pageContext.request.contextPath}/image/assessment.png" style="width: 150px; height: 150px; border-radius: 5%;">
+                </div>
+                <!-- Add your warning message or content here -->
+                <ul class="spaced-list">
+                    <li>Thank you for taking the James An College Assessment Test.</li>
+                    <li>
+                        This assessment test is to help us understand how we can help you in your learning journey.
+                    </li>
+                    <li>
+						Please be ready to enter your correct details so we can get back to you as soon as possible.</li>
+                        
+                    </li>
+                    <li>
+                        We look forward to having you join us!
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="agreeMediaWarning" onclick="navigateToAssessment()">Ready To Procceed</button>
+            	<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
