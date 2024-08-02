@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.text.StyleConstants.ColorConstants;
 
 import java.awt.Color;
 import java.awt.RenderingHints;
@@ -40,24 +37,15 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.border.Border;
-import com.itextpdf.layout.border.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.property.HorizontalAlignment;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.VerticalAlignment;
 
 import hyung.jin.seo.jae.dto.AssessmentAnswerDTO;
-import hyung.jin.seo.jae.dto.BranchDTO;
-import hyung.jin.seo.jae.dto.EnrolmentDTO;
 import hyung.jin.seo.jae.dto.GuestStudentAssessmentDTO;
-import hyung.jin.seo.jae.dto.InvoiceDTO;
-import hyung.jin.seo.jae.dto.MaterialDTO;
-import hyung.jin.seo.jae.dto.MoneyDTO;
-import hyung.jin.seo.jae.dto.OutstandingDTO;
-import hyung.jin.seo.jae.dto.StudentDTO;
 import hyung.jin.seo.jae.model.GuestStudent;
 import hyung.jin.seo.jae.service.PdfService;
 import hyung.jin.seo.jae.utils.JaeConstants;

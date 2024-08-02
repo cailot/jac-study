@@ -8,8 +8,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import hyung.jin.seo.jae.dto.CycleDTO;
 import hyung.jin.seo.jae.service.CycleService;
+import hyung.jin.seo.jae.service.EmailService;
 import hyung.jin.seo.jae.utils.JaeConstants;
 import java.util.List;
+
+import javax.validation.constraints.Email;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -22,6 +25,9 @@ public class JaeApplication extends SpringBootServletInitializer implements Comm
 
 	@Autowired
 	private CycleService cycleService;
+
+	@Autowired
+	private EmailService emailService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(JaeApplication.class, args);
@@ -37,6 +43,7 @@ public class JaeApplication extends SpringBootServletInitializer implements Comm
 		// register cycles to applicationContext
 		List<CycleDTO> cycles = cycleService.allCycles();
 		applicationContext.getBeanFactory().registerSingleton(JaeConstants.ACADEMIC_CYCLES, cycles);
+		emailService.test();
 	}
 
 }
