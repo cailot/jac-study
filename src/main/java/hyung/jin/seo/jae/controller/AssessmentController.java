@@ -6,8 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -57,6 +60,9 @@ public class AssessmentController {
 
 	@Autowired
 	private EmailService emailService;
+
+	@Value("${spring.sender.assessment}")
+    private String assessmentName;
 
 	// register test
 	@PostMapping("/addAssessment")
@@ -264,69 +270,58 @@ public class AssessmentController {
 		// 4. get assessment answers
 		for(GuestStudentAssessmentDTO gsa : gsas){
 			List<Integer> gsAnswer = gsa.getAnswers();
-			// print out gsAnswer
-			//System.out.println("gsAnswer : " + gsAnswer);
 			AssessmentAnswerDTO aa = assessmentService.getAssessmentAnswer(gsa.getAssessmentId());
 			aas.add(aa);
 		}
-		//  correcct answers
-		// for(AssessmentAnswerDTO aa : aas){
-		// 	List<AssessmentAnswerItem> corrects = aa.getAnswers();
-			// print out corrects
-			// System.out.println("corrects : " + corrects);
-		// }
 		ingredients.put(JaeConstants.STUDENT_ANSWER, gsas);
 		ingredients.put(JaeConstants.CORRECT_ANSWER, aas);
 		// 5. create PDF
 		byte[] pdfData = pdfService.generateAssessmentPdf(ingredients);
-		// pdfService.generateTestPdf(ingredients);
 		// 6. send email
-		// String emailRecipient = codeService.getBranchEmail(guest.getBranch());
-		String emailRecipient = "cailot@naver.com";
-		String emailTitle = "Assessment Submitted " + guest.getRegisterDate();
+		String emailRecipient = "jh05052008@gmail.com";
 		StringBuilder emailBodyBuilder = new StringBuilder();
 		emailBodyBuilder.append("<html>")
-			.append("<head>")
-			.append("<style>")
-			.append("table {")
-			.append("  border-collapse: collapse;")
-			.append("  width: 100%;")
-			.append("}")
-			.append("th, td {")
-			.append("  border: 1px solid #dddddd;")
-			.append("  text-align: left;")
-			.append("  padding: 8px;")
-			.append("}")
-			.append("th {")
-			.append("  background-color: #f2f2f2;")
-			.append("  border-bottom: 2px solid #dddddd;")
-			.append("}")
-			.append("tr:nth-child(even) {")
-			.append("  background-color: #f9f9f9;")
-			.append("}")
-			.append("tr:nth-child(odd) {")
-			.append("  background-color: #ffffff;")
-			.append("}")
-			.append("tr:hover {")
-			.append("  background-color: #f1f1f1;")
-			.append("}")
-			.append("td.score {")
-			.append("  text-align: center;")
-			.append("}")
-			.append("</style>")
-			.append("</head>")
-			.append("<body>")
-			.append("<p>There is an assessment test submitted:</p>")
-			.append("<p><b>Name:</b> ").append(guest.getFirstName()).append(" ").append(guest.getLastName()).append("</p>")
-			.append("<p><b>Email:</b> ").append(guest.getEmail()).append("</p>")
-			.append("<p><b>Contact:</b> ").append(guest.getContactNo()).append("</p>")
-			.append("<br>")
-			.append("<table>")
-			.append("<tr>")
-			.append("<th>Title</th>")
-			.append("<th>Score</th>")
+            .append("<head>")
+            .append("<style>")
+            .append("table {")
+            .append("  border-collapse: collapse;")
+            .append("  width: 70%;")
+            .append("}")
+            .append("th, td {")
+            .append("  border: 1px solid #dddddd;")
+            .append("  text-align: left;")
+            .append("  padding: 8px;")
+            .append("}")
+            .append("th {")
+            .append("  background-color: #f2f2f2;")
+            .append("  border-bottom: 2px solid #dddddd;")
+            .append("}")
+            .append("tr:nth-child(even) {")
+            .append("  background-color: #f9f9f9;")
+            .append("}")
+            .append("tr:nth-child(odd) {")
+            .append("  background-color: #ffffff;")
+            .append("}")
+            .append("tr:hover {")
+            .append("  background-color: #f1f1f1;")
+            .append("}")
+            .append("td.score {")
+            .append("  text-align: center;")
+            .append("}")
+            .append("</style>")
+            .append("</head>")
+            .append("<body>")
+			.append("<p style='color: red; font-weight: bold;'>Please Do Not Reply to This Email. This email is intended for sending purposes only</p>")
+            .append("<p>There is an assessment test submitted:</p>")
+            .append("<p><b>Name:</b> ").append(guest.getFirstName()).append(" ").append(guest.getLastName()).append("</p>")
+            .append("<p><b>Email:</b> ").append(guest.getEmail()).append("</p>")
+            .append("<p><b>Contact:</b> ").append(guest.getContactNo()).append("</p>")
+            .append("<br>")
+            .append("<table>")
+            .append("<tr>")
+            .append("<th>Title</th>")
+            .append("<th style='text-align: center;'>Score</th>")
 			.append("</tr>");
-		
 		for (GuestStudentAssessmentDTO dto : gsas) {
 			String subject = dto.getSubject();
 			String grade = guest.getGrade();
@@ -342,10 +337,13 @@ public class AssessmentController {
 			.append("</html>");
 		
 		String emailBody = emailBodyBuilder.toString();
-		emailService.sendEmailWithAttachment("kellyl@jamesancollegevic.com.au", emailRecipient, emailTitle, emailBody, "assessment.pdf", pdfData);
-		// emailService.sendEmail("braybrook@jamesancollegevic.com.au", "jh05052008@gmail.com", "test title", "hey");
-		// AssessmentAnswerDTO answer = assessmentService.getAssessmentAnswer(studentId);
-		return ResponseEntity.ok("\"Assessment result proccessed successfully\"");
+		try {
+			emailService.emailReport(emailRecipient, emailBody, pdfData);
+		} catch (MessagingException e) {
+			String message = "Error updating Assessment : " + e.getMessage();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+		}
+		return ResponseEntity.ok("\"Assessment result processed successfully. <br>Now You can close this browser.\"");
 	}
 
 	// helper method converting test answers Map to List

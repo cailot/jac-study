@@ -22,7 +22,7 @@ function display(url) {
         var questionLabel = $('<div>').addClass('form-check form-check-inline h5 ml-1').text(' ' + i + '. ');
         questionLabel.css('width', '30px');
         questionDiv.append(questionLabel);
-        ['A', 'B', 'C', 'D', 'E'].forEach(function(option, index) {
+        ['A', 'B', 'C', 'D'].forEach(function(option, index) {
             var optionDiv = $('<div>').addClass('form-check form-check-inline h5 ml-1');
             var input = $('<input>').addClass('form-check-input mr-3 ml-1').attr({
                 type: 'radio',

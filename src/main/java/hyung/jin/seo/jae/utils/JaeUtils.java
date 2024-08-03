@@ -366,6 +366,24 @@ public class JaeUtils {
 		return gradeText;
 	}
 
+	// return grade year name
+	public static String getGradeYearName(String value) {
+		String gradeText = "";
+		switch(value) {
+			case "1": gradeText = "Year 2"; break;
+			case "2": gradeText = "Year 3"; break;
+			case "3": gradeText = "Year 4"; break;
+			case "4": gradeText = "Year 5"; break;
+			case "5": gradeText = "Year 6"; break;
+			case "6": gradeText = "Year 7"; break;
+			case "7": gradeText = "Year 8"; break;
+			case "8": gradeText = "Year 9"; break;
+			case "9": gradeText = "Year 10"; break;
+			case "10": gradeText = "Year 1"; 
+		}
+		return gradeText;
+	}
+
 	// return branch name
 	public static String getBranchName(String value) {
 		String branchText = "";

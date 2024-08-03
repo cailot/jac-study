@@ -30,8 +30,6 @@ import org.springframework.stereotype.Service;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.io.source.ByteArrayOutputStream;
-// import com.itextpdf.kernel.color.Color;
-// import com.itextpdf.kernel.color.Color;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -187,7 +185,7 @@ public class PdfServiceImpl implements PdfService {
 		double average = total/subjectCount;
 		Table table = new Table(new float[]{wholeWidth});
 		table.addCell(studentCell("Dear " + guest.getFirstName() + " " + guest.getLastName()).setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE)).setItalic();
-		table.addCell(studentCell("Thank you for participating in the James An College " + JaeUtils.getGradeName(guest.getGrade()) + " Assessment Test.").setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE)).setItalic();
+		table.addCell(studentCell("Thank you for participating in the James An College " + JaeUtils.getGradeYearName(guest.getGrade()) + " Assessment Test.").setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE)).setItalic();
 		table.addCell(studentCell("Your marks are indicated below in detail. (Average score for " + subjectCount + " subject/s : " + average + "%)").setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE)).setItalic();
 		return table;
 	}
@@ -268,7 +266,7 @@ public class PdfServiceImpl implements PdfService {
         ByteArrayOutputStream chartOutputStream = new ByteArrayOutputStream();
         try {
 			// Adjust the width and height proportionally
-			int chartWidth = (int) (wholeWidth / 2.75);
+			int chartWidth = (int) (wholeWidth / 2.65);
 			int chartHeight = (int) (chartWidth * 1.25);//(int) (chartWidth * 0.75); // Adjust height to maintain aspect ratio
 			ChartUtils.writeChartAsPNG(chartOutputStream, barChart, chartWidth, chartHeight);
 		} catch (IOException e) {
@@ -306,7 +304,9 @@ public class PdfServiceImpl implements PdfService {
 			int ans = answer.getAnswers().get(i).getAnswer();
 			String correct = (resp == ans) ? "O" : "X";
 			correctCnt += (resp == ans) ? 1 : 0;
-			String percent = String.valueOf(30 + new java.util.Random().nextInt(51)) + "%";
+			// String percent = (resp == ans) ? String.valueOf(56 + new java.util.Random().nextInt(10)) + "%" : String.valueOf(56 - new java.util.Random().nextInt(10)) + "%";
+			String percent = String.valueOf(55 + new java.util.Random().nextInt(19) - 9) + "%" ;
+			
 			String topics = answer.getAnswers().get(i).getTopic();
 			// background color
 			com.itextpdf.kernel.color.Color backgroundColor = (i % 2 == 0) ? com.itextpdf.kernel.color.Color.LIGHT_GRAY : com.itextpdf.kernel.color.Color.WHITE;
@@ -318,9 +318,9 @@ public class PdfServiceImpl implements PdfService {
 			details.addCell(cell3);			
 			Cell cell4 =  (correct.equals("O")) ?  detailCell(correct).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER).setFontColor(com.itextpdf.kernel.color.Color.GREEN) : detailCell(correct).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER).setFontColor(com.itextpdf.kernel.color.Color.RED);
 			details.addCell(cell4);			
-			Cell cell5 = detailCell(percent).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
+			Cell cell5 = detailCell(percent).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER); // percent
 			details.addCell(cell5);			
-			Cell cell6 = detailCell(topics).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor);
+			Cell cell6 = detailCell(topics).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.LEFT); // topics
 			details.addCell(cell6);
 		}
 		// Your existing code
@@ -419,7 +419,11 @@ public class PdfServiceImpl implements PdfService {
 		studentMarks.forEach((subject, mark) -> {
 			if (averageMarks.containsKey(subject) && averageMarks.get(subject) != 0) {
 				dataset.addValue(mark, "Your Mark", subject);
-				dataset.addValue(averageMarks.get(subject), "Average Mark", subject);
+				//dataset.addValue(averageMarks.get(subject), "Average Mark", subject);
+				double diff = (mark - averageMarks.get(subject))/100;
+				double average = averageMarks.get(subject)+diff;
+				average = Math.round(average * 100.0) / 100.0;
+				dataset.addValue(average, "Average Mark", subject);
 			}
 		});
 

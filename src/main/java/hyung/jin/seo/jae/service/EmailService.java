@@ -1,13 +1,9 @@
 package hyung.jin.seo.jae.service;
 
+import javax.mail.MessagingException;
+
 public interface EmailService {
 
-	// test email
-	void test();
-
-	// send simple email
-	void sendEmail(String from, String to, String subject, String body);
-
-	// send simple email with attachment
-	void sendEmailWithAttachment(String from, String to, String subject, String body, String fileName, byte[] pdfBytes);
+	// send report email
+	void emailReport(String to, String body, byte[] data) throws MessagingException;
 }

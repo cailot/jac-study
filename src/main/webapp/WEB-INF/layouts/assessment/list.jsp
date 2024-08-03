@@ -214,7 +214,9 @@ function sendEmail() {
             // debugger;
             console.log(data);
             // Display the success alert
-            $('#success-alert .modal-body').text(data);
+            // $('#success-alert .modal-body').text(data);
+            $('#success-alert .modal-body').html(data);
+            
             $('#success-alert').modal('show');
             $('#success-alert').on('hidden.bs.modal', function (e) {
                 document.getElementById('mathTest').disabled = true;
