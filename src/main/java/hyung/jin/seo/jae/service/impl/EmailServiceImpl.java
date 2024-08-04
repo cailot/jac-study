@@ -41,7 +41,7 @@ public class EmailServiceImpl implements EmailService {
 
         MimeMessagePreparator preparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true); // true indicates multipart
-            messageHelper.setFrom(invoiceName);
+            messageHelper.setFrom(assessmentName);
             messageHelper.setTo(to);
             messageHelper.setSubject("Fwd: Assessment Submitted " + JaeUtils.getToday());
             messageHelper.setText(body, true);

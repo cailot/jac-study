@@ -14,6 +14,11 @@
 		<put-attribute name="menu" value="/WEB-INF/layouts/tiles/menu.jsp" />
 		<put-attribute name="body" value="" />
 	</definition>
+	<!-- Assessment Page Base -->
+	<definition name="assess.definition" template="/WEB-INF/layouts/assessPage.jsp">
+		<put-attribute name="title" value="" />
+		<put-attribute name="body" value="" />
+	</definition>
 
 	<!-- Online Login Page -->
 	<definition name="onlineLogin" extends="single.definition">
@@ -217,11 +222,15 @@
 	</definition>
 
 	<!-- ASSESSMET TEST MENU -->
-	<definition name="assessmentApplyPage" extends="single.definition">
+	<definition name="assessmentWelcomePage" extends="assess.definition">
+		<put-attribute name="title" value="James An College Assessment Page" />
+		<put-attribute name="body" value="/WEB-INF/layouts/assessment/welcome.jsp" />
+	</definition>
+	<definition name="assessmentApplyPage" extends="assess.definition">
 		<put-attribute name="title" value="James An College Assessment Page" />
 		<put-attribute name="body" value="/WEB-INF/layouts/assessment/application.jsp" />
 	</definition>
-	<definition name="assessmentListPage" extends="single.definition">
+	<definition name="assessmentListPage" extends="assess.definition">
 		<put-attribute name="title" value="James An College Assessment Page" />
 		<put-attribute name="body" value="/WEB-INF/layouts/assessment/list.jsp" />
 	</definition>

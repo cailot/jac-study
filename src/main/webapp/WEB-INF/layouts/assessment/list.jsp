@@ -1,46 +1,29 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Assessment</title>
-    <style>
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f8f9fa;
-            margin: 0;
-        }
-        .assessment-container {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-        }
-        .assessment-container h1 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            font-weight: bold;
-        }
-        .assessment-container .btn {
-            font-size: 1.25rem;
-            padding: 0.5rem;
-            margin: 0.5rem 0;
-            width: 100%;
-        }
-        .btn.disabled {
-            cursor: not-allowed;
-        }
-    </style>
+<style>
+    .assessment-container {
+        background: white;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+    }
+    .assessment-container h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+    .assessment-container .btn {
+        font-size: 1.25rem;
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+        width: 100%;
+    }
+    .btn.disabled {
+        cursor: not-allowed;
+    }
+</style>
 
-<script type="text/javascript" src="${pageContext.request.contextPath}/js/jae.js"></script>
-
-</head>
-<body>
 <div class="assessment-container">
     <h1>Online Assessment</h1>
     <button class="btn btn-primary" id="mathTest" onclick="showWarning(1)">MATHS</button>
@@ -54,7 +37,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content" style="border: 2px solid #ffc107; border-radius: 10px;">
             <div class="modal-header bg-warning" style="display: block;">
-                <p style="text-align: center; margin-bottom: 0;"><span style="font-size:18px"><strong>Test Instruction for James An College Class</strong></span></p>
+                <p style="text-align: center; margin-bottom: 0;"><span style="font-size:18px"><strong>Assessment Instruction for James An College</strong></span></p>
             </div>
             <div class="modal-body" style="background-color: #f8f9fa; border-radius: 5px; padding: 20px;">
                 <div style="text-align: center; margin-bottom: 20px;">
@@ -62,23 +45,20 @@
                 </div>
                 <!-- Add your warning message or content here -->
                 <ol style="line-height: 1.6;">
-                    <li><span class="text-primary"><strong>Test Duration</strong></span>
-                        Ensure completion within the 30-minute time limit provided for the test.
+                    <li><span class="text-primary"><strong>Assessment Duration</strong></span>
+                        Ensure completion within the 30-minute time limit provided for the assessment.
                     </li>
                     <li><span class="text-primary"><strong>Single Attempt</strong></span>
-                        Each student has a single opportunity to attempt the test, and once initiated, retakes are not permitted.
+                        Each student has a single opportunity to attempt the assessment, and once initiated, retakes are not permitted.
                     </li>
                     <li><span class="text-primary"><strong>Submission</strong></span>
-                        Upon finishing the test, submit your answers using the "Submit" button; changes cannot be made thereafter.
+                        Upon finishing the assessment, submit your answers using the "Submit" button; changes cannot be made thereafter.
                     </li>
                     <li><span class="text-primary"><strong>Feedback</strong></span>
-                        Instantly view both your answers and the correct ones for each question immediately after submission, facilitating review and learning from mistakes.
-                    </li>
-                    <li><span class="text-primary"><strong>Test Results</strong></span>
-                        Access detailed reports, including individual answers and class statistics providing insights into your performance relative to peers, under the 'Test Result' menu later.
+                        Result will be sent to selected branch directly. View both your answers and the correct ones for each question immediately after submission, facilitating review and learning strategy.
                     </li>
                 </ol>
-                <p><strong>Please adhere to these guidelines to ensure a fair and effective assessment process. Good luck with your test!</strong></p>      
+                <p><strong>We hope you do your best with your assessment!</strong></p>      
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="agreeTestWarning">I understand</button>
@@ -87,8 +67,6 @@
         </div>
     </div>
 </div>
-</body>
-</html>
 <script>
 var selectedCount = 0;
 // Extract 'id' and 'grade' from the current URL

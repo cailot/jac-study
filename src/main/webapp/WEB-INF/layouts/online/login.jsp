@@ -129,7 +129,9 @@ function navigateToAssessment() {
 								<div class="row">
 									<div class="col-md-12">
 										<div class="text-primary text-right small">
-											<a id="assessmentLink" href="#" onclick="displayAssessment()">Assessment Test
+											<!-- <a id="assessmentLink" href="#" onclick="displayAssessment()"> -->
+											<a href="${pageContext.request.contextPath}/assessment/start">
+												Assessment Test
 											</a>	
 										</div>
 									</div>

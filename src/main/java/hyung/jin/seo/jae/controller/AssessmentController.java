@@ -327,9 +327,10 @@ public class AssessmentController {
 			String grade = guest.getGrade();
 			int score = (int) ((20 * dto.getScore()) / 100); // Assuming dto.getScore() returns a number
 			emailBodyBuilder.append("<tr>")
-				.append("<td>Assessment Test ").append(JaeUtils.getGradeName(grade)).append(" ").append(subject).append("</td>") // Assuming you want to use the grade here
-				.append("<td class='score'>").append(score).append(" / 20</td>")
+				.append("<td>Assessment Test ").append(JaeUtils.getGradeYearName(grade)).append(" ").append(subject).append("</td>") // Assuming you want to use the grade here
+				.append("<td class='score'>").append(score).append(" / 20 (").append((score/20.0)*100).append("%)").append("</td>")
 				.append("</tr>");
+				System.out.println(score);
 		}
 		
 		emailBodyBuilder.append("</table>")

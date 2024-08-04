@@ -6,7 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
-
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.RenderingHints;
 
@@ -304,7 +304,6 @@ public class PdfServiceImpl implements PdfService {
 			int ans = answer.getAnswers().get(i).getAnswer();
 			String correct = (resp == ans) ? "O" : "X";
 			correctCnt += (resp == ans) ? 1 : 0;
-			// String percent = (resp == ans) ? String.valueOf(56 + new java.util.Random().nextInt(10)) + "%" : String.valueOf(56 - new java.util.Random().nextInt(10)) + "%";
 			String percent = String.valueOf(55 + new java.util.Random().nextInt(19) - 9) + "%" ;
 			
 			String topics = answer.getAnswers().get(i).getTopic();
@@ -316,7 +315,7 @@ public class PdfServiceImpl implements PdfService {
 			details.addCell(cell2);			
 			Cell cell3 = detailCell(JaeUtils.getAnswer(ans) + "").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
 			details.addCell(cell3);			
-			Cell cell4 =  (correct.equals("O")) ?  detailCell(correct).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER).setFontColor(com.itextpdf.kernel.color.Color.GREEN) : detailCell(correct).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER).setFontColor(com.itextpdf.kernel.color.Color.RED);
+			Cell cell4 =  (correct.equals("O")) ?  detailCell(correct).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER).setFontColor(com.itextpdf.kernel.color.Color.BLUE) : detailCell(correct).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER).setFontColor(com.itextpdf.kernel.color.Color.BLACK);
 			details.addCell(cell4);			
 			Cell cell5 = detailCell(percent).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER); // percent
 			details.addCell(cell5);			
@@ -473,9 +472,34 @@ public class PdfServiceImpl implements PdfService {
 		renderer.setDefaultItemLabelGenerator(new org.jfree.chart.labels.StandardCategoryItemLabelGenerator());
 		renderer.setBarPainter(new StandardBarPainter());
 
+		/*
 		// Customize the color of the bars
-		renderer.setSeriesPaint(0, Color.BLUE);
-		renderer.setSeriesPaint(1, Color.CYAN);
+		// renderer.setSeriesPaint(0, Color.BLUE);
+		renderer.setSeriesOutlinePaint(1, Color.decode("#033781")); // Set the border color to dark blue
+		renderer.setSeriesPaint(1, Color.white);
+
+		// Set the outline paint and stroke for the border
+		renderer.setSeriesOutlinePaint(1, Color.black); // Set the border color
+		renderer.setSeriesOutlineStroke(1, new BasicStroke(1.0f)); // Set the border thickness
+		renderer.setDrawBarOutline(true); // Enable drawing the outline
+		*/
+
+		// Customize the color of the bars for series 0 and series 1
+		renderer.setSeriesPaint(0, Color.decode("#033781")); // Assuming series 0 is for "Your Mark"
+		renderer.setSeriesPaint(1, Color.white); // Assuming series 1 is for "Average Mark"
+
+		// Set the outline paint and stroke for the border of series 1
+		renderer.setSeriesOutlinePaint(1, Color.black); // Set the border color
+		renderer.setSeriesOutlineStroke(1, new BasicStroke(1.0f)); // Set the border thickness
+		renderer.setDrawBarOutline(true); // Enable drawing the outline
+
+		// Set the outline paint and stroke for the border of series 0 (if needed)
+		renderer.setSeriesOutlinePaint(0, Color.black); // Set the border color for series 0
+		renderer.setSeriesOutlineStroke(0, new BasicStroke(1.0f)); // Set the border thickness for series 0
+		renderer.setDrawBarOutline(true); // Enable drawing the outline
+
+
+
 
 		// Set the font size for the legend
 		barChart.getLegend().setItemFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 9));
