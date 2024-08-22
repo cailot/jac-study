@@ -274,4 +274,13 @@ public interface JaeConstants {
 	String SUBJECT_GA = "General Ability";
 
 	String SUBJECT_GA_SHORT = "G.A";
+
+	////////////////////////////////////
+	//
+	//	ACCESS FROM
+	//
+	////////////////////////////////////
+	String ONLINE_FROM = "online";
+
+	String CONNECTED_FROM = "connected";
 }

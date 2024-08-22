@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.security.authentication.DisabledException;
@@ -19,6 +21,7 @@ import hyung.jin.seo.jae.dto.StudentAccount;
 import hyung.jin.seo.jae.model.Student;
 import hyung.jin.seo.jae.model.User;
 import hyung.jin.seo.jae.service.CycleService;
+import hyung.jin.seo.jae.service.LoginActivityService;
 import hyung.jin.seo.jae.service.StudentAccountService;
 import hyung.jin.seo.jae.utils.JaeConstants;
 import hyung.jin.seo.jae.utils.JaeUtils;
@@ -44,36 +47,13 @@ public class StudentAccountServiceImpl implements StudentAccountService {
 	@Autowired
 	private CycleService cycleService;
 
+	@Autowired
+	private LoginActivityService loginActivityService;
+
+	@Autowired
+	private HttpSession session;
+
 	private List<CycleDTO> cycles;
-
-	/*
-	// when student login, the below method will be executed to save StudentAccount as UserDetails
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		StudentAccount account = null;
-		try{
-			Object[] result = studentRepository.checkStudentAccount(Long.parseLong(username));
-			if(result!=null && result.length > 0){
-				Object[] obj = (Object[])result[0];
-				account = new StudentAccount(obj);
-				// check enrolment is valid if student is active
-				int currentYear = getYear();
-				int currentWeek = getWeek();
-				// check if student is enrolled in any class for current
-				List<Long> ids = enrolmentRepository.checkEnrolmentTime(Long.parseLong(username), currentYear, currentWeek);
-				if(ids==null || ids.size() == 0){
-					// No enrolment
-					account.setEnabled(JaeConstants.INACTIVE);
-					throw new DisabledException("User enrolment is not valid");
-				}
-			}
-		}catch(Exception e){
-			throw new UsernameNotFoundException("User : " + username + " was not found in the database");
-		}
-		return account;
-	}
-*/
-
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -102,6 +82,13 @@ public class StudentAccountServiceImpl implements StudentAccountService {
 						// No enrolment
 						account.setEnabled(JaeConstants.INACTIVE);
 						throw new DisabledException("User enrolment is not valid");
+					}
+
+					String fromWhere = (String) session.getAttribute("referer");
+					// keep login entry if user is connected from login page
+					if(fromWhere!=null && fromWhere.contains(JaeConstants.CONNECTED_FROM)) {
+						// add login activity
+						loginActivityService.saveLoginActivity(Long.parseLong(username));
 					}
 					return account;
 				} else {

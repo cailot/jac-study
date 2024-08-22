@@ -1,5 +1,7 @@
 package hyung.jin.seo.jae.config;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,13 +14,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 public class JaeStudentSecurity extends WebSecurityConfigurerAdapter{
 
 	@Autowired
 	private UserDetailsService userDetailsService;
-    
+
         @Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService).passwordEncoder(getPasswordEncoder());
@@ -41,6 +44,9 @@ public class JaeStudentSecurity extends WebSecurityConfigurerAdapter{
         @Configuration
         @Order(1)
         public static class OnlineSecurityConfig extends WebSecurityConfigurerAdapter {
+                @Autowired
+                private JaeLoginFilter jaeLoginFilter;
+
                 @Override
                 protected void configure(HttpSecurity http) throws Exception {
                         http.headers(headers -> headers.frameOptions().sameOrigin());// allow iframe to embed PDF in body
@@ -61,12 +67,17 @@ public class JaeStudentSecurity extends WebSecurityConfigurerAdapter{
                                         .logoutSuccessUrl("/online/login") // redirect url after logout
                                         .invalidateHttpSession(true) // make session unavailable
                                         .permitAll());
+                        // Add the custom filter before the UsernamePasswordAuthenticationFilter                
+                        http.addFilterBefore(jaeLoginFilter, UsernamePasswordAuthenticationFilter.class);
                 }
         }
 
         @Configuration
         @Order(2)
         public static class ConnectedSecurityConfig extends WebSecurityConfigurerAdapter {
+                @Autowired
+                private JaeLoginFilter jaeLoginFilter;
+
                 @Override
                 protected void configure(HttpSecurity http) throws Exception {
                         http.headers(headers -> headers.frameOptions().sameOrigin());// allow iframe to embed PDF in body
@@ -89,6 +100,8 @@ public class JaeStudentSecurity extends WebSecurityConfigurerAdapter{
                                         .logoutSuccessUrl("/connected/login")// redirect url after logout
                                         .invalidateHttpSession(true)// make session unavailable
                                         .permitAll());
+                        // Add the custom filter before the UsernamePasswordAuthenticationFilter
+                        http.addFilterBefore(jaeLoginFilter, UsernamePasswordAuthenticationFilter.class);
                         
                 }
         }
