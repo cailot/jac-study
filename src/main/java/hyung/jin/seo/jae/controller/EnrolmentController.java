@@ -21,7 +21,6 @@ import hyung.jin.seo.jae.dto.AttendanceDTO;
 import hyung.jin.seo.jae.dto.ClazzDTO;
 import hyung.jin.seo.jae.dto.EnrolmentDTO;
 import hyung.jin.seo.jae.dto.MaterialDTO;
-import hyung.jin.seo.jae.dto.OutstandingDTO;
 import hyung.jin.seo.jae.model.Attendance;
 import hyung.jin.seo.jae.model.Book;
 import hyung.jin.seo.jae.model.Clazz;
@@ -36,7 +35,6 @@ import hyung.jin.seo.jae.service.CycleService;
 import hyung.jin.seo.jae.service.EnrolmentService;
 import hyung.jin.seo.jae.service.InvoiceService;
 import hyung.jin.seo.jae.service.MaterialService;
-import hyung.jin.seo.jae.service.OutstandingService;
 import hyung.jin.seo.jae.service.StudentService;
 import hyung.jin.seo.jae.utils.JaeConstants;
 
@@ -54,9 +52,6 @@ public class EnrolmentController {
 	private StudentService studentService;
 
 	@Autowired
-	private OutstandingService outstandingService;
-
-	@Autowired
 	private MaterialService materialService;
 
 	@Autowired
@@ -71,66 +66,7 @@ public class EnrolmentController {
 	@Autowired
 	private CycleService cycleService;
 
-	@GetMapping("/search/student/{id}")
-	@ResponseBody
-	public List searchEnrolmentByStudent(@PathVariable Long id) {
-		List dtos = new ArrayList(); 
-		// get lastest invoice id
- 		List<Long> invoiceIds = enrolmentService.findInvoiceIdByStudent(id);
-
-		boolean isInvoiceAbsent = ((invoiceIds==null) || (invoiceIds.size()==0));
-		if(isInvoiceAbsent) return dtos; // return empty list if no invoice
-
-		// check current academic year and week
-		int currentYear = cycleService.academicYear();
-		int currentWeek = cycleService.academicWeeks();
-		
-		for(Long invoiceId : invoiceIds){
-			boolean isStillActive = false;
-			boolean isInvoicePaid = invoiceService.isPaidInvoice(invoiceId);
-
-			// 1. get enrolments by invoice id
-			List<EnrolmentDTO> enrols = enrolmentService.findEnrolmentByInvoiceAndStudent(invoiceId, id);
-			for(EnrolmentDTO enrol : enrols){
-				// set price = 0 if discount = 100%
-				if(StringUtils.defaultString(enrol.getDiscount()).equalsIgnoreCase(JaeConstants.DISCOUNT_FREE)){
-					enrol.setPrice(0);
-				}
-				// 2. check if enrolment is active or not
-				boolean isActive = currentYear >= enrol.getYear() && currentWeek <= enrol.getEndWeek();
-				// if full paid, set extra as paid
-				if(isInvoicePaid){
-					enrol.setExtra(JaeConstants.FULL_PAID);
-				}
-				if(isActive){
-					isStillActive = true;
-					dtos.add(enrol);
-				}else{ // if not active, check if fully paid or not
-					// 2-1. if not fully paid, set Overdue to extra
-					if(!isInvoicePaid){
-						enrol.setExtra(JaeConstants.OVERDUE);
-						dtos.add(enrol);
-					}
-				}
-			}
-			if((isStillActive) || (!isInvoicePaid)){
-				// 3. get materials by invoice id and add to list dtos
-				List<MaterialDTO> materials = materialService.findMaterialByInvoice(invoiceId);
-				for(MaterialDTO material : materials){
-					dtos.add(material);
-				}
-				// 4. get outstandings by invoice id and add to list dtos
-				List<OutstandingDTO> stands = outstandingService.getOutstandingtByInvoice(invoiceId);
-				for(OutstandingDTO stand : stands){
-					dtos.add(stand);
-				}
-			}
-		}
-
-		// 4. return dtos mixed by enrolments and outstandings
-		return dtos;
-	}
-
+	
 	// count records number in database
 	@GetMapping("/count")
 	@ResponseBody
@@ -265,24 +201,6 @@ public class EnrolmentController {
 		}
 		return dtos;
 	}
-
-	@PostMapping("/associateOutstanding/{studentId}")
-	@ResponseBody
-	public List<OutstandingDTO> associateOutstanding(@PathVariable Long studentId) {
-		List<OutstandingDTO> dtos = new ArrayList<>();
-		// 1. get Invoice
-		Invoice invo = invoiceService.getLastActiveInvoiceByStudentId(studentId);
-		// 2. check if invoice has owing amount
-		boolean isValidInvoice = (invo !=null) && (invo.getAmount() > invo.getPaidAmount());
-		// 3. if invoice is already paid or null, return empty list
-		if(!isValidInvoice) return dtos;
-		// 4. bring all related Outstandings
-		dtos = outstandingService.getOutstandingtByInvoice(invo.getId());
-		// 5. return OutstandingDTO list
-		return dtos;
-	}
-
-
 
 	@PostMapping("/associateClazz/{studentId}")
 	@ResponseBody
