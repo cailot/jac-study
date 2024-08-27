@@ -16,6 +16,11 @@
 		var academicYear;
     	var academicWeek;
 		var academicSet;
+		// Variables to store the current video being watched
+		var watchingId = 0;
+		// var watchingUrl = '';
+		var watchingTime = '';
+
 	</script>
 </sec:authorize>
 
@@ -41,7 +46,78 @@ $(function() {
 	listState('#editState');
     listBranch('#editBranch');
 	listGrade('#editGrade');
+
+
+
+
+
+
+/*
+
+	// let observerActive = true;
+	// Monitor iframe load event
+    const iframe = document.getElementById('lessonVideo');
+    // Monitor changes to iframe src attribute
+    const observer = new MutationObserver(function(mutationsList) {
+		// if(!observerActive) return;
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+                const timestamp = new Date();
+				// calculate time difference between watchingTime and timestamp
+				const timeDifferenceSecond = (timestamp - watchingTime)/1000;
+				// print out 'src' value
+				const iframe = mutation.target;
+       			const srcValue = iframe.getAttribute('src');
+				console.log('Iframe src attribute has changed to: ' + srcValue + ', watchingTime was ' + watchingTime + ' and current time is ' + timestamp+ '. Time difference second: ' + timeDifferenceSecond);
+				
+				if(timeDifferenceSecond > 10){
+					$.ajax({
+						url: '${pageContext.request.contextPath}/elearning/endWatch/' + studentId + '/' + watchingId, // Backend endpoint to handle the log
+						type: 'GET',
+						success: function(response) {
+							console.log(response);
+						},
+						error: function(xhr, status, error) {
+							console.error('Error logging action: ', error);
+						}
+					});
+				}	
+			}
+        }
+    });
+    // Start observing the iframe for attribute changes
+    observer.observe(iframe, { attributes: true });
+
+
+*/
+
+
+
+
+	 // Detect when the tab or browser is closed
+	 window.addEventListener('beforeunload', function(event) {
+        // const timestamp = new Date();
+        // const timeDifferenceSecond = (timestamp - watchingTime) / 1000;
+        // if (timeDifferenceSecond > 10) {
+            // Send data to the server
+            navigator.sendBeacon('${pageContext.request.contextPath}/elearning/endWatch/' + studentId + '/' + watchingWeek);
+        // }
+    });
+
+
 });
+
+
+
+function test(){
+	const iframe = document.getElementById('lessonVideo');
+    const src = iframe.getAttribute('src');
+	if(src!=null && src != ''){
+		console.log('>>>>>>>>>>>>>> ' + src);
+	}
+	
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //		Retrieve Student Info
@@ -130,8 +206,8 @@ function getOnlineLive(studentId, year, week) {
 		type : 'GET',
 		success : function(data) {
 			$.each(data, function(index, live) {
-				console.log("Live : " + index);
-			    console.log(live);
+				// console.log("Live : " + index);
+			    // console.log(live);
 				var url = live.address;
 				// Create a new session element
 				var sessionElement = $('<div id="onlineLesson'+index+'" class="onlineLesson alert alert-info"></div>');
@@ -141,7 +217,8 @@ function getOnlineLive(studentId, year, week) {
                     '<span id="onlineLessonStartTitle'+index+'" name="onlineLessonStartTitle'+index+'">' + live.startTime + '</span> ~ ' +
                     '<span id="onlineLessonEndTitle'+index+'" name="onlineLessonEndTitle'+index+'">' + live.endTime + '</span>&nbsp;&nbsp;' +
                     '<i id="micIcon'+index+'" name="micIcon'+index+'" class="bi bi-mic-fill text-secondary h5" title="Live"></i>)' +
-                    '&nbsp;<i id="livePlayIcon'+index+'" class="bi bi-caret-right-square text-primary" title="Play Video"></i></p>');
+                    '&nbsp;<i id="livePlayIcon'+index+'" class="bi bi-caret-right-square text-primary" title="Play Video"></i>' + 
+					'<span id="onlineLessonId'+index+'" name="onlineLessonId'+index+'" style="visibility: hidden;">' + live.id + '</span></p>');
                 // Append the session element to the container
                 $('#liveBlocks').append(sessionElement);
 				// Add event listener to the newly created element
@@ -167,15 +244,16 @@ function getRecordedSession(studentId, year, week, set, day, before) {
             $.each(data, function(index, record) {
 				// check if day is same as multiple records returned
                 if(dayName(record.day) == day){
-					console.log("Record : " + index);
-					console.log(record);
+					// console.log("Record : " + index);
+					// console.log(record);
 					var url = record.address;
 					// Create a new session element
 					var sessionElement = $('<div id="recordLesson'+index+'"class="recordLesson alert alert-primary" style="pointer-events: auto; cursor: pointer;"></div>');
 					sessionElement.attr('data-video-url', url);
 					sessionElement.append('<p id="recordBlock' + index + '" class="m-1">Recorded Weekly Lesson <strong>Set</strong> <span id="recordWeek' + index + '"></span> - <i>' + record.title +'</i> (' +
 						'<span id="recordLessonDayTitle' + index + '" name="recordLessonDayTitle' + index + '"></span>) ' +
-						'<i id="recordPlayIcon' + index + '" class="bi bi-caret-right-square text-primary" title="Play Video"></i></p>');
+						'<i id="recordPlayIcon' + index + '" class="bi bi-caret-right-square text-primary" title="Play Video"></i>' +
+						'<span id="recordLessonId'+index+'" name="recordLessonId'+index+'" style="visibility: hidden;">' + record.id + '</span></p>');
 					// Append the session element to the container
 					$('#recordBlocks').append(sessionElement);
 					// Add event listener to the newly created element
@@ -302,10 +380,14 @@ function handleOnlineLessonClick(event) {
 	const startValue = startElement.textContent;
 	const endElement = onlineLesson.querySelector('[id^="onlineLessonEndTitle"]');
 	const endValue = endElement.textContent;
+	const idElement = onlineLesson.querySelector('[id^="onlineLessonId"]');
+	const idValue = idElement.textContent;
 	// set the value of onlineLessonDayTitle to onlineLessonDay
 	document.getElementById("onlineLessonDay").textContent = dayValue;
 	document.getElementById("onlineLessonStart").textContent = startValue;
 	document.getElementById("onlineLessonEnd").textContent = endValue;
+	document.getElementById("realtimeVideoId").value = idValue;
+	// Show confirmation dialog before calling handleLessonClick
 	$('#onleLessonWarning').modal('show');
 }
 
@@ -316,11 +398,15 @@ function handleRecordLessonClick(event) {
 	const recordLesson = event.currentTarget;
 	// set the videoUrl to the hidden input field
 	document.getElementById("recordVideoUrl").value = recordLesson.getAttribute('data-video-url');
-	// Get the value of onlineLessonDayTitle
+	// get the value of onlineLessonDayTitle
 	const dayElement = recordLesson.querySelector('[id^="recordLessonDayTitle"]');
 	const dayValue = dayElement.textContent;
 	document.getElementById("recordLessonDay").textContent = dayValue;
-	// // Show confirmation dialog before calling handleLessonClick
+	// get id value
+	const idElement = recordLesson.querySelector('[id^="recordLessonId"]');
+	const idValue = idElement.textContent;
+	document.getElementById("recordVideoId").value = idValue;
+	// Show confirmation dialog before calling handleLessonClick
 	$('#recordLessonWarning').modal('show');
 }
 
@@ -339,6 +425,45 @@ function displayMedia(videoUrl) {
 	// Hide the media warning modal
 	$('#onleLessonWarning').modal('hide');
 	$('#recordLessonWarning').modal('hide');
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//	Track Video Play & Stop action
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function startVideoTimer(action, id) {
+
+	// set flag to false to stop observer
+	// observerActive = false;
+
+	// Capture the current timestamp
+    const timestamp = new Date();
+	watchingTime = timestamp;
+	watchingId = id;
+	// trigger timestamp to server
+	$.ajax({
+		url: '${pageContext.request.contextPath}/elearning/startWatch/' + studentId + '/' + id, // Backend endpoint to handle the log
+		type: 'GET',
+		success: function(response) {
+			console.log(response);
+		},
+		error: function(xhr, status, error) {
+			console.error('Error logging action: ', error);
+		}
+	});	
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//	Login Activity & Link to Connected Class
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function accessConnectedClass() {
+	// login activity store
+	$.ajax({
+		url: '${pageContext.request.contextPath}/elearning/checkLogin/' + studentId, 
+		type: 'GET'
+	});	
+    const url = '${pageContext.request.contextPath}/connected/lesson';
+    window.open(url, '_blank');
 }
 
 </script>    
@@ -389,10 +514,12 @@ function displayMedia(videoUrl) {
 			</div>
 		</div>
 	</sec:authorize>
+	
 	<!-- HTML with additional container -->
 	<div class="iframe-container" style="display: flex; justify-content: center; align-items: center;">
-		<iframe id="lessonVideo" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+		<iframe id="lessonVideo" src="" allow="autoplay; encrypted-media" allowfullscreen onLoad="test();"></iframe>
 	</div>
+
 	<div class="parent-container" style="display: flex; justify-content: center;">
 		<div class="card-body" style="max-width: 80%; margin: auto;">
 			<div id="liveBlocks">
@@ -400,14 +527,94 @@ function displayMedia(videoUrl) {
 			<div id="recordBlocks">
 			</div>
 			<div class="text-right">
-				<a href="${pageContext.request.contextPath}/connected/lesson" class="btn btn-primary" target="_blank">Access To Connected Class</a>
+				<!-- <a href="${pageContext.request.contextPath}/connected/lesson" class="btn btn-primary" target="_blank">Access To Connected Class</a> -->
+				<button class="btn btn-primary" onclick="accessConnectedClass()">Access To Connected Class</button>
 			</div>
 		</div>
 	</div>	
 </div>
 
+<!-- Realtime Video Warning Modal -->
+<div class="modal fade" id="onleLessonWarning" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border: 2px solid #ffc107; border-radius: 10px;">
+            <div class="modal-header bg-warning" style="display: block;">
+				<p style="text-align: center; margin-bottom: 0;"><span style="font-size:18px"><strong>James An College Year <span class="text-danger" id="onlineGrade" name="onlineGrade"></span></strong></span></p>
+				<script>
+					document.getElementById("onlineGrade").textContent = displayGrade();       
+				</script>
+			</div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="${pageContext.request.contextPath}/image/live.png" style="width: 150px; height: 150px; border-radius: 5%;">
+                </div>
+                <!-- Add your warning message or content here -->
+                <p ><strong>Live Online Class Time:</strong> Every <span id="onlineLessonDay" name="onlineLessonDay"></span>, <span id="onlineLessonStart" name="onlineLessonStart"></span> - <span id="onlineLessonEnd" name="onlineLessonEnd"></span></p>
+                <ol>
+                    <li>Each set should be completed prior to the 'online class'.</li>
+                    <li><span class="text-danger"><strong>Do not turn on your Camera.</strong></span></li>
+                    <li>
+                        You can ask a question to the teacher if necessary. But please do not bring up irrelevant
+                        topics or send dubious and unnecessary content. Anyone who does not respect the online
+                        etiquette may be removed from the class at teacher or Head Office's discretion.
+                    </li>
+                    <li>
+                        Please change your name to <strong>&#39;Full Name - JAC Branch&#39;</strong>, e.g. Ava Lee - Braybrook
+                        <br>
+                        - You can change your name before joining the class or 'rename' yourself after joining.</li>
+                        
+                    </li>
+                    <li>
+                        Please note JAC <span class="text-primary"><strong>&#39;Connected Class&#39; </strong></span> is still available for extra coverage.
+                    </li>
+                </ol>
+            </div>
+            <input type="hidden" id="realtimeVideoUrl" name="realtimeVideoUrl" value="">
+			<input type="hidden" id="realtimeVideoId" name="realtimeVideoId" value="">
+            <div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="agreeMediaWarning" onclick="startVideoTimer('live', document.getElementById('realtimeVideoId').value); displayMedia('realtimeVideoUrl')">I agree</button>
+            	<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Record Video Warning Modal -->
+<div class="modal fade" id="recordLessonWarning" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border: 2px solid #ffc107; border-radius: 10px;">
+            <div class="modal-header bg-warning" style="display: block;">
+				<p style="text-align: center; margin-bottom: 0;"><span style="font-size:18px"><strong>James An College Year <span class="text-danger" id="recordGrade" name="recordGrade"></span></strong></span></p>
+				<script>
+					document.getElementById("recordGrade").textContent = displayGrade();       
+				</script>
+			</div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="${pageContext.request.contextPath}/image/recorded.png" style="width: 150px; height: 150px; border-radius: 5%;">
+                </div>
+                <!-- Add your warning message or content here -->
+                <p><strong>Online Class : </strong><span id="recordLessonDay" name="recordLessonDay"></span></p>
+				<p>
+					Please note that the recorded video will be accessible for a duration of <span class="text-danger text-uppercase"><strong>A WEEK.</strong></span><br>This availability extends until the commencement of the subsequent online live lesson, ensuring you have adequate time to review the content at your convenience.
+				</p>
+            </div>
+            <input type="hidden" id="recordVideoUrl" name="recordVideoUrl" value="">
+			<input type="hidden" id="recordVideoId" name="recordVideoId" value="">
+            <div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="agreeMediaWarning" onclick="startVideoTimer('record', document.getElementById('recordVideoId').value); displayMedia('recordVideoUrl')">I agree</button>
+            	<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<h6 class="text-center" style="position: fixed; bottom: 0; width: 100%;">
+	2015 - <%=new java.util.Date().getYear() + 1900%>&copy;&nbsp; All rights reserved.&nbsp;&nbsp;
+	<div class="copyright-font-color">James An College</div>
+</h6>
+
  <!-- Edit Form Dialogue -->
-<div class="modal fade" id="editStudentModal" tabindex="-1" role="dialog" aria-labelledby="modalEditLabel" aria-hidden="true">	
+ <div class="modal fade" id="editStudentModal" tabindex="-1" role="dialog" aria-labelledby="modalEditLabel" aria-hidden="true">	
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-body">
@@ -540,83 +747,6 @@ function displayMedia(videoUrl) {
 		</div>
 	</div>
 </div>
-
-<!-- Realtime Video Warning Modal -->
-<div class="modal fade" id="onleLessonWarning" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content" style="border: 2px solid #ffc107; border-radius: 10px;">
-            <div class="modal-header bg-warning" style="display: block;">
-				<p style="text-align: center; margin-bottom: 0;"><span style="font-size:18px"><strong>James An College Year <span class="text-danger" id="onlineGrade" name="onlineGrade"></span></strong></span></p>
-				<script>
-					document.getElementById("onlineGrade").textContent = displayGrade();       
-				</script>
-			</div>
-            <div class="modal-body">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <img src="${pageContext.request.contextPath}/image/live.png" style="width: 150px; height: 150px; border-radius: 5%;">
-                </div>
-                <!-- Add your warning message or content here -->
-                <p ><strong>Live Online Class Time:</strong> Every <span id="onlineLessonDay" name="onlineLessonDay"></span>, <span id="onlineLessonStart" name="onlineLessonStart"></span> - <span id="onlineLessonEnd" name="onlineLessonEnd"></span></p>
-                <ol>
-                    <li>Each set should be completed prior to the 'online class'.</li>
-                    <li><span class="text-danger"><strong>Do not turn on your Camera.</strong></span></li>
-                    <li>
-                        You can ask a question to the teacher if necessary. But please do not bring up irrelevant
-                        topics or send dubious and unnecessary content. Anyone who does not respect the online
-                        etiquette may be removed from the class at teacher or Head Office's discretion.
-                    </li>
-                    <li>
-                        Please change your name to <strong>&#39;Full Name - JAC Branch&#39;</strong>, e.g. Ava Lee - Braybrook
-                        <br>
-                        - You can change your name before joining the class or 'rename' yourself after joining.</li>
-                        
-                    </li>
-                    <li>
-                        Please note JAC <span class="text-primary"><strong>&#39;Connected Class&#39; </strong></span> is still available for extra coverage.
-                    </li>
-                </ol>
-            </div>
-            <input type="hidden" id="realtimeVideoUrl" name="realtimeVideoUrl" value="">
-            <div class="modal-footer">
-				<button type="button" class="btn btn-primary" id="agreeMediaWarning" onclick="displayMedia('realtimeVideoUrl')">I agree</button>
-            	<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Record Video Warning Modal -->
-<div class="modal fade" id="recordLessonWarning" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content" style="border: 2px solid #ffc107; border-radius: 10px;">
-            <div class="modal-header bg-warning" style="display: block;">
-				<p style="text-align: center; margin-bottom: 0;"><span style="font-size:18px"><strong>James An College Year <span class="text-danger" id="recordGrade" name="recordGrade"></span></strong></span></p>
-				<script>
-					document.getElementById("recordGrade").textContent = displayGrade();       
-				</script>
-			</div>
-            <div class="modal-body">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <img src="${pageContext.request.contextPath}/image/recorded.png" style="width: 150px; height: 150px; border-radius: 5%;">
-                </div>
-                <!-- Add your warning message or content here -->
-                <p><strong>Online Class : </strong><span id="recordLessonDay" name="recordLessonDay"></span></p>
-				<p>
-					Please note that the recorded video will be accessible for a duration of <span class="text-danger text-uppercase"><strong>A WEEK.</strong></span><br>This availability extends until the commencement of the subsequent online live lesson, ensuring you have adequate time to review the content at your convenience.
-				</p>
-            </div>
-            <input type="hidden" id="recordVideoUrl" name="recordVideoUrl" value="">
-            <div class="modal-footer">
-				<button type="button" class="btn btn-primary" id="agreeMediaWarning" onclick="displayMedia('recordVideoUrl')">I agree</button>
-            	<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-<h6 class="text-center" style="position: fixed; bottom: 0; width: 100%;">
-	2015 - <%=new java.util.Date().getYear() + 1900%>&copy;&nbsp; All rights reserved.&nbsp;&nbsp;
-	<div class="copyright-font-color">James An College</div>
-</h6>
 
 <!-- Success Alert -->
 <div id="success-alert" class="modal fade">

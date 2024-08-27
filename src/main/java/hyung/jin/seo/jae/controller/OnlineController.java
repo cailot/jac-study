@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import hyung.jin.seo.jae.model.Student;
 import hyung.jin.seo.jae.service.CodeService;
 import hyung.jin.seo.jae.service.CycleService;
 import hyung.jin.seo.jae.service.EnrolmentService;
+import hyung.jin.seo.jae.service.LoginActivityService;
 import hyung.jin.seo.jae.service.OnlineSessionService;
 import hyung.jin.seo.jae.service.StudentService;
 import hyung.jin.seo.jae.utils.JaeConstants;
@@ -38,6 +40,9 @@ public class OnlineController {
 
 	@Autowired
 	private CodeService codeService;
+
+	@Autowired
+	private LoginActivityService loginActivityService;
 
 	// get online course url
 	@GetMapping("/getLive/{id}/{year}/{week}")
@@ -102,6 +107,32 @@ public class OnlineController {
 		List<OnlineSessionDTO> dtos = onlineSessionService.findSessionByClazzNWeek(clazzId, set);
 		// 4. return OnlineSessionDTO
 		return dtos;
+	}
+
+
+	// keep start time for online watching
+	@GetMapping("/startWatch/{studentId}/{id}")	
+	@ResponseBody
+	public ResponseEntity<String> saveStartWatch(@PathVariable("studentId") long studentId, @PathVariable("id") long id) {	
+		// print out student id and week with timestamp
+		System.out.println(">>>>>>> Start time - Student ID: " + studentId + " ID: " + id + " Time: " + System.currentTimeMillis());
+		return ResponseEntity.ok("Start log enters successfully in the server");
+	}
+	
+	// keep end time for online watching
+	@GetMapping("/endWatch/{studentId}/{id}")
+	@ResponseBody
+	public ResponseEntity<String> saveEndWatch(@PathVariable("studentId") long studentId, @PathVariable("id") long id) {	
+		// print out student id and week with timestamp
+		System.out.println(">>>>>>> End time - Student ID: " + studentId + " ID: " + id + " Time: " + System.currentTimeMillis());
+		return ResponseEntity.ok("End log enters successfully in the server");
+	}
+
+	// store login activity
+	@GetMapping("/checkLogin/{studentId}")
+	public ResponseEntity<String> storeLoginActivity(@PathVariable("studentId") long studentId) {	
+		loginActivityService.saveLoginActivity(studentId);
+		return ResponseEntity.ok("End log enters successfully in the server");
 	}
 	
 }
