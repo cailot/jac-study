@@ -278,7 +278,7 @@ public class AssessmentController {
 		// 5. create PDF
 		byte[] pdfData = pdfService.generateAssessmentPdf(ingredients);
 		// 6. send email
-		String emailRecipient = "jh05052008@gmail.com";
+		String emailRecipient = "jamesanvic@outlook.com";
 		StringBuilder emailBodyBuilder = new StringBuilder();
 		emailBodyBuilder.append("<html>")
             .append("<head>")

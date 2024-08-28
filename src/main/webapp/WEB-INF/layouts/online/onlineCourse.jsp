@@ -19,7 +19,7 @@
 		// Variables to store the current video being watched
 		var watchingId = 0;
 		// var watchingUrl = '';
-		var watchingTime = '';
+		// var watchingTime = '';
 
 	</script>
 </sec:authorize>
@@ -47,77 +47,24 @@ $(function() {
     listBranch('#editBranch');
 	listGrade('#editGrade');
 
-
-
-
-
-
-/*
-
-	// let observerActive = true;
-	// Monitor iframe load event
-    const iframe = document.getElementById('lessonVideo');
-    // Monitor changes to iframe src attribute
-    const observer = new MutationObserver(function(mutationsList) {
-		// if(!observerActive) return;
-        for (const mutation of mutationsList) {
-            if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
-                const timestamp = new Date();
-				// calculate time difference between watchingTime and timestamp
-				const timeDifferenceSecond = (timestamp - watchingTime)/1000;
-				// print out 'src' value
-				const iframe = mutation.target;
-       			const srcValue = iframe.getAttribute('src');
-				console.log('Iframe src attribute has changed to: ' + srcValue + ', watchingTime was ' + watchingTime + ' and current time is ' + timestamp+ '. Time difference second: ' + timeDifferenceSecond);
-				
-				if(timeDifferenceSecond > 10){
-					$.ajax({
-						url: '${pageContext.request.contextPath}/elearning/endWatch/' + studentId + '/' + watchingId, // Backend endpoint to handle the log
-						type: 'GET',
-						success: function(response) {
-							console.log(response);
-						},
-						error: function(xhr, status, error) {
-							console.error('Error logging action: ', error);
-						}
-					});
-				}	
+    // save end time before closing broswer
+	window.addEventListener('beforeunload', function (event) {
+		$.ajax({
+			url: '${pageContext.request.contextPath}/elearning/endWatch/' + studentId + '/' + watchingId, // Backend endpoint to handle the log
+			type: 'GET',
+			success: function(response) {
+				console.log(response);
+			},
+			error: function(xhr, status, error) {
+				console.error('Error logging action: ', error);
 			}
-        }
-    });
-    // Start observing the iframe for attribute changes
-    observer.observe(iframe, { attributes: true });
-
-
-*/
-
-
-
-
-	 // Detect when the tab or browser is closed
-	 window.addEventListener('beforeunload', function(event) {
-        // const timestamp = new Date();
-        // const timeDifferenceSecond = (timestamp - watchingTime) / 1000;
-        // if (timeDifferenceSecond > 10) {
-            // Send data to the server
-            navigator.sendBeacon('${pageContext.request.contextPath}/elearning/endWatch/' + studentId + '/' + watchingWeek);
-        // }
-    });
-
-
-});
-
-
-
-function test(){
-	const iframe = document.getElementById('lessonVideo');
-    const src = iframe.getAttribute('src');
-	if(src!=null && src != ''){
-		console.log('>>>>>>>>>>>>>> ' + src);
-	}
+		});
+		// Display a confirmation dialog (optional, may not work in all browsers)
+		event.preventDefault(); // Chrome requires returnValue to be set
+		event.returnValue = ''; // This prompts a standard confirmation dialog
+	});
 	
-}
-
+});
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //		Retrieve Student Info
@@ -414,6 +361,19 @@ function handleRecordLessonClick(event) {
 // 			Play video
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function displayMedia(videoUrl) {
+	if(watchingId!=null && watchingId!=0){
+		console.log('>>>>>>>>> STOP >>>>>>>>>>>>>> ' + watchingId);
+		$.ajax({
+			url: '${pageContext.request.contextPath}/elearning/endWatch/' + studentId + '/' + watchingId, // Backend endpoint to handle the log
+			type: 'GET',
+			success: function(response) {
+				console.log(response);
+			},
+			error: function(xhr, status, error) {
+				console.error('Error logging action: ', error);
+			}
+		});
+	}
 	// remove iframe initial background
 	document.getElementById('lessonVideo').style.background = 'none';
 	// get the videoUrl from the hidden input field
@@ -431,15 +391,10 @@ function displayMedia(videoUrl) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //	Track Video Play & Stop action
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function startVideoTimer(action, id) {
-
-	// set flag to false to stop observer
-	// observerActive = false;
-
-	// Capture the current timestamp
-    const timestamp = new Date();
-	watchingTime = timestamp;
+function startVideoTimer(id) {
+    // set the watchingId to the current video being watched
 	watchingId = id;
+	console.log('>>>>>>>>> Start >>>>>>>>>>>>>> ' + watchingId);
 	// trigger timestamp to server
 	$.ajax({
 		url: '${pageContext.request.contextPath}/elearning/startWatch/' + studentId + '/' + id, // Backend endpoint to handle the log
@@ -517,7 +472,7 @@ function accessConnectedClass() {
 	
 	<!-- HTML with additional container -->
 	<div class="iframe-container" style="display: flex; justify-content: center; align-items: center;">
-		<iframe id="lessonVideo" src="" allow="autoplay; encrypted-media" allowfullscreen onLoad="test();"></iframe>
+		<iframe id="lessonVideo" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 	</div>
 
 	<div class="parent-container" style="display: flex; justify-content: center;">
@@ -572,7 +527,7 @@ function accessConnectedClass() {
             <input type="hidden" id="realtimeVideoUrl" name="realtimeVideoUrl" value="">
 			<input type="hidden" id="realtimeVideoId" name="realtimeVideoId" value="">
             <div class="modal-footer">
-				<button type="button" class="btn btn-primary" id="agreeMediaWarning" onclick="startVideoTimer('live', document.getElementById('realtimeVideoId').value); displayMedia('realtimeVideoUrl')">I agree</button>
+				<button type="button" class="btn btn-primary" id="agreeMediaWarning" onclick="displayMedia('realtimeVideoUrl'); startVideoTimer(document.getElementById('realtimeVideoId').value)">I agree</button>
             	<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -602,7 +557,7 @@ function accessConnectedClass() {
             <input type="hidden" id="recordVideoUrl" name="recordVideoUrl" value="">
 			<input type="hidden" id="recordVideoId" name="recordVideoId" value="">
             <div class="modal-footer">
-				<button type="button" class="btn btn-primary" id="agreeMediaWarning" onclick="startVideoTimer('record', document.getElementById('recordVideoId').value); displayMedia('recordVideoUrl')">I agree</button>
+				<button type="button" class="btn btn-primary" id="agreeMediaWarning" onclick="displayMedia('recordVideoUrl'); startVideoTimer(document.getElementById('recordVideoId').value)">I agree</button>
             	<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

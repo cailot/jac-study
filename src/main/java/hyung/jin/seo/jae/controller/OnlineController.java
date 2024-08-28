@@ -1,6 +1,7 @@
 package hyung.jin.seo.jae.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,14 +14,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import hyung.jin.seo.jae.dto.OnlineSessionDTO;
+import hyung.jin.seo.jae.model.OnlineActivity;
 import hyung.jin.seo.jae.model.Student;
 import hyung.jin.seo.jae.service.CodeService;
 import hyung.jin.seo.jae.service.CycleService;
 import hyung.jin.seo.jae.service.EnrolmentService;
 import hyung.jin.seo.jae.service.LoginActivityService;
+import hyung.jin.seo.jae.service.OnlineActivityService;
 import hyung.jin.seo.jae.service.OnlineSessionService;
 import hyung.jin.seo.jae.service.StudentService;
 import hyung.jin.seo.jae.utils.JaeConstants;
+import hyung.jin.seo.jae.utils.JaeUtils;
 
 @Controller
 @RequestMapping("elearning")
@@ -43,6 +47,9 @@ public class OnlineController {
 
 	@Autowired
 	private LoginActivityService loginActivityService;
+
+	@Autowired
+	private OnlineActivityService onlineActivityService;
 
 	// get online course url
 	@GetMapping("/getLive/{id}/{year}/{week}")
@@ -116,6 +123,22 @@ public class OnlineController {
 	public ResponseEntity<String> saveStartWatch(@PathVariable("studentId") long studentId, @PathVariable("id") long id) {	
 		// print out student id and week with timestamp
 		System.out.println(">>>>>>> Start time - Student ID: " + studentId + " ID: " + id + " Time: " + System.currentTimeMillis());
+		OnlineActivity activity = onlineActivityService.getOnlineActivity(studentId, id);
+		if(activity == null){
+			// save online activity
+			onlineActivityService.addOnlineActivity(studentId, id);
+		}else{ 
+			// if status = 2 (completed), then no need to keep track again
+			if(activity.getStatus() == JaeConstants.STATUS_COMPLETED){
+				return ResponseEntity.ok("Already completed");
+			}
+			// update online activity
+			LocalDateTime now = LocalDateTime.now();
+			activity.setStartDateTime(now);
+			activity.setStatus(JaeConstants.STATUS_PROCESSING);
+			activity.setEndDateTime(null);
+			onlineActivityService.updateOnlineActivity(activity, activity.getId());
+		}
 		return ResponseEntity.ok("Start log enters successfully in the server");
 	}
 	
@@ -125,6 +148,19 @@ public class OnlineController {
 	public ResponseEntity<String> saveEndWatch(@PathVariable("studentId") long studentId, @PathVariable("id") long id) {	
 		// print out student id and week with timestamp
 		System.out.println(">>>>>>> End time - Student ID: " + studentId + " ID: " + id + " Time: " + System.currentTimeMillis());
+		OnlineActivity activity = onlineActivityService.getOnlineActivity(studentId, id);
+		if(activity != null && activity.getStatus() != JaeConstants.STATUS_COMPLETED){
+			// update online activity
+			LocalDateTime now = LocalDateTime.now();
+			activity.setEndDateTime(now);
+			// check if watching is completed or not
+			long watching = JaeUtils.calculateDurationInMinutes(activity.getStartDateTime(), activity.getEndDateTime());
+			long lecture = JaeUtils.calculateDurationInMinutes(activity.getOnlineSession().getStartTime(), activity.getOnlineSession().getEndTime());
+			if(isCompleted(lecture, watching)){
+				activity.setStatus(JaeConstants.STATUS_COMPLETED);
+			}
+			onlineActivityService.updateOnlineActivity(activity, activity.getId());
+		}
 		return ResponseEntity.ok("End log enters successfully in the server");
 	}
 
@@ -134,5 +170,15 @@ public class OnlineController {
 		loginActivityService.saveLoginActivity(studentId);
 		return ResponseEntity.ok("End log enters successfully in the server");
 	}
-	
+
+	// check if watching is completed or not
+	private boolean isCompleted(long lecture, long watching){
+		// if watching time is more than 80% of lecture time, then it is completed
+		if(watching > lecture * 0.8){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
 }

@@ -250,6 +250,18 @@ public interface JaeConstants {
 
 	////////////////////////////////////
 	//
+	//	STUDENT MIGRATION
+	//
+	////////////////////////////////////
+
+	String BATCH_TOTAL = "batchTotal";
+
+	String BATCH_SUCCESS = "batchSuccess";
+
+	String BATCH_LIST = "batchList";
+
+	////////////////////////////////////
+	//
 	//	USER ROLE
 	//
 	////////////////////////////////////
@@ -283,4 +295,13 @@ public interface JaeConstants {
 	String ONLINE_FROM = "online";
 
 	String CONNECTED_FROM = "connected";
+
+	////////////////////////////////////
+	//
+	//	STATUS
+	//
+	////////////////////////////////////
+	int STATUS_PROCESSING = 1;
+
+	int STATUS_COMPLETED = 2;
 }

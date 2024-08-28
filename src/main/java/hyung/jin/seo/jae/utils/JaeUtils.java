@@ -2,6 +2,10 @@ package hyung.jin.seo.jae.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -427,5 +431,27 @@ public class JaeUtils {
 		}
 		return answer;
 	}
+
+	// return difference between startDateTime and endDateTime
+	public static long calculateDurationInMinutes(LocalDateTime startDateTime, LocalDateTime endDateTime){
+		if (startDateTime != null && endDateTime != null) {
+            Duration duration = Duration.between(startDateTime, endDateTime);
+            return duration.toMinutes();
+        } else {
+            return 0; // or handle the null case as needed
+        }
+	}
 	
+	// return difference between startTime and endTime
+	public static long calculateDurationInMinutes(String startTime, String endTime) {
+        if (startTime != null && endTime != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            LocalTime start = LocalTime.parse(startTime, formatter);
+            LocalTime end = LocalTime.parse(endTime, formatter);
+            Duration duration = Duration.between(start, end);
+            return duration.toMinutes();
+        } else {
+            return 0; // or handle the null case as needed
+        }
+    }
 }

@@ -46,7 +46,7 @@
                 <!-- Add your warning message or content here -->
                 <ol style="line-height: 1.6;">
                     <li><span class="text-primary"><strong>Assessment Duration</strong></span>
-                        Ensure completion within the 30-minute time limit provided for the assessment.
+                        Ensure completion within the 20-minute time limit provided for the assessment.
                     </li>
                     <li><span class="text-primary"><strong>Single Attempt</strong></span>
                         Each student has a single opportunity to attempt the assessment, and once initiated, retakes are not permitted.
