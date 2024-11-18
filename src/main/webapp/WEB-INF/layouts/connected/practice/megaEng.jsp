@@ -6,6 +6,7 @@ const PDF = 1;
 const DONE= 'DONE';
 // console.log(studentId);
 $(function() {
+
     $.ajax({
         url : '${pageContext.request.contextPath}/connected/summaryPractice/' + studentId + '/' + PRACTICE_TYPE + '/' + numericGrade,
         method: "GET",
@@ -14,12 +15,12 @@ $(function() {
 
                 var title = basket.name;
                 var id = basket.value;
-                var icon = '<i class="bi bi-send h5 text-primary" title="unsubmitted yet"></i>';
+                var icon = '<i class="bi bi-send h5 text-primary" data-toggle="tooltip" title="unsubmitted yet"></i>';
                 var cardBody = '<div class="card-body mx-auto" style="cursor: pointer; max-width: 75%; min-width: 235px;" onclick="displayMaterial(' + id +  ', \'' +  title + '\');">'
                 if (title.endsWith('DONE')) {
                     // title ends with 'DONE'
                     title = title.slice(0, -4);
-                    icon = '<i class="bi bi-send-fill h5 text-primary" title="submitted"></i>';
+                    icon = '<i class="bi bi-send-fill h5 text-primary" data-toggle="tooltip" title="submitted"></i>';
                     cardBody = '<div class="card-body mx-auto" style="cursor: pointer; max-width: 75%; min-width: 235px;" onclick="displayAnswer(' + id +  ', \'' +  title + '\');">'
                 }
                 var columnClass = data.length === 2 ? 'mr-5' : ''; // padding in case of 2 cards

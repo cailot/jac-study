@@ -41,6 +41,7 @@ $(function() {
 // 			Display Material (Video/Pdf)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function displayMaterial(weekNumber, elementId) {
+    //console.log('Display : ' + weekNumber, elementId);
     // set dialogSet value as weekNumber
     document.getElementById("dialogSet").innerHTML = weekNumber;  
     var year = document.getElementById("academicYear").value;
@@ -106,6 +107,7 @@ function displayMaterial(weekNumber, elementId) {
     </div>
 </div>
 <div class="container mt-3" style="background: linear-gradient(to right, #f9f9d5 0%, #f7f7a1 100%); border-radius: 15px;">
+    
     <div class="row mt-5">
         <div class="col-md-6">
             <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(document.getElementById('minus2Week').textContent, 'm2Percentage')">
@@ -138,6 +140,7 @@ function displayMaterial(weekNumber, elementId) {
             </div>
         </div>
     </div>
+
     <div class="row mb-4">
         <div class="col-md-6">
             <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(document.getElementById('academicWeek').textContent, 'weekPercentage')">
@@ -154,6 +157,7 @@ function displayMaterial(weekNumber, elementId) {
                 </div>
             </div>
         </div>
+
         <!-- Next Week -->
         <div class="col-md-6">
             <div class="card-body mx-auto" style="max-width: 75%;">
@@ -170,7 +174,10 @@ function displayMaterial(weekNumber, elementId) {
                 </div>
             </div>
         </div>
+
     </div>
+
+    
 </div>
 
 <!-- Pop up Video modal -->

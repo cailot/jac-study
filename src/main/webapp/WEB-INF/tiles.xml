@@ -45,22 +45,22 @@
 	<!-- HOMEWORK MENU -->
 	<!-- Connected English Homework Page -->
 	<definition name="engHomeworkPage" extends="tile.definition">
-		<put-attribute name="title" value="James An College Connected Class Page" />
+		<put-attribute name="title" value="James An College Connected Class English Homework" />
 		<put-attribute name="body" value="/WEB-INF/layouts/connected/homework/engHomework.jsp" />
 	</definition>
 	<!-- Connected Math Homework Page -->
 	<definition name="mathHomeworkPage" extends="tile.definition">
-		<put-attribute name="title" value="James An College Connected Class Page" />
+		<put-attribute name="title" value="James An College Connected Class Math Homework" />
 		<put-attribute name="body" value="/WEB-INF/layouts/connected/homework/mathHomework.jsp" />
 	</definition>
 	<!-- Connected Writig Homework Page -->
 	<definition name="writeHomeworkPage" extends="tile.definition">
-		<put-attribute name="title" value="James An College Connected Class Page" />
+		<put-attribute name="title" value="James An College Connected Class Writing Homework" />
 		<put-attribute name="body" value="/WEB-INF/layouts/connected/homework/writeHomework.jsp" />
 	</definition>
 	<!-- Connected Homework Answer Page -->
 	<definition name="shortAnswerPage" extends="tile.definition">
-		<put-attribute name="title" value="James An College Connected Class Page" />
+		<put-attribute name="title" value="James An College Connected Class Short Answer" />
 		<put-attribute name="body" value="/WEB-INF/layouts/connected/homework/shortAnswer.jsp" />
 	</definition>
 
