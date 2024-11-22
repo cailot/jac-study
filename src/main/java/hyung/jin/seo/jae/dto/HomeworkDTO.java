@@ -28,7 +28,7 @@ public class HomeworkDTO implements Serializable {
 
 	private int week;
 
-	private int year;
+	// private int year;
 
 	private boolean active;
 
@@ -39,12 +39,12 @@ public class HomeworkDTO implements Serializable {
 	private String registerDate;
 
 	
-	public HomeworkDTO(long id, String videoPath, String pdfPath, int week, int year, String info, boolean active, String grade, long subject, LocalDate registerDate){
+	public HomeworkDTO(long id, String videoPath, String pdfPath, int week, String info, boolean active, String grade, long subject, LocalDate registerDate){
 		this.id = String.valueOf(id);
 		this.videoPath = videoPath;
 		this.pdfPath = pdfPath;
 		this.week = week;
-		this.year = year;
+		// this.year = year;
 		this.info = info;
 		this.active = active;
 		this.grade = grade;
@@ -57,7 +57,7 @@ public class HomeworkDTO implements Serializable {
 		work.setVideoPath(this.videoPath);
 		work.setPdfPath(this.pdfPath);
 		work.setWeek(this.week);
-		work.setYear(this.year);
+		// work.setYear(this.year);
 		work.setInfo(this.info);
 		work.setActive(this.active);
 		return work;
@@ -68,7 +68,7 @@ public class HomeworkDTO implements Serializable {
 		this.videoPath = work.getVideoPath();
 		this.pdfPath = work.getPdfPath();
 		this.week = work.getWeek();
-		this.year = work.getYear();
+		// this.year = work.getYear();
 		this.info = work.getInfo();
 		this.active = work.isActive();
 		this.grade = work.getGrade().getCode();

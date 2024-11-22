@@ -25,17 +25,26 @@ $(function() {
             academicYear = response[0];
             academicWeek = response[1];
             // update the value of the academicWeek span element
-            document.getElementById("academicYear").value = parseInt(academicYear);
-            document.getElementById("minus2Week").innerHTML = parseInt(academicWeek)-2;
-            document.getElementById("minus1Week").innerHTML = parseInt(academicWeek)-1;
-            document.getElementById("academicWeek").innerHTML = parseInt(academicWeek);
-            document.getElementById("plus1Week").innerHTML = parseInt(academicWeek)+1;
+            // document.getElementById("academicYear").value = parseInt(academicYear);
+            // document.getElementById("minus2Week").innerHTML = parseInt(academicWeek)-2;
+            // document.getElementById("minus1Week").innerHTML = parseInt(academicWeek)-1;
+            // document.getElementById("academicWeek").innerHTML = parseInt(academicWeek);
+            // document.getElementById("plus1Week").innerHTML = parseInt(academicWeek)+1;
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log('Error : ' + errorThrown);
         }
     });
 });
+
+
+
+const weeksData = [
+    { week: '22', percentage: '30'},
+    { week: '23', percentage: '40'},
+    { week: '24', percentage: '85'},
+    { week: '25', percentage: '17'}
+];
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 			Display Material (Video/Pdf)
@@ -98,6 +107,66 @@ function displayMaterial(weekNumber, elementId) {
         }
     });  
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 			Create Card
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function createCard(weekData) {
+    console.log(weekData);
+    console.log(weekData.week);
+    const card = document.createElement('div');
+    card.className = 'col-md-6';
+    card.innerHTML = `
+        <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(` + weekData.week+ `, ` + weekData.percentage+ `)">
+            <div class="alert alert-info english-homework" role="alert" style="background-color: false;">
+                <p id="` + weekData.week + `OnlineLesson" style="margin: 30px;">
+                    <strong>Set</strong> <span>` + weekData.week +`</span>&nbsp;&nbsp;<i class="bi-mortarboard-fill h5 text-primary"></i>
+                </p>
+                <div class="progress" style="margin: 30px;">
+                    <div id="` + weekData.week + `Bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">
+                        <span id="` + weekData.week + `Percentage" class="ml-auto pl-2">` + weekData.percentage +`%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    return card;
+}
+
+function createNextCard(week) {
+    const card = document.createElement('div');
+    card.className = 'col-md-6';
+    card.innerHTML = `
+        <div class="card-body mx-auto" style="max-width: 75%;">
+            <div class="alert alert-secondary english-homework" role="alert" style="background-color: lightgrey;">
+                <p style="margin: 30px;">
+                    <strong>Set</strong> <span>` + week + `</span>
+                    &nbsp;&nbsp;<i class="bi bi-lock-fill h5 text-secondary"></i>
+                </p>
+                <div class="progress" style="margin: 30px;">
+                    <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">
+                        <span class="ml-auto text-secondary pl-2">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    return card;
+}
+
+function displayCards() {
+    const container = document.getElementById('cardsContainer');
+    weeksData.forEach(weekData => {
+        const card = createCard(weekData);
+        container.appendChild(card);
+    });
+    // add next card
+    const nextCard = createNextCard(27);
+    container.appendChild(nextCard);
+}
+
+document.addEventListener('DOMContentLoaded', displayCards);
+
 </script>
 
 <input type="hidden" id="academicYear" name="academicYear" />
@@ -108,76 +177,8 @@ function displayMaterial(weekNumber, elementId) {
 </div>
 <div class="container mt-3" style="background: linear-gradient(to right, #f9f9d5 0%, #f7f7a1 100%); border-radius: 15px;">
     
-    <div class="row mt-5">
-        <div class="col-md-6">
-            <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(document.getElementById('minus2Week').textContent, 'm2Percentage')">
-                <div class="alert alert-info english-homework" role="alert">
-                    <p id="m2OnlineLesson" style="margin: 30px;">
-                        <strong>Set</strong> <span id="minus2Week"></span>
-                        &nbsp;&nbsp;<i class="bi bi-mortarboard-fill h5 text-primary"></i>
-                    </p>
-                    <div class="progress" style="margin: 30px;">
-                        <div id="m2PercentageBar" class="" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">
-                            <span id="m2Percentage" class="ml-auto">0%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(document.getElementById('minus1Week').textContent, 'm1Percentage')">
-                <div class="alert alert-info english-homework" role="alert">
-                    <p id="m1OnlineLesson" style="margin: 30px;">
-                        <strong>Set</strong> <span id="minus1Week"></span>
-                        &nbsp;&nbsp;<i class="bi bi-mortarboard-fill h5 text-primary"></i>
-                    </p>
-                    <div class="progress" style="margin: 30px;">
-                        <div id="m1PercentageBar" class="" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">
-                            <span id="m1Percentage" class="ml-auto">0%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="cardsContainer" class="row mt-5"></div>
 
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(document.getElementById('academicWeek').textContent, 'weekPercentage')">
-                <div class="alert alert-info english-homework" role="alert">
-                    <p id="onlineLesson" style="margin: 30px;">
-                        <strong>Set</strong> <span id="academicWeek"></span>
-                        &nbsp;&nbsp;<i class="bi bi-mortarboard-fill h5 text-primary"></i>
-                    </p>
-                    <div class="progress" style="margin: 30px;">
-                        <div id="weekPercentageBar" class="" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">
-                            <span id="weekPercentage" class="ml-auto">0%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Next Week -->
-        <div class="col-md-6">
-            <div class="card-body mx-auto" style="max-width: 75%;">
-                <div class="alert alert-info english-homework" role="alert" style="background-color: lightgrey;">
-                    <p style="margin: 30px;">
-                        <strong>Set</strong> <span id="plus1Week"></span>
-                    &nbsp;&nbsp;<i class="bi bi-lock-fill h5 text-secondary"></i>
-                    </p>
-                    <div class="progress" style="margin: 30px;">
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            <span class="ml-auto"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    
 </div>
 
 <!-- Pop up Video modal -->

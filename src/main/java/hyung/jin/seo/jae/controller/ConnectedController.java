@@ -291,10 +291,10 @@ public class ConnectedController {
 	}
 
 	// search homework by subject, year & week
-	@GetMapping("/homework/{subject}/{year}/{week}")
+	@GetMapping("/homework/{subject}/{week}")
 	@ResponseBody
-	public HomeworkDTO searchHomework(@PathVariable int subject, @PathVariable int year, @PathVariable int week) {
-		HomeworkDTO dto = connectedService.getHomeworkInfo(subject, year, week);
+	public HomeworkDTO searchHomework(@PathVariable int subject, @PathVariable int week) {
+		HomeworkDTO dto = connectedService.getHomeworkInfo(subject, week);
 		return dto;
 	}
 
@@ -328,15 +328,13 @@ public class ConnectedController {
 	public String listHomeworks(
 			@RequestParam(value = "listSubject", required = false) String subject,
 			@RequestParam(value = "listGrade", required = false) String grade,
-			@RequestParam(value = "listYear", required = false) String year,
 			@RequestParam(value = "listWeek", required = false) String week, 
 			Model model) {
 		List<HomeworkDTO> dtos = new ArrayList();
 		String filteredSubject = StringUtils.defaultString(subject, "0");
 		String filteredGrade = StringUtils.defaultString(grade, JaeConstants.ALL);
-		String filteredYear = StringUtils.defaultString(year, "0");
 		String filteredWeek = StringUtils.defaultString(week, "0");
-		dtos = connectedService.listHomework(Integer.parseInt(filteredSubject), filteredGrade, Integer.parseInt(filteredYear), Integer.parseInt(filteredWeek));		
+		dtos = connectedService.listHomework(Integer.parseInt(filteredSubject), filteredGrade, Integer.parseInt(filteredWeek));		
 		model.addAttribute(JaeConstants.HOMEWORK_LIST, dtos);
 		return "homeworkListPage";
 	}

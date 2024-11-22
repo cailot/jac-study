@@ -1,9 +1,11 @@
 package hyung.jin.seo.jae.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import hyung.jin.seo.jae.dto.ExtraworkDTO;
 import hyung.jin.seo.jae.dto.HomeworkDTO;
+import hyung.jin.seo.jae.dto.HomeworkScheduleDTO;
 import hyung.jin.seo.jae.dto.PracticeAnswerDTO;
 import hyung.jin.seo.jae.dto.PracticeDTO;
 import hyung.jin.seo.jae.dto.PracticeScheduleDTO;
@@ -14,6 +16,7 @@ import hyung.jin.seo.jae.dto.TestAnswerDTO;
 import hyung.jin.seo.jae.dto.TestDTO;
 import hyung.jin.seo.jae.model.Extrawork;
 import hyung.jin.seo.jae.model.Homework;
+import hyung.jin.seo.jae.model.HomeworkSchedule;
 import hyung.jin.seo.jae.model.Practice;
 import hyung.jin.seo.jae.model.PracticeAnswer;
 import hyung.jin.seo.jae.model.PracticeSchedule;
@@ -45,11 +48,11 @@ public interface ConnectedService {
 	// delete Homework
 	void deleteHomework(Long id);
 
-	// get Homework by subject, year & week
-	HomeworkDTO getHomeworkInfo(int subject, int year, int week);
+	// get Homework by subject & week
+	HomeworkDTO getHomeworkInfo(long subject, int week);
 
-	// list Homework by subject, grade, year & week
-	List<HomeworkDTO> listHomework(int subject, String grade, int year, int week);
+	// list Homework by subject, grade & week
+	List<HomeworkDTO> listHomework(long subject, String grade, int week);
 
 	/////////////////////////////////////////////////////////
 	//
@@ -220,6 +223,30 @@ public interface ConnectedService {
 	
 	// retrieve StudentTest brief info
 	StudentTestDTO getStudentTest(Long studentId, Long testTypeId, String grade, int volume);
+
+	/////////////////////////////////////////////////////////
+	//
+	//	HOMEWORK SCHEDULE
+	//
+	/////////////////////////////////////////////////////////
+
+	// list all Homework Schedules
+	List<HomeworkSchedule> allHomeworkSchedules();
+
+	// list Homework Schedule
+	List<HomeworkScheduleDTO> listHomeworkSchedule(LocalDateTime from, LocalDateTime to);
+
+	// retrieve Homework Schedule by Id
+	HomeworkSchedule getHomeworkSchedule(Long id);
+	
+	// register Homework Schedule
+	HomeworkSchedule addHomeworkSchedule(HomeworkSchedule schedule);
+	
+	// update Homework Schedule info by Id
+	HomeworkSchedule updateHomeworkSchedule(HomeworkSchedule schedule, Long id);
+	
+	// delete Homeowork Schedule
+	void deleteHomeworkSchedule(Long id);
 
 	/////////////////////////////////////////////////////////
 	//
