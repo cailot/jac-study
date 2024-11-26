@@ -1,5 +1,6 @@
 package hyung.jin.seo.jae.service.impl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -10,11 +11,13 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import hyung.jin.seo.jae.dto.ExtraworkDTO;
 import hyung.jin.seo.jae.dto.HomeworkDTO;
+import hyung.jin.seo.jae.dto.HomeworkProgressDTO;
 import hyung.jin.seo.jae.dto.HomeworkScheduleDTO;
 import hyung.jin.seo.jae.dto.PracticeAnswerDTO;
 import hyung.jin.seo.jae.dto.PracticeDTO;
@@ -26,6 +29,7 @@ import hyung.jin.seo.jae.dto.TestAnswerDTO;
 import hyung.jin.seo.jae.dto.TestDTO;
 import hyung.jin.seo.jae.model.Extrawork;
 import hyung.jin.seo.jae.model.Homework;
+import hyung.jin.seo.jae.model.HomeworkProgress;
 import hyung.jin.seo.jae.model.HomeworkSchedule;
 import hyung.jin.seo.jae.model.Practice;
 import hyung.jin.seo.jae.model.PracticeAnswer;
@@ -36,6 +40,7 @@ import hyung.jin.seo.jae.model.Test;
 import hyung.jin.seo.jae.model.TestAnswer;
 import hyung.jin.seo.jae.model.TestAnswerItem;
 import hyung.jin.seo.jae.repository.ExtraworkRepository;
+import hyung.jin.seo.jae.repository.HomeworkProgressRepository;
 import hyung.jin.seo.jae.repository.HomeworkRepository;
 import hyung.jin.seo.jae.repository.HomeworkScheduleRepository;
 import hyung.jin.seo.jae.repository.PracticeAnswerRepository;
@@ -79,6 +84,9 @@ public class ConnectedServiceImpl implements ConnectedService {
 
 	@Autowired
 	private HomeworkScheduleRepository homeworkScheduleRepository;
+
+	@Autowired
+	private HomeworkProgressRepository homeworkProgressRepository;
 	
 	@Override
 	public List<Homework> allHomeworks() {
@@ -210,6 +218,13 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
+	public HomeworkProgress getHomeworkProgress(Long id) {
+		Optional<HomeworkProgress> progress = homeworkProgressRepository.findById(id);
+		if(!progress.isPresent()) return null;
+		return progress.get();
+	}
+
+	@Override
 	public PracticeSchedule getPracticeSchedule(Long id) {
 		Optional<PracticeSchedule> test = practiceScheduleRepository.findById(id);
 		if(!test.isPresent()) return null;
@@ -285,6 +300,14 @@ public class ConnectedServiceImpl implements ConnectedService {
 	@Transactional
 	public HomeworkSchedule addHomeworkSchedule(HomeworkSchedule schedule) {
 		HomeworkSchedule home = homeworkScheduleRepository.save(schedule);
+		return home;
+	}
+
+	@SuppressAjWarnings("null")
+	@Override
+	@Transactional
+	public HomeworkProgress addHomeworkProgress(HomeworkProgress progress) {
+		HomeworkProgress home = homeworkProgressRepository.save(progress);
 		return home;
 	}
 
@@ -489,6 +512,19 @@ public class ConnectedServiceImpl implements ConnectedService {
 
 	@Override
 	@Transactional
+	public HomeworkProgress updateHomeworkProgressPercentage(Long id, int percentage) {
+		HomeworkProgress existing = homeworkProgressRepository.findById(id).get();
+		// update percentage
+		existing.setPercentage(percentage);
+		// update registerDate
+		existing.setRegisterDate(LocalDate.now());
+		// update the existing record
+		HomeworkProgress updated = homeworkProgressRepository.save(existing);
+		return updated;
+	}
+
+	@Override
+	@Transactional
 	public PracticeSchedule updatePracticeSchedule(PracticeSchedule newWork, Long id) {
 		// search by getId
 		PracticeSchedule existing = practiceScheduleRepository.findById(id).get();
@@ -639,12 +675,24 @@ public class ConnectedServiceImpl implements ConnectedService {
 	public List<HomeworkDTO> listHomework(long subject, String grade, int week) {
 		List<HomeworkDTO> dtos = new ArrayList<>();
 		try{
-			dtos = homeworkRepository.filterHomeworkBySubjectNGradeNYearNWeek(subject, grade, week);
+			dtos = homeworkRepository.filterHomeworkBySubjectNGradeNWeek(subject, grade, week);
 		}catch(Exception e){
 			System.out.println("No Homework found");
 		}
 		return dtos;
 	}
+
+	@Override
+	public long getHomeworkIdByWeek(long subject, String grade, int week){
+		long id = 0L;
+		try{
+			id = homeworkRepository.findHomeworkIdBySubjectNGradeNWeek(subject, grade, week);
+		}catch(Exception e){
+			System.out.println("No Homework found");
+		}
+		return id;
+	}
+
 
 	@Override
 	public List<ExtraworkDTO> listExtrawork(String grade) {
@@ -891,5 +939,32 @@ public class ConnectedServiceImpl implements ConnectedService {
 		return dto;
 	}
 
+	@Override
+	public HomeworkScheduleDTO getHomeworkScheduleBySubjectAndGrade(String subject, String grade, LocalDateTime now) {
+		List<HomeworkScheduleDTO> result = homeworkScheduleRepository.getHomeworkScheduleBySubjectAndGrade(subject, grade, now, PageRequest.of(0, 1));
+        return result.isEmpty() ? null : result.get(0);
+	}
+
+	@Override
+	public HomeworkProgress getHomeworkProgressByStudentNHomework(Long studentId, Long homeworkId) {
+		HomeworkProgress progress = null;
+		try{
+			progress =  homeworkProgressRepository.findHomeworkProgressByStudentAndHomework(studentId, homeworkId);
+		}catch(Exception e){
+			System.out.println("No Homework Progress found");
+		}
+		return progress;
+	}
+
+	@Override
+	public int getHomeworkProgressPercentage(Long studentId, Long homeworkId) {
+		int percentage = 0;
+		try{
+			percentage = homeworkProgressRepository.getPercentageByStudentAndHomework(studentId, homeworkId);
+		}catch(Exception e){
+			System.out.println("No Homework Progress found");
+		}
+		return percentage;
+	}
 
 }

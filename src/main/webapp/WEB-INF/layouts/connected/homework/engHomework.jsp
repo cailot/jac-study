@@ -13,8 +13,7 @@
 <script>
 
 const SUBJECT = 1; // 1 is English 
-const MOVIE = 0;
-const PDF = 1;
+var weeksData = [];
 
 $(function() {
     $.ajax({
@@ -23,13 +22,23 @@ $(function() {
         success: function(response) {
             // save the response into the variable
             academicYear = response[0];
-            academicWeek = response[1];
-            // update the value of the academicWeek span element
-            // document.getElementById("academicYear").value = parseInt(academicYear);
-            // document.getElementById("minus2Week").innerHTML = parseInt(academicWeek)-2;
-            // document.getElementById("minus1Week").innerHTML = parseInt(academicWeek)-1;
-            // document.getElementById("academicWeek").innerHTML = parseInt(academicWeek);
-            // document.getElementById("plus1Week").innerHTML = parseInt(academicWeek)+1;
+            academicWeek = parseInt(response[1]);
+            //console.log('NumericGrade ---> ' + numericGrade);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log('Error : ' + errorThrown);
+        }
+    });
+
+    // get week info
+    $.ajax({
+        url : '${pageContext.request.contextPath}/connected/subjectList/' + SUBJECT + "/" + numericGrade + "/" + studentId,
+        method: "GET",
+        success: function(response) {
+            // save the response into the variable
+            // console.log(response);
+            weeksData = response;
+            displayCards();
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log('Error : ' + errorThrown);
@@ -37,34 +46,24 @@ $(function() {
     });
 });
 
-
-
-const weeksData = [
-    { week: '22', percentage: '30'},
-    { week: '23', percentage: '40'},
-    { week: '24', percentage: '85'},
-    { week: '25', percentage: '17'}
-];
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 			Display Material (Video/Pdf)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-function displayMaterial(weekNumber, elementId) {
-    //console.log('Display : ' + weekNumber, elementId);
-    // set dialogSet value as weekNumber
-    document.getElementById("dialogSet").innerHTML = weekNumber;  
+function displayMaterial(homeworkId) {
     var year = document.getElementById("academicYear").value;
     $.ajax({
-        url : '${pageContext.request.contextPath}/connected/homework/' + SUBJECT + "/" + year + "/" + weekNumber,
+        url : '${pageContext.request.contextPath}/connected/homework/' + homeworkId,
         method: "GET",
         success: function(value) {
+            // console.log(value);
+            document.getElementById("dialogSet").innerHTML = value.week;  
             // Add this part for displaying played percentage
             var videoPlayer = document.getElementById("videoPlayer");
             videoPlayer.src = value.videoPath;
+            document.getElementById("pdfViewer").data = value.pdfPath;
 
-            var progressPercentage = document.getElementById(elementId);
-            var progressBar = document.getElementById(elementId+"Bar");
-
+            var progressPercentage = document.getElementById(homeworkId+"Percentage");
+            var progressBar = document.getElementById(homeworkId+"Bar");
             // Define the event listener function
             var updateProgressBar = function() {
                 var playedPercentage = Math.round((videoPlayer.currentTime / videoPlayer.duration) * 100);
@@ -74,33 +73,36 @@ function displayMaterial(weekNumber, elementId) {
                 } else {
                     progressPercentage.innerHTML = playedPercentage + "%";
                     progressBar.style.width = playedPercentage + "%";
-                    if(playedPercentage < 30){
-                        progressBar.className = 'progress-bar bg-danger'; // Red color for less than 30%
-                    } else if(playedPercentage >= 30 && playedPercentage <= 70){
-                        progressBar.className = 'progress-bar bg-warning'; // Yellow color for 30% - 70%
-                    } else {
-                        progressBar.className = 'progress-bar bg-success'; // Green color for more than 70%
-                    }
+                    progressBar.className = getProgressBarClass(playedPercentage);
                 }
             }
 
             // Add the event listener when the video starts playing
             videoPlayer.addEventListener('timeupdate', updateProgressBar);
 
-            videoPlayer.addEventListener("ended", function() {
-                // Video ended, you can perform additional actions if needed
-                console.log("Video ended");
-            });
+            var updateCalled = false;
+
+            function updateProgress() {
+                if (!updateCalled) {
+                    updateCalled = true;
+                    updateProgressOnServer(homeworkId, progressPercentage.innerHTML);
+                }
+            }
+
+            videoPlayer.addEventListener("ended", updateProgress);
 
             // Remove the event listener when the modal is closed
             $('#homeworkModal').on('hidden.bs.modal', function () {
                 videoPlayer.removeEventListener('timeupdate', updateProgressBar);
+                updateProgress();
             });
-            // console.log('no duration');
-            document.getElementById("pdfViewer").data = value.pdfPath;
-              
-            // pop-up video & pdf
+
+            // Update progress on the server when the user navigates away or closes the browser
+            window.addEventListener('beforeunload', updateProgress);
+
+            // Show the modal
             $('#homeworkModal').modal('show');
+
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log('Error : ' + errorThrown);
@@ -112,19 +114,19 @@ function displayMaterial(weekNumber, elementId) {
 // 			Create Card
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function createCard(weekData) {
-    console.log(weekData);
-    console.log(weekData.week);
+    // console.log(weekData);
+    // console.log(weekData.week);
     const card = document.createElement('div');
     card.className = 'col-md-6';
     card.innerHTML = `
-        <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(` + weekData.week+ `, ` + weekData.percentage+ `)">
+        <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(` + weekData.id + `)">
             <div class="alert alert-info english-homework" role="alert" style="background-color: false;">
                 <p id="` + weekData.week + `OnlineLesson" style="margin: 30px;">
                     <strong>Set</strong> <span>` + weekData.week +`</span>&nbsp;&nbsp;<i class="bi-mortarboard-fill h5 text-primary"></i>
                 </p>
                 <div class="progress" style="margin: 30px;">
-                    <div id="` + weekData.week + `Bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">
-                        <span id="` + weekData.week + `Percentage" class="ml-auto pl-2">` + weekData.percentage +`%</span>
+                    <div id="` + weekData.id + `Bar" class="`+ getProgressBarClass(weekData.percentage) +`" role="progressbar" style="width: ` + weekData.percentage + `%;" aria-valuemin="0" aria-valuemax="100">
+                        <span id="` + weekData.id + `Percentage" class="ml-auto pl-2">` + weekData.percentage +`%</span>
                     </div>
                 </div>
             </div>
@@ -154,6 +156,22 @@ function createNextCard(week) {
     return card;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 			Color Progress Bar
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function getProgressBarClass(percentage) {
+    if (percentage < 30) {
+        return 'progress-bar bg-danger'; // Red color for less than 30%
+    } else if (percentage >= 30 && percentage <= 70) {
+        return 'progress-bar bg-warning'; // Yellow color for 30% - 70%
+    } else {
+        return 'progress-bar bg-success'; // Green color for more than 70%
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 			Display Card
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function displayCards() {
     const container = document.getElementById('cardsContainer');
     weeksData.forEach(weekData => {
@@ -161,11 +179,35 @@ function displayCards() {
         container.appendChild(card);
     });
     // add next card
-    const nextCard = createNextCard(27);
+    const nextCard = createNextCard(academicWeek+1);
     container.appendChild(nextCard);
 }
 
-document.addEventListener('DOMContentLoaded', displayCards);
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 			Update Progress
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function updateProgressOnServer(homeworkId, percentage){
+    // Remove the '%' symbol and convert to integer
+    var percentageValue = parseInt(percentage.replace('%', ''), 10);
+    // console.log('Updating progress:', homeworkId, percentageValue, studentId);
+   
+    $.ajax({
+        url: '${pageContext.request.contextPath}/connected/updateHomeworkProgress',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            homeworkId: homeworkId,
+            studentId: studentId,
+            percentage: percentageValue
+        }),
+        success: function(response) {
+            console.log('Progress updated successfully:', response);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log('Error updating progress:', errorThrown);
+        }
+    });
+}
 
 </script>
 
@@ -175,10 +217,8 @@ document.addEventListener('DOMContentLoaded', displayCards);
         <h2 style="color: #6c757d; font-weight: bold; text-transform: uppercase; text-shadow: 2px 2px 4px rgba(247, 247, 161, 1);">English Homework</h2>
     </div>
 </div>
-<div class="container mt-3" style="background: linear-gradient(to right, #f9f9d5 0%, #f7f7a1 100%); border-radius: 15px;">
-    
+<div class="container mt-3" style="background: linear-gradient(to right, #f9f9d5 0%, #f7f7a1 100%); border-radius: 15px;">   
     <div id="cardsContainer" class="row mt-5"></div>
-
 </div>
 
 <!-- Pop up Video modal -->

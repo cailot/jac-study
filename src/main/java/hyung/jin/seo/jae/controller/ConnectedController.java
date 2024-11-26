@@ -1,5 +1,6 @@
 package hyung.jin.seo.jae.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -25,6 +26,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import hyung.jin.seo.jae.dto.ExtraworkDTO;
 import hyung.jin.seo.jae.dto.HomeworkDTO;
+import hyung.jin.seo.jae.dto.HomeworkProgressDTO;
+import hyung.jin.seo.jae.dto.HomeworkScheduleDTO;
+import hyung.jin.seo.jae.dto.HomeworkSummaryDTO;
 import hyung.jin.seo.jae.dto.PracticeAnswerDTO;
 import hyung.jin.seo.jae.dto.PracticeDTO;
 import hyung.jin.seo.jae.dto.PracticeScheduleDTO;
@@ -35,6 +39,7 @@ import hyung.jin.seo.jae.dto.TestDTO;
 import hyung.jin.seo.jae.model.Extrawork;
 import hyung.jin.seo.jae.model.Grade;
 import hyung.jin.seo.jae.model.Homework;
+import hyung.jin.seo.jae.model.HomeworkProgress;
 import hyung.jin.seo.jae.model.Practice;
 import hyung.jin.seo.jae.model.PracticeType;
 import hyung.jin.seo.jae.model.Student;
@@ -45,6 +50,8 @@ import hyung.jin.seo.jae.model.Test;
 import hyung.jin.seo.jae.model.TestAnswerItem;
 import hyung.jin.seo.jae.service.CodeService;
 import hyung.jin.seo.jae.service.ConnectedService;
+import hyung.jin.seo.jae.service.CycleService;
+import hyung.jin.seo.jae.service.PropertiesService;
 import hyung.jin.seo.jae.service.StudentService;
 import hyung.jin.seo.jae.utils.JaeConstants;
 import hyung.jin.seo.jae.utils.JaeUtils;
@@ -63,6 +70,12 @@ public class ConnectedController {
 
 	@Autowired
 	private StudentService studentService;
+
+	@Autowired
+	private PropertiesService propertiesService;
+
+	@Autowired
+	private CycleService cycleService;
 	
 	// register homework
 	@PostMapping("/addHomework")
@@ -290,11 +303,12 @@ public class ConnectedController {
 		return dto;
 	}
 
-	// search homework by subject, year & week
-	@GetMapping("/homework/{subject}/{week}")
+	// search homework by id
+	@GetMapping("/homework/{homeworkId}")
 	@ResponseBody
-	public HomeworkDTO searchHomework(@PathVariable int subject, @PathVariable int week) {
-		HomeworkDTO dto = connectedService.getHomeworkInfo(subject, week);
+	public HomeworkDTO searchHomework(@PathVariable long homeworkId) {
+		Homework work = connectedService.getHomework(homeworkId);
+		HomeworkDTO dto = new HomeworkDTO(work);
 		return dto;
 	}
 
@@ -521,4 +535,101 @@ public class ConnectedController {
 		}
 		return answerList;
 	}
+
+	// get subject list
+	@GetMapping("/subjectList/{subject}/{grade}/{student}")
+	@ResponseBody
+	public List<HomeworkSummaryDTO> subjectList(@PathVariable String subject, @PathVariable String grade, @PathVariable long student) {
+		int subjectCard = 0;
+		// int answerCard = 0;
+		
+		// 1. get current LocalDateTime & current week
+		LocalDateTime now = LocalDateTime.now();
+		int currentWeek = cycleService.academicWeeks();
+		// 2. get weeks from properties or schedule by checking database
+		HomeworkScheduleDTO schedule = connectedService.getHomeworkScheduleBySubjectAndGrade(subject, grade, now);
+		if(schedule == null){
+			// 2-1. get cards count from properties
+			subjectCard = propertiesService.getSubjectCardCount();
+			// answerCard = propertiesService.getAnswerCardCount();
+		}else{
+			// 2-2. get cards count from schedule
+			subjectCard = schedule.getSubjectDisplay();
+			// answerCard = schedule.getAnswerDisplay();
+		}
+		// 3. calculate and get Homework info (id & week)
+		List<HomeworkSummaryDTO> dtos = new ArrayList<>();
+		for(int i = (subjectCard-1) ; i >= 0; i--){
+			HomeworkSummaryDTO dto = new HomeworkSummaryDTO();
+			long homeworkId = connectedService.getHomeworkIdByWeek(Long.parseLong(subject), grade, (currentWeek-i));
+			int percentage = connectedService.getHomeworkProgressPercentage(student, homeworkId);
+			dto.setWeek(currentWeek - i);
+			dto.setId(homeworkId);
+			dto.setPercentage(percentage);
+			dtos.add(dto);
+		}
+
+		// 4. return HomeworkDTO
+		return dtos;
+	}
+
+	// get short answer list
+	@GetMapping("/shortAnswerList/{subject}/{grade}/{student}")
+	@ResponseBody
+	public List<HomeworkSummaryDTO> shortAnswerList(@PathVariable String subject, @PathVariable String grade, @PathVariable long student) {
+		// int subjectCard = 0;
+		int answerCard = 0;	
+		// 1. get current LocalDateTime & current week
+		LocalDateTime now = LocalDateTime.now();
+		int currentWeek = cycleService.academicWeeks();
+		// 2. get weeks from properties or schedule by checking database
+		HomeworkScheduleDTO schedule = connectedService.getHomeworkScheduleBySubjectAndGrade(subject, grade, now);
+		if(schedule == null){
+			// 2-1. get cards count from properties
+			// subjectCard = propertiesService.getSubjectCardCount();
+			answerCard = propertiesService.getAnswerCardCount();
+		}else{
+			// 2-2. get cards count from schedule
+			// subjectCard = schedule.getSubjectDisplay();
+			answerCard = schedule.getAnswerDisplay();
+		}
+		// 3. calculate and get Homework info (id & week)
+		List<HomeworkSummaryDTO> dtos = new ArrayList<>();
+		for(int i = (answerCard-1) ; i >= 0; i--){
+			HomeworkSummaryDTO dto = new HomeworkSummaryDTO();
+			long homeworkId = connectedService.getHomeworkIdByWeek(Long.parseLong(subject), grade, (currentWeek-i));
+			int percentage = connectedService.getHomeworkProgressPercentage(student, homeworkId);
+			dto.setWeek(currentWeek - i);
+			dto.setId(homeworkId);
+			dto.setPercentage(percentage);
+			dtos.add(dto);
+		}
+		// 4. return HomeworkDTO
+		return dtos;
+	}
+
+	@PostMapping("/updateHomeworkProgress")
+    public ResponseEntity<String> updateProgress(@RequestBody HomeworkProgressDTO progress) {
+        try {
+			Long homework = progress.getHomeworkId();
+			Long student = progress.getStudentId();
+			//check if record exists
+			HomeworkProgress existing = connectedService.getHomeworkProgressByStudentNHomework(student, homework);
+			if(existing == null){	// create new record
+				HomeworkProgress add = new HomeworkProgress();
+				Homework homwork = connectedService.getHomework(homework);
+				Student stud = studentService.getStudent(student);
+				add.setHomework(homwork);
+				add.setStudent(stud);
+				add.setPercentage(progress.getPercentage());
+				connectedService.addHomeworkProgress(add);	
+			}else{ // update existing record
+				connectedService.updateHomeworkProgressPercentage(existing.getId(), progress.getPercentage());
+			}
+			return ResponseEntity.ok("Progress updated successfully");
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body("Error updating progress: " + e.getMessage());
+		}
+	}
+	
 }

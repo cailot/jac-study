@@ -13,8 +13,7 @@
 <script>
 
 const SUBJECT = 12; // 12 is Short Answer 
-const MOVIE = 0;
-const PDF = 1;
+var weeksData = [];
 
 $(function() {
     $.ajax({
@@ -23,13 +22,23 @@ $(function() {
         success: function(response) {
             // save the response into the variable
             academicYear = response[0];
-            academicWeek = response[1];
-            // update the value of the academicWeek span element
-            document.getElementById("academicYear").value = parseInt(academicYear);
-            document.getElementById("minus2Week").innerHTML = parseInt(academicWeek)-2;
-            document.getElementById("minus1Week").innerHTML = parseInt(academicWeek)-1;
-            document.getElementById("academicWeek").innerHTML = parseInt(academicWeek);
-            // document.getElementById("plus1Week").innerHTML = parseInt(academicWeek)+1;
+            academicWeek = parseInt(response[1]);
+            //console.log('NumericGrade ---> ' + numericGrade);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log('Error : ' + errorThrown);
+        }
+    });
+
+    // get week info
+    $.ajax({
+        url : '${pageContext.request.contextPath}/connected/shortAnswerList/' + SUBJECT + "/" + numericGrade + "/" + studentId,
+        method: "GET",
+        success: function(response) {
+            // save the response into the variable
+            // console.log(response);
+            weeksData = response;
+            displayCards();
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log('Error : ' + errorThrown);
@@ -40,53 +49,14 @@ $(function() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 			Display Material (Video/Pdf)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-function displayMaterial(weekNumber, elementId) {
-    // set dialogSet value as weekNumber
-    document.getElementById("dialogSet").innerHTML = weekNumber;  
+function displayMaterial(homeworkId) {
     var year = document.getElementById("academicYear").value;
     $.ajax({
-        url : '${pageContext.request.contextPath}/connected/homework/' + SUBJECT + "/" + year + "/" + weekNumber,
+        url : '${pageContext.request.contextPath}/connected/homework/' + homeworkId,
         method: "GET",
         success: function(value) {
-            // Add this part for displaying played percentage
-            // var videoPlayer = document.getElementById("videoPlayer");
-            // videoPlayer.src = value.videoPath;
 
-            // var progressPercentage = document.getElementById(elementId);
-            // var progressBar = document.getElementById(elementId+"Bar");
-
-            // Define the event listener function
-            // var updateProgressBar = function() {
-            //     var playedPercentage = Math.round((videoPlayer.currentTime / videoPlayer.duration) * 100);
-            //     if(!playedPercentage || isNaN(playedPercentage)){
-            //         progressPercentage.innerHTML = "0%";
-            //         progressBar.style.width = "0%";
-            //     } else {
-            //         progressPercentage.innerHTML = playedPercentage + "%";
-            //         progressBar.style.width = playedPercentage + "%";
-            //         if(playedPercentage < 30){
-            //             progressBar.className = 'progress-bar bg-danger'; // Red color for less than 30%
-            //         } else if(playedPercentage >= 30 && playedPercentage <= 70){
-            //             progressBar.className = 'progress-bar bg-warning'; // Yellow color for 30% - 70%
-            //         } else {
-            //             progressBar.className = 'progress-bar bg-success'; // Green color for more than 70%
-            //         }
-            //     }
-            // }
-
-            // Add the event listener when the video starts playing
-            // videoPlayer.addEventListener('timeupdate', updateProgressBar);
-
-            // videoPlayer.addEventListener("ended", function() {
-            //     // Video ended, you can perform additional actions if needed
-            //     console.log("Video ended");
-            // });
-
-            // Remove the event listener when the modal is closed
-            // $('#homeworkModal').on('hidden.bs.modal', function () {
-            //     videoPlayer.removeEventListener('timeupdate', updateProgressBar);
-            // });
-            // console.log('no duration');
+            document.getElementById("dialogSet").innerHTML = value.week;  
             document.getElementById("pdfViewer").data = value.pdfPath;
               
             // pop-up video & pdf
@@ -98,73 +68,66 @@ function displayMaterial(weekNumber, elementId) {
     });  
 }
 
-</script>
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 			Create Card
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function createCard(weekData) {
+    // console.log(weekData);
+    // console.log(weekData.week);
+    const card = document.createElement('div');
+    card.className = 'col-md-6';
+    card.innerHTML = `
+        <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(` + weekData.id + `)">
+            <div class="alert alert-info english-homework" role="alert" style="background-color: false;">
+                <p id="` + weekData.week + `OnlineLesson" style="margin: 30px;">
+                    <strong>Set</strong> <span>` + weekData.week +`</span>&nbsp;&nbsp;<i class="bi bi-journal-text h5 text-primary"></i>
+                </p>
+            </div>
+        </div>
+    `;
+    return card;
+}
 
+function createNextCard(week) {
+    const card = document.createElement('div');
+    card.className = 'col-md-6';
+    card.innerHTML = `
+        <div class="card-body mx-auto" style="max-width: 75%;">
+            <div class="alert alert-secondary english-homework" role="alert" style="background-color: lightgrey;">
+                <p style="margin: 30px;">
+                    <strong>Set</strong> <span>` + week + `</span>
+                    &nbsp;&nbsp;<i class="bi bi-lock-fill h5 text-secondary"></i>
+                </p>
+            </div>
+        </div>
+    `;
+    return card;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 			Display Card
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function displayCards() {
+    const container = document.getElementById('cardsContainer');
+    weeksData.forEach(weekData => {
+        const card = createCard(weekData);
+        container.appendChild(card);
+    });
+    // add next card
+    const nextCard = createNextCard(academicWeek+1);
+    container.appendChild(nextCard);
+}
+
+</script>
 <input type="hidden" id="academicYear" name="academicYear" />
 <div class="col-md-12 pt-3">
     <div class="card-body text-center">
         <h2 style="color: #6c757d; font-weight: bold; text-transform: uppercase; text-shadow: 2px 2px 4px rgba(247, 247, 161, 1);">Short Answer</h2>
     </div>
 </div>
-<div class="container mt-3" style="background: linear-gradient(to right, #f9f9d5 0%, #f7f7a1 100%); border-radius: 15px;">
-    <div class="row mt-5">
-        <div class="col-md-6">
-            <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(document.getElementById('minus2Week').textContent, 'm2Percentage')">
-                <div class="alert alert-info english-homework" role="alert">
-                    <p id="m2OnlineLesson" style="margin: 30px;">
-                        <strong>Set</strong> <span id="minus2Week"></span>
-                        &nbsp;&nbsp;<i class="bi bi-journal-text h5 text-primary"></i>
-                    </p>
-                    <%--
-                    <div class="progress" style="margin: 30px;">
-                        <div id="m2PercentageBar" class="" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">
-                            <span id="m2Percentage" class="ml-auto">0%</span>
-                        </div>
-                    </div>
-                    --%>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(document.getElementById('minus1Week').textContent, 'm1Percentage')">
-                <div class="alert alert-info english-homework" role="alert">
-                    <p id="m1OnlineLesson" style="margin: 30px;">
-                        <strong>Set</strong> <span id="minus1Week"></span>
-                        &nbsp;&nbsp;<i class="bi bi-journal-text h5 text-primary"></i>
-                    </p>
-                    <%--
-                    <div class="progress" style="margin: 30px;">
-                        <div id="m1PercentageBar" class="" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">
-                            <span id="m1Percentage" class="ml-auto">0%</span>
-                        </div>
-                    </div>
-                    --%>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row mb-4">
-        <!-- This Week -->
-        <div class="col-md-6">
-            <div class="card-body mx-auto" style="max-width: 75%;">
-                <div class="alert alert-info english-homework" role="alert" style="background-color: lightgrey;">
-                    <p style="margin: 30px;">
-                        <strong>Set</strong> <span id="academicWeek"></span>
-                    &nbsp;&nbsp;<i class="bi bi-lock-fill h5 text-secondary"></i>
-                    </p>
-                    <%--
-                    <div class="progress" style="margin: 30px;">
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            <span class="ml-auto"></span>
-                        </div>
-                    </div>
-                    --%>
-                </div>
-            </div>
-        </div>
-        <div class="offset-md-6"></div>
-    </div>
-</div>    
+<div class="container mt-3" style="background: linear-gradient(to right, #f9f9d5 0%, #f7f7a1 100%); border-radius: 15px;">   
+    <div id="cardsContainer" class="row mt-5"></div>
+</div> 
 
 <!-- Pop up Video modal -->
 <div class="modal fade" id="homeworkModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"  data-backdrop="static" data-keyboard="false">

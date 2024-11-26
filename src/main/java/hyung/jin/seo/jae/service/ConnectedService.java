@@ -5,6 +5,7 @@ import java.util.List;
 
 import hyung.jin.seo.jae.dto.ExtraworkDTO;
 import hyung.jin.seo.jae.dto.HomeworkDTO;
+import hyung.jin.seo.jae.dto.HomeworkProgressDTO;
 import hyung.jin.seo.jae.dto.HomeworkScheduleDTO;
 import hyung.jin.seo.jae.dto.PracticeAnswerDTO;
 import hyung.jin.seo.jae.dto.PracticeDTO;
@@ -16,6 +17,7 @@ import hyung.jin.seo.jae.dto.TestAnswerDTO;
 import hyung.jin.seo.jae.dto.TestDTO;
 import hyung.jin.seo.jae.model.Extrawork;
 import hyung.jin.seo.jae.model.Homework;
+import hyung.jin.seo.jae.model.HomeworkProgress;
 import hyung.jin.seo.jae.model.HomeworkSchedule;
 import hyung.jin.seo.jae.model.Practice;
 import hyung.jin.seo.jae.model.PracticeAnswer;
@@ -53,6 +55,57 @@ public interface ConnectedService {
 
 	// list Homework by subject, grade & week
 	List<HomeworkDTO> listHomework(long subject, String grade, int week);
+
+	// get Id by subject, grade & week
+	long getHomeworkIdByWeek(long subject, String grade, int week);
+
+	/////////////////////////////////////////////////////////
+	//
+	//	HOMEWORK SCHEDULE
+	//
+	/////////////////////////////////////////////////////////
+
+	// list all Homework Schedules
+	List<HomeworkSchedule> allHomeworkSchedules();
+
+	// list Homework Schedule
+	List<HomeworkScheduleDTO> listHomeworkSchedule(LocalDateTime from, LocalDateTime to);
+
+	// retrieve Homework Schedule by Id
+	HomeworkSchedule getHomeworkSchedule(Long id);
+	
+	// register Homework Schedule
+	HomeworkSchedule addHomeworkSchedule(HomeworkSchedule schedule);
+	
+	// update Homework Schedule info by Id
+	HomeworkSchedule updateHomeworkSchedule(HomeworkSchedule schedule, Long id);
+	
+	// delete Homeowork Schedule
+	void deleteHomeworkSchedule(Long id);
+
+	// get Homework Schedule by subject & grade & localDateTime
+	HomeworkScheduleDTO getHomeworkScheduleBySubjectAndGrade(String subject, String grade, LocalDateTime now);
+
+	/////////////////////////////////////////////////////////
+	//
+	//	HOMEWORK PROGRESS
+	//
+	/////////////////////////////////////////////////////////
+
+	// retrieve Homework Progress by Id
+	HomeworkProgress getHomeworkProgress(Long id);
+
+	// retrieve Homework Progress by student & homework
+	HomeworkProgress getHomeworkProgressByStudentNHomework(Long studentId, Long homeworkId);
+
+	// get Percentage Homework Progress by student & homework
+	int getHomeworkProgressPercentage(Long studentId, Long homeworkId);
+
+	// register Homework Progress
+	HomeworkProgress addHomeworkProgress(HomeworkProgress progress);
+	
+	// update Homework Progress info by Id
+	HomeworkProgress updateHomeworkProgressPercentage(Long id, int percentage);
 
 	/////////////////////////////////////////////////////////
 	//
@@ -223,30 +276,6 @@ public interface ConnectedService {
 	
 	// retrieve StudentTest brief info
 	StudentTestDTO getStudentTest(Long studentId, Long testTypeId, String grade, int volume);
-
-	/////////////////////////////////////////////////////////
-	//
-	//	HOMEWORK SCHEDULE
-	//
-	/////////////////////////////////////////////////////////
-
-	// list all Homework Schedules
-	List<HomeworkSchedule> allHomeworkSchedules();
-
-	// list Homework Schedule
-	List<HomeworkScheduleDTO> listHomeworkSchedule(LocalDateTime from, LocalDateTime to);
-
-	// retrieve Homework Schedule by Id
-	HomeworkSchedule getHomeworkSchedule(Long id);
-	
-	// register Homework Schedule
-	HomeworkSchedule addHomeworkSchedule(HomeworkSchedule schedule);
-	
-	// update Homework Schedule info by Id
-	HomeworkSchedule updateHomeworkSchedule(HomeworkSchedule schedule, Long id);
-	
-	// delete Homeowork Schedule
-	void deleteHomeworkSchedule(Long id);
 
 	/////////////////////////////////////////////////////////
 	//

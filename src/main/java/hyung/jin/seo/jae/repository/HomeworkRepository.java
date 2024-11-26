@@ -20,8 +20,11 @@ public interface HomeworkRepository extends JpaRepository<Homework, Long>{
 	@Query("SELECT new hyung.jin.seo.jae.dto.HomeworkDTO(h.id, h.videoPath, h.pdfPath, h.week, h.info, h.active, h.grade.code, h.subject.id, h.registerDate) FROM Homework h WHERE h.subject.id = ?1 AND h.week = ?2")
 	HomeworkDTO findHomework(long subjectId, int week);
 
-	// filter HomeworkDTO by subject, grade, year & year
+	// filter HomeworkDTO by subject, grade & week
 	@Query("SELECT new hyung.jin.seo.jae.dto.HomeworkDTO(h.id, h.videoPath, h.pdfPath, h.week, h.info, h.active, h.grade.code, h.subject.id, h.registerDate) FROM Homework h WHERE (?1 = 0 OR h.subject.id = ?1) AND (?2 = 'All' OR h.grade.code = ?2) AND (?3 = 0 OR h.week = ?3)")
-	List<HomeworkDTO> filterHomeworkBySubjectNGradeNYearNWeek(long subject, String grade, int week);
+	List<HomeworkDTO> filterHomeworkBySubjectNGradeNWeek(long subject, String grade, int week);
 
+	// get Homework Id by subject, grade & week
+	@Query("SELECT h.id FROM Homework h WHERE (h.subject.id = ?1) AND (h.grade.code = ?2) AND (h.week = ?3)")
+	Long findHomeworkIdBySubjectNGradeNWeek(long subject, String grade, int week);
 }
