@@ -16,6 +16,7 @@ import hyung.jin.seo.jae.dto.StudentTestDTO;
 import hyung.jin.seo.jae.dto.TestAnswerDTO;
 import hyung.jin.seo.jae.dto.TestDTO;
 import hyung.jin.seo.jae.model.Extrawork;
+import hyung.jin.seo.jae.model.ExtraworkProgress;
 import hyung.jin.seo.jae.model.Homework;
 import hyung.jin.seo.jae.model.HomeworkProgress;
 import hyung.jin.seo.jae.model.HomeworkSchedule;
@@ -135,6 +136,28 @@ public interface ConnectedService {
 	
 	// summary of Extrawork by grade
 	List<SimpleBasketDTO> loadExtrawork(String grade);
+
+
+	/////////////////////////////////////////////////////////
+	//
+	//	HOMEWORK PROGRESS
+	//
+	/////////////////////////////////////////////////////////
+
+	// retrieve Extrawork Progress by Id
+	ExtraworkProgress getExtraworkProgress(Long id);
+
+	// retrieve Extrawork Progress by student & homework
+	ExtraworkProgress getExtraworkProgressByStudentNHomework(Long studentId, Long extraworkId);
+
+	// get Percentage Extrawork Progress by student & homework
+	int getExtraworkProgressPercentage(Long studentId, Long extraworkId);
+
+	// register Extrawork Progress
+	ExtraworkProgress addExtraworkProgress(ExtraworkProgress progress);
+	
+	// update Extrawork Progress info by Id
+	ExtraworkProgress updateExtraworkProgressPercentage(Long id, int percentage);
 
 	/////////////////////////////////////////////////////////
 	//

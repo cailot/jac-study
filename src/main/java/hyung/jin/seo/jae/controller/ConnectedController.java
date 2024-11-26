@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import hyung.jin.seo.jae.dto.ExtraworkDTO;
+import hyung.jin.seo.jae.dto.ExtraworkProgressDTO;
 import hyung.jin.seo.jae.dto.HomeworkDTO;
 import hyung.jin.seo.jae.dto.HomeworkProgressDTO;
 import hyung.jin.seo.jae.dto.HomeworkScheduleDTO;
@@ -37,6 +38,7 @@ import hyung.jin.seo.jae.dto.StudentTestDTO;
 import hyung.jin.seo.jae.dto.TestAnswerDTO;
 import hyung.jin.seo.jae.dto.TestDTO;
 import hyung.jin.seo.jae.model.Extrawork;
+import hyung.jin.seo.jae.model.ExtraworkProgress;
 import hyung.jin.seo.jae.model.Grade;
 import hyung.jin.seo.jae.model.Homework;
 import hyung.jin.seo.jae.model.HomeworkProgress;
@@ -609,7 +611,7 @@ public class ConnectedController {
 	}
 
 	@PostMapping("/updateHomeworkProgress")
-    public ResponseEntity<String> updateProgress(@RequestBody HomeworkProgressDTO progress) {
+    public ResponseEntity<String> updateHomeworkProgress(@RequestBody HomeworkProgressDTO progress) {
         try {
 			Long homework = progress.getHomeworkId();
 			Long student = progress.getStudentId();
@@ -625,6 +627,30 @@ public class ConnectedController {
 				connectedService.addHomeworkProgress(add);	
 			}else{ // update existing record
 				connectedService.updateHomeworkProgressPercentage(existing.getId(), progress.getPercentage());
+			}
+			return ResponseEntity.ok("Progress updated successfully");
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body("Error updating progress: " + e.getMessage());
+		}
+	}
+
+	@PostMapping("/updateExtraworkProgress")
+    public ResponseEntity<String> updateExtraworkProgress(@RequestBody ExtraworkProgressDTO progress) {
+        try {
+			Long extrawork = progress.getExtraworkId();
+			Long student = progress.getStudentId();
+			//check if record exists
+			ExtraworkProgress existing = connectedService.getExtraworkProgressByStudentNHomework(student, extrawork);
+			if(existing == null){	// create new record
+				ExtraworkProgress add = new ExtraworkProgress();
+				Extrawork work = connectedService.getExtrawork(extrawork);
+				Student stud = studentService.getStudent(student);
+				add.setExtrawork(work);
+				add.setStudent(stud);
+				add.setPercentage(progress.getPercentage());
+				connectedService.addExtraworkProgress(add);	
+			}else{ // update existing record
+				connectedService.updateExtraworkProgressPercentage(existing.getId(), progress.getPercentage());
 			}
 			return ResponseEntity.ok("Progress updated successfully");
 		} catch (Exception e) {

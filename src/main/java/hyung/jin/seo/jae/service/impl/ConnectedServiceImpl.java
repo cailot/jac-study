@@ -28,6 +28,7 @@ import hyung.jin.seo.jae.dto.StudentTestDTO;
 import hyung.jin.seo.jae.dto.TestAnswerDTO;
 import hyung.jin.seo.jae.dto.TestDTO;
 import hyung.jin.seo.jae.model.Extrawork;
+import hyung.jin.seo.jae.model.ExtraworkProgress;
 import hyung.jin.seo.jae.model.Homework;
 import hyung.jin.seo.jae.model.HomeworkProgress;
 import hyung.jin.seo.jae.model.HomeworkSchedule;
@@ -39,6 +40,7 @@ import hyung.jin.seo.jae.model.StudentTest;
 import hyung.jin.seo.jae.model.Test;
 import hyung.jin.seo.jae.model.TestAnswer;
 import hyung.jin.seo.jae.model.TestAnswerItem;
+import hyung.jin.seo.jae.repository.ExtraworkProgressRepository;
 import hyung.jin.seo.jae.repository.ExtraworkRepository;
 import hyung.jin.seo.jae.repository.HomeworkProgressRepository;
 import hyung.jin.seo.jae.repository.HomeworkRepository;
@@ -87,6 +89,9 @@ public class ConnectedServiceImpl implements ConnectedService {
 
 	@Autowired
 	private HomeworkProgressRepository homeworkProgressRepository;
+
+	@Autowired
+	private ExtraworkProgressRepository extraworkProgressRepository;
 	
 	@Override
 	public List<Homework> allHomeworks() {
@@ -225,6 +230,13 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
+	public ExtraworkProgress getExtraworkProgress(Long id) {
+		Optional<ExtraworkProgress> progress = extraworkProgressRepository.findById(id);
+		if(!progress.isPresent()) return null;
+		return progress.get();
+	}
+
+	@Override
 	public PracticeSchedule getPracticeSchedule(Long id) {
 		Optional<PracticeSchedule> test = practiceScheduleRepository.findById(id);
 		if(!test.isPresent()) return null;
@@ -309,6 +321,14 @@ public class ConnectedServiceImpl implements ConnectedService {
 	public HomeworkProgress addHomeworkProgress(HomeworkProgress progress) {
 		HomeworkProgress home = homeworkProgressRepository.save(progress);
 		return home;
+	}
+
+	@SuppressAjWarnings("null")
+	@Override
+	@Transactional
+	public ExtraworkProgress addExtraworkProgress(ExtraworkProgress progress) {
+		ExtraworkProgress extra = extraworkProgressRepository.save(progress);
+		return extra;
 	}
 
 	@SuppressAjWarnings("null")
@@ -520,6 +540,19 @@ public class ConnectedServiceImpl implements ConnectedService {
 		existing.setRegisterDate(LocalDate.now());
 		// update the existing record
 		HomeworkProgress updated = homeworkProgressRepository.save(existing);
+		return updated;
+	}
+
+	@Override
+	@Transactional
+	public ExtraworkProgress updateExtraworkProgressPercentage(Long id, int percentage) {
+		ExtraworkProgress existing = extraworkProgressRepository.findById(id).get();
+		// update percentage
+		existing.setPercentage(percentage);
+		// update registerDate
+		existing.setRegisterDate(LocalDate.now());
+		// update the existing record
+		ExtraworkProgress updated = extraworkProgressRepository.save(existing);
 		return updated;
 	}
 
@@ -957,12 +990,34 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
+	public ExtraworkProgress getExtraworkProgressByStudentNHomework(Long studentId, Long extraworkId) {
+		ExtraworkProgress progress = null;
+		try{
+			progress =  extraworkProgressRepository.findExtraworkProgressByStudentAndHomework(studentId, extraworkId);
+		}catch(Exception e){
+			System.out.println("No Extrawork Progress found");
+		}
+		return progress;
+	}
+
+	@Override
 	public int getHomeworkProgressPercentage(Long studentId, Long homeworkId) {
 		int percentage = 0;
 		try{
 			percentage = homeworkProgressRepository.getPercentageByStudentAndHomework(studentId, homeworkId);
 		}catch(Exception e){
 			System.out.println("No Homework Progress found");
+		}
+		return percentage;
+	}
+
+	@Override
+	public int getExtraworkProgressPercentage(Long studentId, Long extraworkId) {
+		int percentage = 0;
+		try{
+			percentage = extraworkProgressRepository.getPercentageByStudentAndHomework(studentId, extraworkId);
+		}catch(Exception e){
+			System.out.println("No Extrawork Progress found");
 		}
 		return percentage;
 	}
