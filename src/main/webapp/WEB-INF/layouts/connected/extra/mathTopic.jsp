@@ -25,20 +25,23 @@ $(function() {
     // check if student or Admin/Staff
     if(isStudent){
         $.ajax({
-            url : '${pageContext.request.contextPath}/connected/summaryExtrawork/' + numericGrade,
+            url : '${pageContext.request.contextPath}/connected/summaryExtrawork/' + studentId + "/" + numericGrade,
             method: "GET",
             success: function(data) {
 
                 $.each(data, function(index, basket) {
-                    var title = basket.name;
-                    var id = basket.value;
-                // console.log(basket);
+                    var title = basket.title;
+                    var id = basket.id;
+                    var percentage = basket.percentage;
+
+                console.log(basket);
                     var topicDiv = '<div class="col-md-4">'
                     +  '<div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(' + id + ', \'' +  title + '\');">'
                     + '<div class="alert alert-info topic-card" role="alert"><p id="onlineLesson" style="margin: 30px;">'
                     + '<strong><span id="topicTitle">' + title + '</span></strong>&nbsp;&nbsp;<i class="bi bi-calculator h5 text-primary"></i></p>'
-                    + '<div class="progress" style="margin: 30px;"><div id="' + id + 'topicPercentageBar" class="" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">'
-                    + '<span id="'+ id + 'topicPercentage" class="ml-auto">0%</span></div></div></div></div></div>';
+                    + '<div class="progress" style="margin: 30px;"><div id="' + id + 'topicPercentageBar" class="' + getProgressBarClass(percentage) +'" role="progressbar" style="width: '+ percentage +'%;" aria-valuemin="0" aria-valuemax="100">'
+                    + '<span id="'+ id + 'topicPercentage" class="ml-auto">'+ percentage +'%</span></div></div></div></div></div>';
+                    
                     $('#topicContainer').append(topicDiv);    
                 });
             },
@@ -51,7 +54,7 @@ $(function() {
         // Define an async function to make AJAX calls and return promises
         function fetchSummaryExtrawork(i) {
             return $.ajax({
-                url: '${pageContext.request.contextPath}/connected/summaryExtrawork/' + i,
+                url: '${pageContext.request.contextPath}/connected/summaryExtraworkAll/' + i,
                 method: "GET"
             }).then(data => {
                 return { iteration: i, data: data }; // Return both iteration and data for ordering
@@ -74,12 +77,14 @@ $(function() {
                 $.each(data, function(index, basket) {
                     var title = basket.name;
                     var id = basket.value;
+                    var percentage = basket.percentage;
                     var topicDiv = '<div class="col-md-4">'
                     + '<div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(' + id + ', \'' + title + '\');">'
                     + '<div class="alert alert-info topic-card" role="alert"><p id="onlineLesson" style="margin: 30px;">'
                     + '<strong><span id="topicTitle">' + title + '</span></strong>&nbsp;&nbsp;<i class="bi bi-calculator h5 text-primary"></i></p>'
                     + '<div class="progress" style="margin: 30px;"><div id="' + id + 'topicPercentageBar" class="" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">'
                     + '<span id="'+ id + 'topicPercentage" class="ml-auto">0%</span></div></div></div></div></div>';
+            
                     $('#topicContainer').append(topicDiv);
                 });
             });
@@ -114,30 +119,32 @@ function displayMaterial(id, title) {
                 } else {
                     progressPercentage.innerHTML = playedPercentage + "%";
                     progressBar.style.width = playedPercentage + "%";
-                    if (playedPercentage < 30) {
-                        progressBar.className = 'progress-bar bg-danger'; // Red color for less than 30%
-                    } else if (playedPercentage >= 30 && playedPercentage <= 70) {
-                        progressBar.className = 'progress-bar bg-warning'; // Yellow color for 30% - 70%
-                    } else {
-                        progressBar.className = 'progress-bar bg-success'; // Green color for more than 70%
-                    }
+                    progressBar.className = getProgressBarClass(playedPercentage);
                 }
             }
 
             // Add the event listener when the video starts playing
             videoPlayer.addEventListener('timeupdate', updateProgressBar);
 
-            videoPlayer.addEventListener("ended", function() {
-                // Video ended, you can perform additional actions if needed
-                console.log("Video ended");
-            });
+            var updateCalled = false;
+
+            function updateProgress() {
+                if (!updateCalled) {
+                    updateCalled = true;
+                    updateProgressOnServer(id, progressPercentage.innerHTML);
+                }
+            }
+
+            videoPlayer.addEventListener("ended", updateProgress);
 
             // Remove the event listener and stop the video when the modal is closed
             $('#materialModal').on('hidden.bs.modal', function () {
                 videoPlayer.removeEventListener('timeupdate', updateProgressBar);
-                videoPlayer.pause(); // Stop the video
-                videoPlayer.currentTime = 0; // Reset the video time
+                updateProgress();
             });
+
+            // Update progress on the server when the user navigates away or closes the browser
+            window.addEventListener('beforeunload', updateProgress);
 
             // Force reload the PDF by removing and re-adding the object element
             var pdfContainer = document.getElementById("pdfViewer").parentNode;
@@ -160,73 +167,44 @@ function displayMaterial(id, title) {
     });  
 }
 
-
-function displayMaterial1(id, title) {
-    // set dialogTitle value
-    document.getElementById("dialogTitle").innerHTML = title;  
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 			Color Progress Bar
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function getProgressBarClass(percentage) {
+    if (percentage < 30) {
+        return 'progress-bar bg-danger'; // Red color for less than 30%
+    } else if (percentage >= 30 && percentage <= 70) {
+        return 'progress-bar bg-warning'; // Yellow color for 30% - 70%
+    } else {
+        return 'progress-bar bg-success'; // Green color for more than 70%
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 			Update Progress
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function updateProgressOnServer(extraworkId, percentage){
+    // Remove the '%' symbol and convert to integer
+    var percentageValue = parseInt(percentage.replace('%', ''), 10);
+    // console.log('Updating progress:', homeworkId, percentageValue, studentId);
+   
     $.ajax({
-        url : '${pageContext.request.contextPath}/connected/getExtrawork/' + id,
-        method: "GET",
-        success: function(value) {
-            // Add this part for displaying played percentage
-            var videoPlayer = document.getElementById("videoPlayer");
-            videoPlayer.src = value.videoPath;
-
-            var progressPercentage = document.getElementById(id+"topicPercentage");
-            var progressBar = document.getElementById(id+"topicPercentageBar");
-
-            // Define the event listener function
-            var updateProgressBar = function() {
-                var playedPercentage = Math.round((videoPlayer.currentTime / videoPlayer.duration) * 100);
-                if(!playedPercentage || isNaN(playedPercentage)){
-                    progressPercentage.innerHTML = "0%";
-                    progressBar.style.width = "0%";
-                } else {
-                    progressPercentage.innerHTML = playedPercentage + "%";
-                    progressBar.style.width = playedPercentage + "%";
-                    if(playedPercentage < 30){
-                        progressBar.className = 'progress-bar bg-danger'; // Red color for less than 30%
-                    } else if(playedPercentage >= 30 && playedPercentage <= 70){
-                        progressBar.className = 'progress-bar bg-warning'; // Yellow color for 30% - 70%
-                    } else {
-                        progressBar.className = 'progress-bar bg-success'; // Green color for more than 70%
-                    }
-                }
-            }
-
-            // Add the event listener when the video starts playing
-            videoPlayer.addEventListener('timeupdate', updateProgressBar);
-
-            videoPlayer.addEventListener("ended", function() {
-                // Video ended, you can perform additional actions if needed
-                console.log("Video ended");
-            });
-
-            // Remove the event listener when the modal is closed
-            $('#materialModal').on('hidden.bs.modal', function () {
-                videoPlayer.removeEventListener('timeupdate', updateProgressBar);
-            });
-
-            // Force reload the PDF by appending a timestamp to the URL
-            var pdfContainer = document.getElementById("pdfViewer").parentNode;
-            var oldPdfViewer = document.getElementById("pdfViewer");
-            var newPdfViewer = document.createElement("object");
-            newPdfViewer.id = "pdfViewer";
-            newPdfViewer.data = value.pdfPath + '?t=' + new Date().getTime(); // Append timestamp to prevent caching
-            newPdfViewer.type = "application/pdf";
-            newPdfViewer.style.width = "100%";
-            newPdfViewer.style.height = "80vh";
-            newPdfViewer.innerHTML = '<p>It appears you don\'t have a PDF plugin for this browser. No biggie... you can <a href="' + value.pdfPath + '">click here to download the PDF file.</a></p>';
-            pdfContainer.replaceChild(newPdfViewer, oldPdfViewer);
-              
-            // pop-up video & pdf
-            $('#materialModal').modal('show');
+        url: '${pageContext.request.contextPath}/connected/updateExtraworkProgress',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            extraworkId: extraworkId,
+            studentId: studentId,
+            percentage: percentageValue
+        }),
+        success: function(response) {
+            console.log('Progress updated successfully:', response);
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            console.log('Error : ' + errorThrown);
+            console.log('Error updating progress:', errorThrown);
         }
-    });  
+    });
 }
+
 </script>
 
 <div class="col-md-12 pt-3">

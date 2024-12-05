@@ -95,7 +95,7 @@ function createNextCard(week) {
         <div class="card-body mx-auto" style="max-width: 75%;">
             <div class="alert alert-secondary english-homework" role="alert" style="background-color: lightgrey;">
                 <p style="margin: 30px;">
-                    <strong>Set</strong> <span>` + week + `</span>
+                    <strong>Set</strong> <span>` + (week-1) + `</span>
                     &nbsp;&nbsp;<i class="bi bi-lock-fill h5 text-secondary"></i>
                 </p>
             </div>

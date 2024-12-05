@@ -1,6 +1,12 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+
+<c:set var="grade" value="" />
+
+
 
 <sec:authorize access="isAuthenticated()">
 
@@ -8,6 +14,7 @@
 <sec:authentication var="id" property="principal.username"/>
 <sec:authentication var="firstName" property="principal.firstName"/>
 <sec:authentication var="lastName" property="principal.lastName"/>
+<c:set var="grade" value="${role}" />
 	<script>
 		var role = '${role}';
 		var numericGrade = role.replace(/[\[\]]/g, ''); // replace '[' & ']' with an empty string
@@ -16,7 +23,7 @@
 		var lastName = '${lastName}';
 		// Determine if numericGrade is a number
 		var isStudent = !isNaN(+numericGrade);
-		//console.log(isStudent); // Logs true if numericGrade is a number, otherwise false
+		// console.log('numericGrade : ' + numericGrade); // Logs true if numericGrade is a number, otherwise false
 	</script>
 </sec:authorize>
 
@@ -29,8 +36,6 @@ $(function() {
 	listGrade('#editGrade');
 });
 
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 			Display grade
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +46,6 @@ function displayGrade() {
 	var grade = gradeName(numericPart);
 	return grade;
 }
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 			Clear password fields
@@ -145,9 +149,15 @@ function updatePassword() {
 				<i class="bi bi-pencil-square custom-icon mr-2"></i><span class="h4">Homework</span>
 			</a>
 			<div class="dropdown-menu">
-				<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/engHomework">English Homework</a>
-			  	<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/mathHomework">Mathematics Homework</a>
-				<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/writeHomework">Writing Homework</a>
+				<!-- P2 .. S10, JMSS -->
+				<c:if test="${grade == '[1]' || grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]' || grade == '[6]' || grade == '[7]' || grade == '[8]' || grade == '[9]' || grade == '[19]'}">
+					<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/engHomework">English Homework</a>
+					<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/mathHomework">Mathematics Homework</a>
+				</c:if>
+				<!-- P3 .. P6 -->
+				<c:if test="${grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]'}">
+					<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/writeHomework">Writing Homework</a>
+				</c:if>
 				<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/shortAnswer">Short Answer</a>
 			</div>
 		</li>
@@ -164,27 +174,66 @@ function updatePassword() {
 			</a>			
 			<div class="dropdown-menu">
 				<!-- Mega Practice submenu -->
-				<div class="dropdown-submenu">
-					<a class="dropdown-item" href="#" id="megaPracticeDropdown" role="button" aria-haspopup="true" aria-expanded="false">
-						Mega Practice
-					</a>
-					<div class="dropdown-menu" aria-labelledby="megaPracticeDropdown">
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/megaEng">MEGA English</a>
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/megaMath">MEGA Mathematics</a>
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/megaGA">MEGA General Ability</a>
+				<c:if test="${grade == '[1]' ||grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]'}">
+					<div class="dropdown-submenu">
+						<a class="dropdown-item" href="#" id="megaPracticeDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+							Mega Practice
+						</a>
+						<div class="dropdown-menu" aria-labelledby="megaPracticeDropdown">
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/megaEng">MEGA English</a>
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/megaMath">MEGA Mathematics</a>
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/megaGA">MEGA General Ability</a>
+						</div>
 					</div>
-				</div>
+				</c:if>
+				<!-- Revision submenu -->
+				<c:if test="${grade == '[6]' ||grade == '[7]' || grade == '[8]' || grade == '[9]'}">
+					<div class="dropdown-submenu">
+						<a class="dropdown-item" href="#" id="revisionPracticeDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+							Revision Practice
+						</a>
+						<div class="dropdown-menu" aria-labelledby="revisionPracticeDropdown">
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/revisionEng">Revision English</a>
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/revisionMath">Revision Mathematics</a>
+						</div>
+					</div>
+				</c:if>
 				<!-- NAPLAN submenu -->
-				<div class="dropdown-submenu">
-					<a class="dropdown-item" href="#" id="naplanPracticeDropdown" role="button" aria-haspopup="true" aria-expanded="false">
-						NAPLAN
-					</a>
-					<div class="dropdown-menu" aria-labelledby="naplanPracticeDropdown">
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplanLC">NAPLAN Language Conventions</a>
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplanMath">NAPLAN Mathematics</a>
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplanRead">NAPLAN Reading</a>
+				<c:if test="${grade == '[2]' || grade == '[4]' || grade == '[6]' || grade == '[8]'}">
+					<div class="dropdown-submenu">
+						<a class="dropdown-item" href="#" id="naplanPracticeDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+							NAPLAN
+						</a>
+						<div class="dropdown-menu" aria-labelledby="naplanPracticeDropdown">
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplanLC">NAPLAN Language Conventions</a>
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplanMath">NAPLAN Mathematics</a>
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplanRead">NAPLAN Reading</a>
+						</div>
 					</div>
-				</div>
+				</c:if>
+				<!-- Acer & Edu submenu -->
+				<c:if test="${grade == '[11]' ||grade == '[12]'}">
+					<div class="dropdown-submenu">
+						<a class="dropdown-item" href="#" id="acerPracticeDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+							Acer Practice
+						</a>
+						<div class="dropdown-menu" aria-labelledby="acerPracticeDropdown">
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/acerEng">Acer English</a>
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/acerMath">Acer Mathematics</a>
+						</div>
+					</div>
+					<div class="dropdown-submenu">
+						<a class="dropdown-item" href="#" id="eduPracticeDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+							Edu Practice
+						</a>
+						<div class="dropdown-menu" aria-labelledby="eduPracticeDropdown">
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/eduEng">Edu RC</a>
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/eduMath">Edu Mathematics</a>
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/eduMath">Edu NR</a>
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/eduMath">Edu VR</a>
+						</div>
+					</div>
+				</c:if>				
 			</div>
 		</li>
 

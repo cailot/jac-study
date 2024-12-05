@@ -39,7 +39,7 @@ public class ExtraworkProgress{ // bridge table between Student & Practice
 	private Student student;
 	
 	@ManyToOne
-	@JoinColumn(name = "homeworkId", foreignKey = @ForeignKey(name = "FK_ExtraworkProgress_Extrawork"))
+	@JoinColumn(name = "extraworkId", foreignKey = @ForeignKey(name = "FK_ExtraworkProgress_Extrawork"))
 	private Extrawork extrawork;
 	
 	@CreationTimestamp

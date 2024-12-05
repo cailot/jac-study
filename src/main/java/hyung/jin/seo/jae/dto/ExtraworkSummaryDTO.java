@@ -11,11 +11,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class HomeworkSummaryDTO extends WorkSummaryDTO {
+public class ExtraworkSummaryDTO extends WorkSummaryDTO {
     
 	// private long id;
 
-	private int week;
+	private String title;
 
 	// private int percentage;
 
