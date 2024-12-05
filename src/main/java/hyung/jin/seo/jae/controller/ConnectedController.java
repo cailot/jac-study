@@ -715,24 +715,66 @@ public class ConnectedController {
 		}
 		// 3. calculate and get Homework info (id & week)
 		List<HomeworkSummaryDTO> dtos = new ArrayList<>();
+		////////////////////////////////////////////////////////////////////////////////////////////////
+		// if week is first week of academic year, check student's register date is more than a month.
+		////////////////////////////////////////////////////////////////////////////////////////////////
+		if(currentWeek == 1){
 
+			Student std = studentService.getStudent(student);
+			LocalDate regDate = std.getRegisterDate();
+			String stdGrade = std.getGrade();			
+			// check if regDate is less than last month compared with today
+			LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+			if(regDate.isBefore(oneMonthAgo) && !stdGrade.equalsIgnoreCase("11") && !stdGrade.equalsIgnoreCase("12")){
+				// if student's register date is more than a month and NOT TT6 nor TT8, return 2 homework from previous grade
+				String previousGrade = codeService.getPreviousGrade(stdGrade);
+				// get last week of last year
+				int lastWeek = cycleService.lastAcademicWeek(cycleService.academicYear()-1);
+				
+				// last week of previous grade
+				HomeworkSummaryDTO dto = new HomeworkSummaryDTO();
+				long homeworkId = connectedService.getHomeworkIdByWeek(Long.parseLong(subject), previousGrade, lastWeek);
+				int percentage = connectedService.getHomeworkProgressPercentage(student, homeworkId);
+				dto.setWeek(lastWeek);
+				dto.setId(homeworkId);
+				dto.setPercentage(percentage);
+				dtos.add(dto);
 
+				return dtos;
+			}
 
+		}else if(currentWeek == 2){
 
-		
+			Student std = studentService.getStudent(student);
+			LocalDate regDate = std.getRegisterDate();
+			// check if regDate is less than last month compared with today
+			LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+			if(regDate.isBefore(oneMonthAgo)){
+				// 1st week of current grade
+				HomeworkSummaryDTO dto = new HomeworkSummaryDTO();
+				long homeworkId = connectedService.getHomeworkIdByWeek(Long.parseLong(subject), grade, 1);
+				int percentage = connectedService.getHomeworkProgressPercentage(student, homeworkId);
+				dto.setWeek(1);
+				dto.setId(homeworkId);
+				dto.setPercentage(percentage);
+				dtos.add(dto);
 
+				return dtos;
+			}
 
-
-
-		for(int i = (answerCard-1) ; i >= 0; i--){
-			HomeworkSummaryDTO dto = new HomeworkSummaryDTO();
-			long homeworkId = connectedService.getHomeworkIdByWeek(Long.parseLong(subject), grade, (currentWeek-i));
-			int percentage = connectedService.getHomeworkProgressPercentage(student, homeworkId);
-			dto.setWeek(currentWeek - i);
-			dto.setId(homeworkId);
-			dto.setPercentage(percentage);
-			dtos.add(dto);
+		}else{
+			// if week is not first/second week of academic year, return normal short answer from current grade
+			for(int i = (answerCard-1) ; i >= 0; i--){
+				HomeworkSummaryDTO dto = new HomeworkSummaryDTO();
+				long homeworkId = connectedService.getHomeworkIdByWeek(Long.parseLong(subject), grade, (currentWeek-i));
+				int percentage = connectedService.getHomeworkProgressPercentage(student, homeworkId);
+				dto.setWeek(currentWeek - i);
+				dto.setId(homeworkId);
+				dto.setPercentage(percentage);
+				dtos.add(dto);
+			}
 		}
+
 		// 4. return HomeworkDTO
 		return dtos;
 	}
