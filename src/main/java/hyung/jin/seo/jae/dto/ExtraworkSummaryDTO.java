@@ -17,6 +17,6 @@ public class ExtraworkSummaryDTO extends WorkSummaryDTO {
 
 	private String title;
 
-	// private int percentage;
+	private int percentage;
 
 }

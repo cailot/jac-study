@@ -71,7 +71,7 @@ public class OnlineController {
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		// if week is first week of academic year, check student's register date is more than a month.
 		////////////////////////////////////////////////////////////////////////////////////////////////
-		if(week == 1){
+		if(week == JaeConstants.FIRST_WEEK){
 			Student std = studentService.getStudent(id);
 			LocalDate regDate = std.getRegisterDate();
 			// check if regDate is less than last month compared with today

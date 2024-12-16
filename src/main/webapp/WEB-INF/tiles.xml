@@ -117,6 +117,21 @@
 		<put-attribute name="title" value="James An College Connected Class Page" />
 		<put-attribute name="body" value="/WEB-INF/layouts/connected/practice/naplanRead.jsp" />
 	</definition>
+
+
+
+
+
+	<!-- Connected NAPLAN Practice -->
+	<definition name="naplanPracticePage" extends="tile.definition">
+		<put-attribute name="title" value="James An College Connected Class Page" />
+		<put-attribute name="body" value="/WEB-INF/layouts/connected/practice/naplan.jsp" />
+	</definition>
+
+
+
+
+
 	<!-- Connected EDU RC Practice -->
 	<definition name="eduRCPracticePage" extends="tile.definition">
 		<put-attribute name="title" value="James An College Connected Class Page" />

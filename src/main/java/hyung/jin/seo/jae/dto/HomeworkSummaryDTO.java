@@ -17,6 +17,6 @@ public class HomeworkSummaryDTO extends WorkSummaryDTO {
 
 	private int week;
 
-	// private int percentage;
+	private int percentage;
 
 }

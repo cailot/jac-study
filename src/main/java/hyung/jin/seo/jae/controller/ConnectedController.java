@@ -33,6 +33,7 @@ import hyung.jin.seo.jae.dto.HomeworkSummaryDTO;
 import hyung.jin.seo.jae.dto.PracticeAnswerDTO;
 import hyung.jin.seo.jae.dto.PracticeDTO;
 import hyung.jin.seo.jae.dto.PracticeScheduleDTO;
+import hyung.jin.seo.jae.dto.PracticeSummaryDTO;
 import hyung.jin.seo.jae.dto.SimpleBasketDTO;
 import hyung.jin.seo.jae.dto.StudentTestDTO;
 import hyung.jin.seo.jae.dto.TestAnswerDTO;
@@ -77,67 +78,67 @@ public class ConnectedController {
 	@Autowired
 	private CycleService cycleService;
 	
-	// register homework
-	@PostMapping("/addHomework")
-	@ResponseBody
-	public HomeworkDTO registerHomework(@RequestBody HomeworkDTO formData) {
-		// 1. create barebone
-		Homework work = formData.convertToHomework();
-		// 2. set active to true as default
-		work.setActive(true);
-		// 3. set Subject
-		Subject subject = codeService.getSubject(Long.parseLong(formData.getSubject()));
-		// 4. set Grade
-		Grade grade = codeService.getGrade(Long.parseLong(formData.getGrade()));
-		// 5. associate Subject & Grade
-		work.setSubject(subject);
-		work.setGrade(grade);
-		// 6. register Homework
-		Homework added = connectedService.addHomework(work);
-		// 7. return dto
-		HomeworkDTO dto = new HomeworkDTO(added);
-		return dto;
-	}
+	// // register homework
+	// @PostMapping("/addHomework")
+	// @ResponseBody
+	// public HomeworkDTO registerHomework(@RequestBody HomeworkDTO formData) {
+	// 	// 1. create barebone
+	// 	Homework work = formData.convertToHomework();
+	// 	// 2. set active to true as default
+	// 	work.setActive(true);
+	// 	// 3. set Subject
+	// 	Subject subject = codeService.getSubject(Long.parseLong(formData.getSubject()));
+	// 	// 4. set Grade
+	// 	Grade grade = codeService.getGrade(Long.parseLong(formData.getGrade()));
+	// 	// 5. associate Subject & Grade
+	// 	work.setSubject(subject);
+	// 	work.setGrade(grade);
+	// 	// 6. register Homework
+	// 	Homework added = connectedService.addHomework(work);
+	// 	// 7. return dto
+	// 	HomeworkDTO dto = new HomeworkDTO(added);
+	// 	return dto;
+	// }
 
-	// register extrawork
-	@PostMapping("/addExtrawork")
-	@ResponseBody
-	public ExtraworkDTO registerExtrawork(@RequestBody ExtraworkDTO formData) {
-		// 1. create barebone
-		Extrawork work = formData.convertToExtrawork();
-		// 2. set active to true as default
-		work.setActive(true);
-		// 3. set Grade
-		Grade grade = codeService.getGrade(Long.parseLong(formData.getGrade()));
-		// 4. associate Grade
-		work.setGrade(grade);
-		// 5. register Extrawork
-		Extrawork added = connectedService.addExtrawork(work);
-		// 6. return dto
-		ExtraworkDTO dto = new ExtraworkDTO(added);
-		return dto;
-	}
+	// // register extrawork
+	// @PostMapping("/addExtrawork")
+	// @ResponseBody
+	// public ExtraworkDTO registerExtrawork(@RequestBody ExtraworkDTO formData) {
+	// 	// 1. create barebone
+	// 	Extrawork work = formData.convertToExtrawork();
+	// 	// 2. set active to true as default
+	// 	work.setActive(true);
+	// 	// 3. set Grade
+	// 	Grade grade = codeService.getGrade(Long.parseLong(formData.getGrade()));
+	// 	// 4. associate Grade
+	// 	work.setGrade(grade);
+	// 	// 5. register Extrawork
+	// 	Extrawork added = connectedService.addExtrawork(work);
+	// 	// 6. return dto
+	// 	ExtraworkDTO dto = new ExtraworkDTO(added);
+	// 	return dto;
+	// }
 
-	// register practice
-	@PostMapping("/addPractice")
-	@ResponseBody
-	public PracticeDTO registerPractice(@RequestBody PracticeDTO formData) {
-		// 1. create barebone
-		Practice work = formData.convertToPractice();
-		// 2. set active to true as default
-		work.setActive(true);
-		// 3. set Grade & PracticeType
-		Grade grade = codeService.getGrade(Long.parseLong(formData.getGrade()));
-		PracticeType type = codeService.getPracticeType(formData.getPracticeType());
-		// 4. associate Grade & PracticeType
-		work.setGrade(grade);
-		work.setPracticeType(type);
-		// 5. register Practice
-		Practice added = connectedService.addPractice(work);
-		// 6. return dto
-		PracticeDTO dto = new PracticeDTO(added);
-		return dto;
-	}
+	// // register practice
+	// @PostMapping("/addPractice")
+	// @ResponseBody
+	// public PracticeDTO registerPractice(@RequestBody PracticeDTO formData) {
+	// 	// 1. create barebone
+	// 	Practice work = formData.convertToPractice();
+	// 	// 2. set active to true as default
+	// 	work.setActive(true);
+	// 	// 3. set Grade & PracticeType
+	// 	Grade grade = codeService.getGrade(Long.parseLong(formData.getGrade()));
+	// 	PracticeType type = codeService.getPracticeType(formData.getPracticeType());
+	// 	// 4. associate Grade & PracticeType
+	// 	work.setGrade(grade);
+	// 	work.setPracticeType(type);
+	// 	// 5. register Practice
+	// 	Practice added = connectedService.addPractice(work);
+	// 	// 6. return dto
+	// 	PracticeDTO dto = new PracticeDTO(added);
+	// 	return dto;
+	// }
 
 	@PostMapping(value = "/addStudentPractice")
 	@ResponseBody
@@ -210,56 +211,56 @@ public class ConnectedController {
 		}
 	}
 
-	// update existing homework
-	@PutMapping("/updateHomework")
-	@ResponseBody
-	public ResponseEntity<String> updateHomework(@RequestBody HomeworkDTO formData) {
-		try{
-			// 1. create barebone Homework
-			Homework work = formData.convertToHomework();
-			// 2. update Homework
-			work = connectedService.updateHomework(work, Long.parseLong(formData.getId()));
-			// 3.return flag
-			return ResponseEntity.ok("\"Homework updated\"");
-		}catch(Exception e){
-			String message = "Error updating Homework : " + e.getMessage();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
-		}
-	}
+	// // update existing homework
+	// @PutMapping("/updateHomework")
+	// @ResponseBody
+	// public ResponseEntity<String> updateHomework(@RequestBody HomeworkDTO formData) {
+	// 	try{
+	// 		// 1. create barebone Homework
+	// 		Homework work = formData.convertToHomework();
+	// 		// 2. update Homework
+	// 		work = connectedService.updateHomework(work, Long.parseLong(formData.getId()));
+	// 		// 3.return flag
+	// 		return ResponseEntity.ok("\"Homework updated\"");
+	// 	}catch(Exception e){
+	// 		String message = "Error updating Homework : " + e.getMessage();
+	// 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+	// 	}
+	// }
 
-	// update existing extrawork
-	@PutMapping("/updateExtrawork")
-	@ResponseBody
-	public ResponseEntity<String> updateExtrawork(@RequestBody ExtraworkDTO formData) {
-		try{
-			// 1. create barebone Homework
-			Extrawork work = formData.convertToExtrawork();
-			// 2. update Homework
-			work = connectedService.updateExtrawork(work, Long.parseLong(formData.getId()));
-			// 3.return flag
-			return ResponseEntity.ok("\"Extrawork updated\"");
-		}catch(Exception e){
-			String message = "Error updating Extrawork : " + e.getMessage();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
-		}
-	}
+	// // update existing extrawork
+	// @PutMapping("/updateExtrawork")
+	// @ResponseBody
+	// public ResponseEntity<String> updateExtrawork(@RequestBody ExtraworkDTO formData) {
+	// 	try{
+	// 		// 1. create barebone Homework
+	// 		Extrawork work = formData.convertToExtrawork();
+	// 		// 2. update Homework
+	// 		work = connectedService.updateExtrawork(work, Long.parseLong(formData.getId()));
+	// 		// 3.return flag
+	// 		return ResponseEntity.ok("\"Extrawork updated\"");
+	// 	}catch(Exception e){
+	// 		String message = "Error updating Extrawork : " + e.getMessage();
+	// 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+	// 	}
+	// }
 
-	// update existing practice
-	@PutMapping("/updatePractice")
-	@ResponseBody
-	public ResponseEntity<String> updatePractice(@RequestBody PracticeDTO formData) {
-		try{
-			// 1. create barebone Homework
-			Practice work = formData.convertToPractice();
-			// 2. update Homework
-			work = connectedService.updatePractice(work, Long.parseLong(formData.getId()));
-			// 3.return flag
-			return ResponseEntity.ok("\"Practice updated\"");
-		}catch(Exception e){
-			String message = "Error updating Practice : " + e.getMessage();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
-		}
-	}
+	// // update existing practice
+	// @PutMapping("/updatePractice")
+	// @ResponseBody
+	// public ResponseEntity<String> updatePractice(@RequestBody PracticeDTO formData) {
+	// 	try{
+	// 		// 1. create barebone Homework
+	// 		Practice work = formData.convertToPractice();
+	// 		// 2. update Homework
+	// 		work = connectedService.updatePractice(work, Long.parseLong(formData.getId()));
+	// 		// 3.return flag
+	// 		return ResponseEntity.ok("\"Practice updated\"");
+	// 	}catch(Exception e){
+	// 		String message = "Error updating Practice : " + e.getMessage();
+	// 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+	// 	}
+	// }
 	
 	// get homework
 	@GetMapping("/getHomework/{id}")
@@ -407,26 +408,88 @@ public class ConnectedController {
 		return dtos;
 	}
 
-	@GetMapping("/summaryPractice/{studentId}/{practiceType}/{grade}")
+	@GetMapping("/summaryPractice/{practiceGroup}/{grade}")
 	@ResponseBody
-	public List<SimpleBasketDTO> summaryPractices(@PathVariable String studentId, @PathVariable String practiceType, @PathVariable String grade) {
-		List<SimpleBasketDTO> dtos = new ArrayList();
-		String filteredStudentId = StringUtils.defaultString(studentId, "0");
-		String filteredPracticeType = StringUtils.defaultString(practiceType, "0");
-		String filteredGrade = StringUtils.defaultString(grade, "0");
-		dtos = connectedService.loadPractice(Integer.parseInt(filteredPracticeType), Integer.parseInt(filteredGrade));
-		// check whether the volume is finished or not
-		for(SimpleBasketDTO dto : dtos){
-			// get practiceId
-			String practiceId = StringUtils.defaultString(dto.getValue(), "0");
-			boolean done = connectedService.isStudentPracticeExist(Long.parseLong(filteredStudentId), Long.parseLong(practiceId));
-			if(done){
-				String name = dto.getName();
-				dto.setName(name + JaeConstants.PRACTICE_COMPLETE);
+	public List<PracticeSummaryDTO> summaryPractices(@PathVariable int practiceGroup, @PathVariable String grade) {
+		
+		// 1. get practice group by practiceType
+		// int group = codeService.getPracticeGroup(Long.parseLong(practiceType));
+
+		// 2. get current LocalDateTime & current week
+		LocalDateTime now = LocalDateTime.now();
+		
+		// 3. get PracticeScheduleDTO by current time, practiceType & grade
+		List<PracticeScheduleDTO> schedules = connectedService.checkPracticeSchedule(practiceGroup+"", grade, now);
+
+
+		// 4. check if schedule is empty
+		if(schedules.isEmpty()){
+			// 4-1. if empty, return empty list
+			return new ArrayList<>();
+		}else{
+			// // 4-2. if not empty, get practice list
+			List<PracticeSummaryDTO> dtos = new ArrayList<>();
+			for(PracticeScheduleDTO schedule : schedules){
+				
+				String[] groups = schedule.getPracticeGroup();
+				// get index by practiceGroup
+				int index = 0;
+				for(int i=0; i<groups.length; i++){
+					if(groups[i].equals(practiceGroup+"")){
+						index = i;
+						break;
+					}
+				}
+				// what about groups = [1,1,1] ?
+				// get week by index
+				String[] weeks = schedule.getWeek();
+				int week = Integer.parseInt(weeks[index]);
+				// get PracticeDTO by group, grade & week
+				List<PracticeDTO> practices = connectedService.getPracticeInfoByGroup(practiceGroup, grade, week);
+				
+				for(PracticeDTO practice : practices){
+					// add to list
+					PracticeSummaryDTO dto = new PracticeSummaryDTO();
+					dto.setId(Long.parseLong(practice.getId()));
+					dto.setTitle(practice.getTitle());
+					dto.setWeek(week);
+					dtos.add(dto);
+				}
+				// // add to list
+				// PracticeSummaryDTO dto = new PracticeSummaryDTO();
+				// dto.setId(Long.parseLong(practice.getId()));
+				// dto.setTitle(practice.getTitle());
+				// dto.setWeek(week);
+				// dtos.add(dto);
+
 			}
+			// // 7. return dtos
+			return dtos;
 		}
-		return dtos;
+
+
 	}
+
+	// @GetMapping("/summaryPractice/{studentId}/{practiceType}/{grade}")
+	// @ResponseBody
+	// public List<SimpleBasketDTO> summaryPractices(@PathVariable String studentId, @PathVariable String practiceType, @PathVariable String grade) {
+	// 	List<SimpleBasketDTO> dtos = new ArrayList();
+	// 	String filteredStudentId = StringUtils.defaultString(studentId, "0");
+	// 	String filteredPracticeType = StringUtils.defaultString(practiceType, "0");
+	// 	String filteredGrade = StringUtils.defaultString(grade, "0");
+	// 	dtos = connectedService.loadPractice(Integer.parseInt(filteredPracticeType), Integer.parseInt(filteredGrade));
+	// 	// check whether the volume is finished or not
+	// 	for(SimpleBasketDTO dto : dtos){
+	// 		// get practiceId
+	// 		String practiceId = StringUtils.defaultString(dto.getValue(), "0");
+	// 		boolean done = connectedService.isStudentPracticeExist(Long.parseLong(filteredStudentId), Long.parseLong(practiceId));
+	// 		if(done){
+	// 			String name = dto.getName();
+	// 			dto.setName(name + JaeConstants.PRACTICE_COMPLETE);
+	// 		}
+	// 	}
+	// 	return dtos;
+	// }
 
 	@GetMapping("/summaryTest/{studentId}/{testType}/{grade}")
 	@ResponseBody
@@ -501,28 +564,28 @@ public class ConnectedController {
 
 
 	// get practice schedule
-	@GetMapping("/getPracticeSchedule/{year}/{week}/{grade}")
-	@ResponseBody
-	public List<PracticeDTO> getPracticeSchedule(@PathVariable int year, @PathVariable int week, @PathVariable int grade) {
-		List<PracticeDTO> dtos = new ArrayList<>();
-		// 1. get PracticeScheduleDTO by year & week
-		List<PracticeScheduleDTO> schedules = connectedService.listPracticeSchedule(year, week);
-		// 2. get PracticeDTO from PracticeScheduleDTO
-		for(PracticeScheduleDTO schedule : schedules){
-			// 3. get PracticeDTO
-			List<PracticeDTO> practices = schedule.getPractices();
-			for(PracticeDTO practice : practices){
-				// 4. get and compare grade
-				int practiceGrade = Integer.parseInt(StringUtils.defaultString(practice.getGrade(), "0"));
-				if(grade == practiceGrade){
-					// 5. add to list
-					dtos.add(practice);
-				}
-			}
-		}
-		// 6. return dtos
-		return dtos;
-	}
+	// @GetMapping("/getPracticeSchedule/{year}/{week}/{grade}")
+	// @ResponseBody
+	// public List<PracticeDTO> getPracticeSchedule(@PathVariable int year, @PathVariable int week, @PathVariable int grade) {
+	// 	List<PracticeDTO> dtos = new ArrayList<>();
+	// 	// 1. get PracticeScheduleDTO by year & week
+	// 	List<PracticeScheduleDTO> schedules = connectedService.listPracticeSchedule(year, week);
+	// 	// 2. get PracticeDTO from PracticeScheduleDTO
+	// 	for(PracticeScheduleDTO schedule : schedules){
+	// 		// 3. get PracticeDTO
+	// 		List<PracticeDTO> practices = schedule.getPractices();
+	// 		for(PracticeDTO practice : practices){
+	// 			// 4. get and compare grade
+	// 			int practiceGrade = Integer.parseInt(StringUtils.defaultString(practice.getGrade(), "0"));
+	// 			if(grade == practiceGrade){
+	// 				// 5. add to list
+	// 				dtos.add(practice);
+	// 			}
+	// 		}
+	// 	}
+	// 	// 6. return dtos
+	// 	return dtos;
+	// }
 
 	// helper method converting practice answers Map to List
 	private List<Integer> convertPracticeAnswers(List<Map<String, Object>> answers) {
@@ -580,7 +643,7 @@ public class ConnectedController {
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		// if week is first week of academic year, check student's register date is more than a month.
 		////////////////////////////////////////////////////////////////////////////////////////////////
-		if(currentWeek == 1){
+		if(currentWeek == JaeConstants.FIRST_WEEK){
 
 			Student std = studentService.getStudent(student);
 			LocalDate regDate = std.getRegisterDate();
@@ -623,7 +686,7 @@ public class ConnectedController {
 				return dtos;
 			}
 
-		}else if(currentWeek == 2){
+		}else if(currentWeek == JaeConstants.SECOND_WEEK){
 
 			Student std = studentService.getStudent(student);
 			LocalDate regDate = std.getRegisterDate();
@@ -679,16 +742,6 @@ public class ConnectedController {
 			}
 		}
 		
-		// for(int i = (subjectCard-1) ; i >= 0; i--){
-		// 	HomeworkSummaryDTO dto = new HomeworkSummaryDTO();
-		// 	long homeworkId = connectedService.getHomeworkIdByWeek(Long.parseLong(subject), grade, (currentWeek-i));
-		// 	int percentage = connectedService.getHomeworkProgressPercentage(student, homeworkId);
-		// 	dto.setWeek(currentWeek - i);
-		// 	dto.setId(homeworkId);
-		// 	dto.setPercentage(percentage);
-		// 	dtos.add(dto);
-		// }
-
 		// 4. return HomeworkDTO
 		return dtos;
 	}
@@ -718,7 +771,7 @@ public class ConnectedController {
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		// if week is first week of academic year, check student's register date is more than a month.
 		////////////////////////////////////////////////////////////////////////////////////////////////
-		if(currentWeek == 1){
+		if(currentWeek == JaeConstants.FIRST_WEEK){
 
 			Student std = studentService.getStudent(student);
 			LocalDate regDate = std.getRegisterDate();
@@ -743,7 +796,7 @@ public class ConnectedController {
 				return dtos;
 			}
 
-		}else if(currentWeek == 2){
+		}else if(currentWeek == JaeConstants.SECOND_WEEK){
 
 			Student std = studentService.getStudent(student);
 			LocalDate regDate = std.getRegisterDate();

@@ -3,6 +3,9 @@ package hyung.jin.seo.jae.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
+
 import hyung.jin.seo.jae.dto.ExtraworkDTO;
 import hyung.jin.seo.jae.dto.HomeworkDTO;
 import hyung.jin.seo.jae.dto.HomeworkProgressDTO;
@@ -42,14 +45,14 @@ public interface ConnectedService {
 	// retrieve Homework by Id
 	Homework getHomework(Long id);
 	
-	// register Homework
-	Homework addHomework(Homework crs);
+	// // register Homework
+	// Homework addHomework(Homework crs);
     
-    // update Homework info by Id
- 	Homework updateHomework(Homework newWork, Long id);
+    // // update Homework info by Id
+ 	// Homework updateHomework(Homework newWork, Long id);
 	
-	// delete Homework
-	void deleteHomework(Long id);
+	// // delete Homework
+	// void deleteHomework(Long id);
 
 	// get Homework by subject & week
 	HomeworkDTO getHomeworkInfo(long subject, int week);
@@ -75,14 +78,14 @@ public interface ConnectedService {
 	// retrieve Homework Schedule by Id
 	HomeworkSchedule getHomeworkSchedule(Long id);
 	
-	// register Homework Schedule
-	HomeworkSchedule addHomeworkSchedule(HomeworkSchedule schedule);
+	// // register Homework Schedule
+	// HomeworkSchedule addHomeworkSchedule(HomeworkSchedule schedule);
 	
-	// update Homework Schedule info by Id
-	HomeworkSchedule updateHomeworkSchedule(HomeworkSchedule schedule, Long id);
+	// // update Homework Schedule info by Id
+	// HomeworkSchedule updateHomeworkSchedule(HomeworkSchedule schedule, Long id);
 	
-	// delete Homeowork Schedule
-	void deleteHomeworkSchedule(Long id);
+	// // delete Homeowork Schedule
+	// void deleteHomeworkSchedule(Long id);
 
 	// get Homework Schedule by subject & grade & localDateTime
 	HomeworkScheduleDTO getHomeworkScheduleBySubjectAndGrade(String subject, String grade, LocalDateTime now);
@@ -119,14 +122,14 @@ public interface ConnectedService {
 	// retrieve Extrawork by Id
 	Extrawork getExtrawork(Long id);
 	
-	// register Extrawork
-	Extrawork addExtrawork(Extrawork crs);
+	// // register Extrawork
+	// Extrawork addExtrawork(Extrawork crs);
 	
-	// update Extrawork info by Id
-	Extrawork updateExtrawork(Extrawork newWork, Long id);
+	// // update Extrawork info by Id
+	// Extrawork updateExtrawork(Extrawork newWork, Long id);
 	
-	// delete Extrawork
-	void deleteExtrawork(Long id);
+	// // delete Extrawork
+	// void deleteExtrawork(Long id);
 
 	// get Extrawork by subject, year & week
 	ExtraworkDTO getExtraworkInfo(int subject, int year, int week);
@@ -170,15 +173,18 @@ public interface ConnectedService {
 
 	// retrieve Practice by Id
 	Practice getPractice(Long id);
+
+	// get Practice by practice group, grade & week
+	List<PracticeDTO> getPracticeInfoByGroup(int practiceGroup, String grade, int week);
 	
-	// register Practice
-	Practice addPractice(Practice crs);
+	// // register Practice
+	// Practice addPractice(Practice crs);
 	
-	// update Practice info by Id
-	Practice updatePractice(Practice newWork, Long id);
+	// // update Practice info by Id
+	// Practice updatePractice(Practice newWork, Long id);
 	
-	// delete Practice
-	void deletePractice(Long id);
+	// // delete Practice
+	// void deletePractice(Long id);
 
 	// get Practice by type, grade & volume
 	PracticeDTO getPracticeInfo(int type, String grade, int volume);
@@ -195,11 +201,11 @@ public interface ConnectedService {
 	// retrieve PracticeAnswer by Practice
 	PracticeAnswerDTO findPracticeAnswerByPractice(Long id);
 
-	// register PracticeAnswer
-	PracticeAnswer addPracticeAnswer(PracticeAnswer crs);
+	// // register PracticeAnswer
+	// PracticeAnswer addPracticeAnswer(PracticeAnswer crs);
 	
-	// update PracticeAnswer info by Id
-	PracticeAnswer updatePracticeAnswer(PracticeAnswer newWork, Long id);
+	// // update PracticeAnswer info by Id
+	// PracticeAnswer updatePracticeAnswer(PracticeAnswer newWork, Long id);
 
 	// get Answer sheet by Practice
 	List<Integer> getAnswersByPractice(Long practiceId);
@@ -216,11 +222,11 @@ public interface ConnectedService {
 	// retrieve PracticeAnswer by Practice
 	StudentPracticeDTO findStudentPracticeByStudentNPractice(Long studentId, Long practiceId);
 
-	// register PracticeAnswer
+	// // register PracticeAnswer
 	StudentPractice addStudentPractice(StudentPractice crs);
 	
-	// update PracticeAnswer info by Id
-	StudentPractice updateStudentPractice(StudentPractice newWork, Long id);
+	// // update PracticeAnswer info by Id
+	// StudentPractice updateStudentPractice(StudentPractice newWork, Long id);
 
 	// check if student has done the practice
 	boolean isStudentPracticeExist(Long studentId, Long practiceId);
@@ -240,14 +246,14 @@ public interface ConnectedService {
 	// retrieve Test by Id
 	Test getTest(Long id);
 	
-	// register Test
-	Test addTest(Test crs);
+	// // register Test
+	// Test addTest(Test crs);
 	
-	// update Test info by Id
-	Test updateTest(Test newWork, Long id);
+	// // update Test info by Id
+	// Test updateTest(Test newWork, Long id);
 	
-	// delete Test
-	void deleteTest(Long id);
+	// // delete Test
+	// void deleteTest(Long id);
 
 	// get Test by type, grade & volume
 	TestDTO getTestInfo(int type, String grade, int volume);
@@ -264,11 +270,11 @@ public interface ConnectedService {
 	// retrieve TestAnswer by Test
 	TestAnswerDTO findTestAnswerByTest(Long id);
 
-	// register TestAnswer
-	TestAnswer addTestAnswer(TestAnswer crs);
+	// // register TestAnswer
+	// TestAnswer addTestAnswer(TestAnswer crs);
 	
-	// update TestAnswer info by Id
-	TestAnswer updateTestAnswer(TestAnswer newWork, Long id);
+	// // update TestAnswer info by Id
+	// TestAnswer updateTestAnswer(TestAnswer newWork, Long id);
 
 	// get Answer sheet by Test
 	List<TestAnswerItem> getAnswersByTest(Long testId);
@@ -288,14 +294,14 @@ public interface ConnectedService {
 	// register TestAnswer
 	StudentTest addStudentTest(StudentTest crs);
 	
-	// update TestAnswer info by Id
-	StudentTest updateStudentTest(StudentTest newWork, Long id);
+	// // update TestAnswer info by Id
+	// StudentTest updateStudentTest(StudentTest newWork, Long id);
 
 	// check if student has done the test
 	boolean isStudentTestExist(Long studentId, Long testId);
 
-	// delete existing record to take test again
-	void deleteStudentTest(Long studentId, Long testId); 
+	// // delete existing record to take test again
+	// void deleteStudentTest(Long studentId, Long testId); 
 	
 	// retrieve StudentTest brief info
 	StudentTestDTO getStudentTest(Long studentId, Long testTypeId, String grade, int volume);
@@ -310,19 +316,21 @@ public interface ConnectedService {
 	List<PracticeSchedule> allPracticeSchedules();
 
 	// list Practice Schedule by year & week
-	List<PracticeScheduleDTO> listPracticeSchedule(int year, int week);
+	// List<PracticeScheduleDTO> listPracticeSchedule(int year, int week);
 
 	// retrieve Practice Schedule by Id
 	PracticeSchedule getPracticeSchedule(Long id);
 	
-	// register Practice Schedule
-	PracticeSchedule addPracticeSchedule(PracticeSchedule ps);
+	// // register Practice Schedule
+	// PracticeSchedule addPracticeSchedule(PracticeSchedule ps);
 	
-	// update Practice Schedule info by Id
-	PracticeSchedule updatePracticeSchedule(PracticeSchedule newWork, Long id);
+	// // update Practice Schedule info by Id
+	// PracticeSchedule updatePracticeSchedule(PracticeSchedule newWork, Long id);
 	
-	// delete Practice Schedule
-	void deletePracticeSchedule(Long id);
+	// // delete Practice Schedule
+	// void deletePracticeSchedule(Long id);
 
+	// get Practice Schedule by practiceGroup & grade & localDateTime
+	List<PracticeScheduleDTO> checkPracticeSchedule(String practiceGroup, String grade, LocalDateTime now);
 
 }

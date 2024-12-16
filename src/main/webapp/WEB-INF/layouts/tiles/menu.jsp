@@ -210,6 +210,26 @@ function updatePassword() {
 							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplanRead">NAPLAN Reading</a>
 						</div>
 					</div>
+
+
+
+
+
+
+
+
+
+
+
+					<div class="dropdown-submenu">
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplan">[Naplan]</a>
+					</div>
+
+
+
+
+
+
 				</c:if>
 				<!-- Acer & Edu submenu -->
 				<c:if test="${grade == '[11]' ||grade == '[12]'}">

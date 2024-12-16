@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import hyung.jin.seo.jae.dto.ExtraworkDTO;
 import hyung.jin.seo.jae.dto.HomeworkDTO;
-import hyung.jin.seo.jae.dto.HomeworkProgressDTO;
 import hyung.jin.seo.jae.dto.HomeworkScheduleDTO;
 import hyung.jin.seo.jae.dto.PracticeAnswerDTO;
 import hyung.jin.seo.jae.dto.PracticeDTO;
@@ -243,37 +242,37 @@ public class ConnectedServiceImpl implements ConnectedService {
 		return test.get();
 	}
 
-	@SuppressWarnings("null")
-	@Override
-	@Transactional
-	public Homework addHomework(Homework work) {
-		Homework home = homeworkRepository.save(work);
-		return home;
-	}
+	// @SuppressWarnings("null")
+	// @Override
+	// @Transactional
+	// public Homework addHomework(Homework work) {
+	// 	Homework home = homeworkRepository.save(work);
+	// 	return home;
+	// }
 
-	@SuppressWarnings("null")
-	@Override
-	@Transactional
-	public Extrawork addExtrawork(Extrawork work) {
-		Extrawork extra = extraworkRepository.save(work);
-		return extra;
-	}
+	// @SuppressWarnings("null")
+	// @Override
+	// @Transactional
+	// public Extrawork addExtrawork(Extrawork work) {
+	// 	Extrawork extra = extraworkRepository.save(work);
+	// 	return extra;
+	// }
 
-	@SuppressWarnings("null")
-	@Override
-	@Transactional
-	public Practice addPractice(Practice practice) {
-		Practice prac = practiceRepository.save(practice);
-		return prac;
-	}
+	// @SuppressWarnings("null")
+	// @Override
+	// @Transactional
+	// public Practice addPractice(Practice practice) {
+	// 	Practice prac = practiceRepository.save(practice);
+	// 	return prac;
+	// }
 
-	@SuppressWarnings("null")
-	@Override
-	@Transactional
-	public PracticeAnswer addPracticeAnswer(PracticeAnswer ans) {
-		PracticeAnswer answer = practiceAnswerRepository.save(ans);
-		return answer;
-	}
+	// @SuppressWarnings("null")
+	// @Override
+	// @Transactional
+	// public PracticeAnswer addPracticeAnswer(PracticeAnswer ans) {
+	// 	PracticeAnswer answer = practiceAnswerRepository.save(ans);
+	// 	return answer;
+	// }
 
 	@SuppressAjWarnings("null")
 	@Override
@@ -283,21 +282,21 @@ public class ConnectedServiceImpl implements ConnectedService {
 		return sp;
 	}
 
-	@SuppressAjWarnings("null")
-	@Override
-	@Transactional
-	public Test addTest(Test crs) {
-		Test test = testRepository.save(crs);
-		return test;
-	}
+	// @SuppressAjWarnings("null")
+	// @Override
+	// @Transactional
+	// public Test addTest(Test crs) {
+	// 	Test test = testRepository.save(crs);
+	// 	return test;
+	// }
 
-	@SuppressAjWarnings("null")
-	@Override
-	@Transactional
-	public TestAnswer addTestAnswer(TestAnswer crs) {
-		TestAnswer answer = testAnswerRepository.save(crs);
-		return answer;
-	}
+	// @SuppressAjWarnings("null")
+	// @Override
+	// @Transactional
+	// public TestAnswer addTestAnswer(TestAnswer crs) {
+	// 	TestAnswer answer = testAnswerRepository.save(crs);
+	// 	return answer;
+	// }
 
 	@SuppressAjWarnings("null")
 	@Override
@@ -307,13 +306,13 @@ public class ConnectedServiceImpl implements ConnectedService {
 		return test;
 	}
 
-	@SuppressAjWarnings("null")
-	@Override
-	@Transactional
-	public HomeworkSchedule addHomeworkSchedule(HomeworkSchedule schedule) {
-		HomeworkSchedule home = homeworkScheduleRepository.save(schedule);
-		return home;
-	}
+	// @SuppressAjWarnings("null")
+	// @Override
+	// @Transactional
+	// public HomeworkSchedule addHomeworkSchedule(HomeworkSchedule schedule) {
+	// 	HomeworkSchedule home = homeworkScheduleRepository.save(schedule);
+	// 	return home;
+	// }
 
 	@SuppressAjWarnings("null")
 	@Override
@@ -331,204 +330,204 @@ public class ConnectedServiceImpl implements ConnectedService {
 		return extra;
 	}
 
-	@SuppressAjWarnings("null")
-	@Override
-	@Transactional
-	public PracticeSchedule addPracticeSchedule(PracticeSchedule ps) {
-		PracticeSchedule schedule = practiceScheduleRepository.save(ps);
-		return schedule;
-	}
+	// @SuppressAjWarnings("null")
+	// @Override
+	// @Transactional
+	// public PracticeSchedule addPracticeSchedule(PracticeSchedule ps) {
+	// 	PracticeSchedule schedule = practiceScheduleRepository.save(ps);
+	// 	return schedule;
+	// }
 
-	@Override
-	@Transactional
-	public Homework updateHomework(Homework newWork, Long id) {
-		// search by getId
-		Homework existing = homeworkRepository.findById(id).get();
-        // Update info
-        String newVideoPath = StringUtils.defaultString(newWork.getVideoPath());
-        // if(StringUtils.isNotBlank(newVideoPath)){
-        	existing.setVideoPath(newVideoPath);
-        // }
-		String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
-        // if(StringUtils.isNotBlank(newPdfPath)){
-        	existing.setPdfPath(newPdfPath);
-        // }
-        String newInfo = StringUtils.defaultString(newWork.getInfo());
-        // if(StringUtils.isNotBlank(newInfo)){
-        	existing.setInfo(newInfo);
-        // }
-		int newWeek = newWork.getWeek();
-		existing.setWeek(newWeek);
-		// int newYear = newWork.getYear();
-		// existing.setYear(newYear);
-		boolean newActive = newWork.isActive();
-		existing.setActive(newActive);
-        // update the existing record
-        Homework updated = homeworkRepository.save(existing);
-        return updated;
-	}
+	// @Override
+	// @Transactional
+	// public Homework updateHomework(Homework newWork, Long id) {
+	// 	// search by getId
+	// 	Homework existing = homeworkRepository.findById(id).get();
+    //     // Update info
+    //     String newVideoPath = StringUtils.defaultString(newWork.getVideoPath());
+    //     // if(StringUtils.isNotBlank(newVideoPath)){
+    //     	existing.setVideoPath(newVideoPath);
+    //     // }
+	// 	String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
+    //     // if(StringUtils.isNotBlank(newPdfPath)){
+    //     	existing.setPdfPath(newPdfPath);
+    //     // }
+    //     String newInfo = StringUtils.defaultString(newWork.getInfo());
+    //     // if(StringUtils.isNotBlank(newInfo)){
+    //     	existing.setInfo(newInfo);
+    //     // }
+	// 	int newWeek = newWork.getWeek();
+	// 	existing.setWeek(newWeek);
+	// 	// int newYear = newWork.getYear();
+	// 	// existing.setYear(newYear);
+	// 	boolean newActive = newWork.isActive();
+	// 	existing.setActive(newActive);
+    //     // update the existing record
+    //     Homework updated = homeworkRepository.save(existing);
+    //     return updated;
+	// }
 
-	@Override
-	@Transactional
-	public Extrawork updateExtrawork(Extrawork newWork, Long id) {
-		// search by getId
-		Extrawork existing = extraworkRepository.findById(id).get();
-        // Update info
-        String newVideoPath = StringUtils.defaultString(newWork.getVideoPath());
-        // if(StringUtils.isNotBlank(newVideoPath)){
-        	existing.setVideoPath(newVideoPath);
-        // }
-		String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
-        // if(StringUtils.isNotBlank(newPdfPath)){
-        	existing.setPdfPath(newPdfPath);
-        // }
-        String newName = StringUtils.defaultString(newWork.getName());
-        // if(StringUtils.isNotBlank(newName)){
-        	existing.setName(newName);
-        // }
-		boolean newActive = newWork.isActive();
-		existing.setActive(newActive);
-        // update the existing record
-        Extrawork updated = extraworkRepository.save(existing);
-        return updated;
-	}
+	// @Override
+	// @Transactional
+	// public Extrawork updateExtrawork(Extrawork newWork, Long id) {
+	// 	// search by getId
+	// 	Extrawork existing = extraworkRepository.findById(id).get();
+    //     // Update info
+    //     String newVideoPath = StringUtils.defaultString(newWork.getVideoPath());
+    //     // if(StringUtils.isNotBlank(newVideoPath)){
+    //     	existing.setVideoPath(newVideoPath);
+    //     // }
+	// 	String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
+    //     // if(StringUtils.isNotBlank(newPdfPath)){
+    //     	existing.setPdfPath(newPdfPath);
+    //     // }
+    //     String newName = StringUtils.defaultString(newWork.getName());
+    //     // if(StringUtils.isNotBlank(newName)){
+    //     	existing.setName(newName);
+    //     // }
+	// 	boolean newActive = newWork.isActive();
+	// 	existing.setActive(newActive);
+    //     // update the existing record
+    //     Extrawork updated = extraworkRepository.save(existing);
+    //     return updated;
+	// }
 
-	@Override
-	@Transactional
-	public Practice updatePractice(Practice newWork, Long id) {
-		// search by getId
-		Practice existing = practiceRepository.findById(id).get();
-        // Update info
-        String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
-        // if(StringUtils.isNotBlank(newPdfPath)){
-        	existing.setPdfPath(newPdfPath);
-        // }
-		String newInfo = StringUtils.defaultString(newWork.getInfo());
-        // if(StringUtils.isNotBlank(newInfo)){
-        	existing.setInfo(newInfo);
-        // }
-		int newVolume = newWork.getVolume();
-		existing.setVolume(newVolume);
-		// int newCount = newWork.getQuestionCount();
-		// existing.setQuestionCount(newCount);
-		boolean newActive = newWork.isActive();
-		existing.setActive(newActive);
-        // update the existing record
-        Practice updated = practiceRepository.save(existing);
-		return updated;
-	}
+	// @Override
+	// @Transactional
+	// public Practice updatePractice(Practice newWork, Long id) {
+	// 	// search by getId
+	// 	Practice existing = practiceRepository.findById(id).get();
+    //     // Update info
+    //     String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
+    //     // if(StringUtils.isNotBlank(newPdfPath)){
+    //     	existing.setPdfPath(newPdfPath);
+    //     // }
+	// 	String newInfo = StringUtils.defaultString(newWork.getInfo());
+    //     // if(StringUtils.isNotBlank(newInfo)){
+    //     	existing.setInfo(newInfo);
+    //     // }
+	// 	int newVolume = newWork.getVolume();
+	// 	existing.setVolume(newVolume);
+	// 	// int newCount = newWork.getQuestionCount();
+	// 	// existing.setQuestionCount(newCount);
+	// 	boolean newActive = newWork.isActive();
+	// 	existing.setActive(newActive);
+    //     // update the existing record
+    //     Practice updated = practiceRepository.save(existing);
+	// 	return updated;
+	// }
 
-	@Override
-	@Transactional
-	public PracticeAnswer updatePracticeAnswer(PracticeAnswer newWork, Long id) {
-		// search by getId
-		PracticeAnswer existing = practiceAnswerRepository.findById(id).get();
-		// update info
-		String newVideoPath = StringUtils.defaultString(newWork.getVideoPath());
-        // if(StringUtils.isNotBlank(newVideoPath)){
-        	existing.setVideoPath(newVideoPath);
-        // }
-		String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
-        // if(StringUtils.isNotBlank(newPdfPath)){
-        	existing.setPdfPath(newPdfPath);
-        // }
-		List newAns = newWork.getAnswers();
-		existing.setAnswers(newAns);
-		// update the existing record
-		PracticeAnswer updated = practiceAnswerRepository.save(existing);
-		return updated;	
-	}
+	// @Override
+	// @Transactional
+	// public PracticeAnswer updatePracticeAnswer(PracticeAnswer newWork, Long id) {
+	// 	// search by getId
+	// 	PracticeAnswer existing = practiceAnswerRepository.findById(id).get();
+	// 	// update info
+	// 	String newVideoPath = StringUtils.defaultString(newWork.getVideoPath());
+    //     // if(StringUtils.isNotBlank(newVideoPath)){
+    //     	existing.setVideoPath(newVideoPath);
+    //     // }
+	// 	String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
+    //     // if(StringUtils.isNotBlank(newPdfPath)){
+    //     	existing.setPdfPath(newPdfPath);
+    //     // }
+	// 	List newAns = newWork.getAnswers();
+	// 	existing.setAnswers(newAns);
+	// 	// update the existing record
+	// 	PracticeAnswer updated = practiceAnswerRepository.save(existing);
+	// 	return updated;	
+	// }
 
-	@Override
-	@Transactional
-	public StudentPractice updateStudentPractice(StudentPractice newWork, Long id) {
-		// search by getId
-		StudentPractice existing = studentPracticeRepository.findById(id).get();
-		// update info
-		double newScore = newWork.getScore();
-		existing.setScore(newScore);
-		List newAnswers = newWork.getAnswers();
-		existing.setAnswers(newAnswers);
-		// update the existing record
-		StudentPractice updated = studentPracticeRepository.save(existing);
-		return updated;
-	}
+	// @Override
+	// @Transactional
+	// public StudentPractice updateStudentPractice(StudentPractice newWork, Long id) {
+	// 	// search by getId
+	// 	StudentPractice existing = studentPracticeRepository.findById(id).get();
+	// 	// update info
+	// 	double newScore = newWork.getScore();
+	// 	existing.setScore(newScore);
+	// 	List newAnswers = newWork.getAnswers();
+	// 	existing.setAnswers(newAnswers);
+	// 	// update the existing record
+	// 	StudentPractice updated = studentPracticeRepository.save(existing);
+	// 	return updated;
+	// }
 
-	@Override
-	@Transactional
-	public Test updateTest(Test newWork, Long id) {
-		// search by getId
-		Test existing = testRepository.findById(id).get();
-        // Update info
-        String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
-        existing.setPdfPath(newPdfPath);
-        String newInfo = StringUtils.defaultString(newWork.getInfo());
-        existing.setInfo(newInfo);
-        int newVolume = newWork.getVolume();
-		existing.setVolume(newVolume);
-		boolean newActive = newWork.isActive();
-		existing.setActive(newActive);
-        Test updated = testRepository.save(existing);
-		return updated;
-	}
+	// @Override
+	// @Transactional
+	// public Test updateTest(Test newWork, Long id) {
+	// 	// search by getId
+	// 	Test existing = testRepository.findById(id).get();
+    //     // Update info
+    //     String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
+    //     existing.setPdfPath(newPdfPath);
+    //     String newInfo = StringUtils.defaultString(newWork.getInfo());
+    //     existing.setInfo(newInfo);
+    //     int newVolume = newWork.getVolume();
+	// 	existing.setVolume(newVolume);
+	// 	boolean newActive = newWork.isActive();
+	// 	existing.setActive(newActive);
+    //     Test updated = testRepository.save(existing);
+	// 	return updated;
+	// }
 
-	@Override
-	@Transactional
-	public TestAnswer updateTestAnswer(TestAnswer newWork, Long id) {
-		// search by getId
-		TestAnswer existing = testAnswerRepository.findById(id).get();
-		// update info
-		String newVideoPath = StringUtils.defaultString(newWork.getVideoPath());
-        existing.setVideoPath(newVideoPath);
-        String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
-        existing.setPdfPath(newPdfPath);
-        List newAns = newWork.getAnswers();
-		existing.setAnswers(newAns);
-		// update the existing record
-		TestAnswer updated = testAnswerRepository.save(existing);
-		return updated;	
-	}
+	// @Override
+	// @Transactional
+	// public TestAnswer updateTestAnswer(TestAnswer newWork, Long id) {
+	// 	// search by getId
+	// 	TestAnswer existing = testAnswerRepository.findById(id).get();
+	// 	// update info
+	// 	String newVideoPath = StringUtils.defaultString(newWork.getVideoPath());
+    //     existing.setVideoPath(newVideoPath);
+    //     String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
+    //     existing.setPdfPath(newPdfPath);
+    //     List newAns = newWork.getAnswers();
+	// 	existing.setAnswers(newAns);
+	// 	// update the existing record
+	// 	TestAnswer updated = testAnswerRepository.save(existing);
+	// 	return updated;	
+	// }
 
-	@Override
-	@Transactional
-	public StudentTest updateStudentTest(StudentTest newWork, Long id) {
-		// search by getId
-		StudentTest existing = studentTestRepository.findById(id).get();
-		// update info
-		double newScore = newWork.getScore();
-		existing.setScore(newScore);
-		List newAnswers = newWork.getAnswers();
-		existing.setAnswers(newAnswers);
-		// update the existing record
-		StudentTest updated = studentTestRepository.save(existing);
-		return updated;
-	}
+	// @Override
+	// @Transactional
+	// public StudentTest updateStudentTest(StudentTest newWork, Long id) {
+	// 	// search by getId
+	// 	StudentTest existing = studentTestRepository.findById(id).get();
+	// 	// update info
+	// 	double newScore = newWork.getScore();
+	// 	existing.setScore(newScore);
+	// 	List newAnswers = newWork.getAnswers();
+	// 	existing.setAnswers(newAnswers);
+	// 	// update the existing record
+	// 	StudentTest updated = studentTestRepository.save(existing);
+	// 	return updated;
+	// }
 
-	@Override
-	@Transactional
-	public HomeworkSchedule updateHomeworkSchedule(HomeworkSchedule schedule, Long id) {
-		HomeworkSchedule existing = homeworkScheduleRepository.findById(id).get();
-		// update info
-		LocalDateTime newFrom = schedule.getFromDatetime();
-		existing.setFromDatetime(newFrom);
-		LocalDateTime newTo = schedule.getToDatetime();
-		existing.setToDatetime(newTo);
-		boolean newActive = schedule.isActive();
-		existing.setActive(newActive);
-		String newInfo = schedule.getInfo();
-		existing.setInfo(newInfo);
-		int newSubjectDisplay = schedule.getSubjectDisplay();
-		existing.setSubjectDisplay(newSubjectDisplay);
-		int newAnswerDisplay = schedule.getAnswerDisplay();
-		existing.setAnswerDisplay(newAnswerDisplay);
-		String newGrade = schedule.getGrade();
-		existing.setGrade(newGrade);
-		String newSubject = schedule.getSubject();
-		existing.setSubject(newSubject);
-		// update the existing record
-		HomeworkSchedule updated = homeworkScheduleRepository.save(existing);
-		return updated;
-	}
+	// @Override
+	// @Transactional
+	// public HomeworkSchedule updateHomeworkSchedule(HomeworkSchedule schedule, Long id) {
+	// 	HomeworkSchedule existing = homeworkScheduleRepository.findById(id).get();
+	// 	// update info
+	// 	LocalDateTime newFrom = schedule.getFromDatetime();
+	// 	existing.setFromDatetime(newFrom);
+	// 	LocalDateTime newTo = schedule.getToDatetime();
+	// 	existing.setToDatetime(newTo);
+	// 	boolean newActive = schedule.isActive();
+	// 	existing.setActive(newActive);
+	// 	String newInfo = schedule.getInfo();
+	// 	existing.setInfo(newInfo);
+	// 	int newSubjectDisplay = schedule.getSubjectDisplay();
+	// 	existing.setSubjectDisplay(newSubjectDisplay);
+	// 	int newAnswerDisplay = schedule.getAnswerDisplay();
+	// 	existing.setAnswerDisplay(newAnswerDisplay);
+	// 	String newGrade = schedule.getGrade();
+	// 	existing.setGrade(newGrade);
+	// 	String newSubject = schedule.getSubject();
+	// 	existing.setSubject(newSubject);
+	// 	// update the existing record
+	// 	HomeworkSchedule updated = homeworkScheduleRepository.save(existing);
+	// 	return updated;
+	// }
 
 	@Override
 	@Transactional
@@ -556,56 +555,56 @@ public class ConnectedServiceImpl implements ConnectedService {
 		return updated;
 	}
 
-	@Override
-	@Transactional
-	public PracticeSchedule updatePracticeSchedule(PracticeSchedule newWork, Long id) {
-		// search by getId
-		PracticeSchedule existing = practiceScheduleRepository.findById(id).get();
-		// update info
-		int newYear = newWork.getYear();
-		existing.setYear(newYear);
-		int newWeek = newWork.getWeek();
-		existing.setWeek(newWeek);
-		boolean newActive = newWork.isActive();
-		existing.setActive(newActive);
-		String newInfo = newWork.getInfo();
-		existing.setInfo(newInfo);
-		Set<Practice> newPracs = newWork.getPractices();
-		existing.setPractices(newPracs);
-		// update the existing record
-		PracticeSchedule updated = practiceScheduleRepository.save(existing);
-		return updated;	
-	}
+	// @Override
+	// @Transactional
+	// public PracticeSchedule updatePracticeSchedule(PracticeSchedule newWork, Long id) {
+	// 	// search by getId
+	// 	PracticeSchedule existing = practiceScheduleRepository.findById(id).get();
+	// 	// update info
+	// 	int newYear = newWork.getYear();
+	// 	existing.setYear(newYear);
+	// 	int newWeek = newWork.getWeek();
+	// 	existing.setWeek(newWeek);
+	// 	boolean newActive = newWork.isActive();
+	// 	existing.setActive(newActive);
+	// 	String newInfo = newWork.getInfo();
+	// 	existing.setInfo(newInfo);
+	// 	Set<Practice> newPracs = newWork.getPractices();
+	// 	existing.setPractices(newPracs);
+	// 	// update the existing record
+	// 	PracticeSchedule updated = practiceScheduleRepository.save(existing);
+	// 	return updated;	
+	// }
 
-	@Override
-	@Transactional
-	public void deleteHomework(Long id) {
-		try{
-		    homeworkRepository.deleteById(id);
-        }catch(org.springframework.dao.EmptyResultDataAccessException e){
-            System.out.println("Nothing to delete");
-        }
-	}
+	// @Override
+	// @Transactional
+	// public void deleteHomework(Long id) {
+	// 	try{
+	// 	    homeworkRepository.deleteById(id);
+    //     }catch(org.springframework.dao.EmptyResultDataAccessException e){
+    //         System.out.println("Nothing to delete");
+    //     }
+	// }
 
-	@Override
-	@Transactional
-	public void deletePractice(Long id) {
-		try{
-		    practiceRepository.deleteById(id);
-        }catch(org.springframework.dao.EmptyResultDataAccessException e){
-            System.out.println("Nothing to delete");
-        }
-	}
+	// @Override
+	// @Transactional
+	// public void deletePractice(Long id) {
+	// 	try{
+	// 	    practiceRepository.deleteById(id);
+    //     }catch(org.springframework.dao.EmptyResultDataAccessException e){
+    //         System.out.println("Nothing to delete");
+    //     }
+	// }
 
-	@Override
-	@Transactional
-	public void deleteExtrawork(Long id) {
-		try{
-		    extraworkRepository.deleteById(id);
-        }catch(org.springframework.dao.EmptyResultDataAccessException e){
-            System.out.println("Nothing to delete");
-        }
-	}
+	// @Override
+	// @Transactional
+	// public void deleteExtrawork(Long id) {
+	// 	try{
+	// 	    extraworkRepository.deleteById(id);
+    //     }catch(org.springframework.dao.EmptyResultDataAccessException e){
+    //         System.out.println("Nothing to delete");
+    //     }
+	// }
 
 	@Override
 	@Transactional
@@ -617,53 +616,53 @@ public class ConnectedServiceImpl implements ConnectedService {
 		}
 	}
 
-	@Override
-	@Transactional
-	public void deleteTest(Long id) {
-		try{
-			testRepository.deleteById(id);
-		}catch(Exception e){
-			System.out.println("Nothing to delete");
-		}
-	}
+	// @Override
+	// @Transactional
+	// public void deleteTest(Long id) {
+	// 	try{
+	// 		testRepository.deleteById(id);
+	// 	}catch(Exception e){
+	// 		System.out.println("Nothing to delete");
+	// 	}
+	// }
 
-	@Override
-	@Transactional
-	public void deleteStudentTest(Long studentId, Long testId) {
-		try{
-			studentTestRepository.deleteById(testId);
-		}catch(Exception e){
-			System.out.println("Nothing to delete");
-		}
-	}
+	// @Override
+	// @Transactional
+	// public void deleteStudentTest(Long studentId, Long testId) {
+	// 	try{
+	// 		studentTestRepository.deleteById(testId);
+	// 	}catch(Exception e){
+	// 		System.out.println("Nothing to delete");
+	// 	}
+	// }
 
-	@Override
-	@Transactional
-	public void deleteHomeworkSchedule(Long id) {
-		try{
-			homeworkScheduleRepository.deleteById(id);
-		}catch(Exception e){
-			System.out.println("Nothing to delete");
-		}
-	}
+	// @Override
+	// @Transactional
+	// public void deleteHomeworkSchedule(Long id) {
+	// 	try{
+	// 		homeworkScheduleRepository.deleteById(id);
+	// 	}catch(Exception e){
+	// 		System.out.println("Nothing to delete");
+	// 	}
+	// }
 
-	@Override
-	@Transactional
-	public void deletePracticeSchedule(Long id) {
-		PracticeSchedule practiceSchedule = practiceScheduleRepository.findById(id).orElse(null);
-		if (practiceSchedule != null) {
-			// Retrieve the associated practices
-			Set<Practice> practices = practiceSchedule.getPractices();		
-			// Remove the associations between PracticeSchedule and Practice entities
-			practiceSchedule.setPractices(new LinkedHashSet<>());
-			practiceScheduleRepository.save(practiceSchedule); // Update to remove associations
-			// Now you can safely delete the PracticeSchedule record
-			practiceScheduleRepository.delete(practiceSchedule);
-		} else {
-			// Handle the case where the PracticeSchedule record doesn't exist
-		}
+	// @Override
+	// @Transactional
+	// public void deletePracticeSchedule(Long id) {
+	// 	PracticeSchedule practiceSchedule = practiceScheduleRepository.findById(id).orElse(null);
+	// 	if (practiceSchedule != null) {
+	// 		// Retrieve the associated practices
+	// 		Set<Practice> practices = practiceSchedule.getPractices();		
+	// 		// Remove the associations between PracticeSchedule and Practice entities
+	// 		practiceSchedule.setPractices(new LinkedHashSet<>());
+	// 		practiceScheduleRepository.save(practiceSchedule); // Update to remove associations
+	// 		// Now you can safely delete the PracticeSchedule record
+	// 		practiceScheduleRepository.delete(practiceSchedule);
+	// 	} else {
+	// 		// Handle the case where the PracticeSchedule record doesn't exist
+	// 	}
 
-	}
+	// }
 
 	@Override
 	public HomeworkDTO getHomeworkInfo(long subject, int week) {
@@ -771,17 +770,16 @@ public class ConnectedServiceImpl implements ConnectedService {
 		return dtos;
 	}
 
-
-	@Override
-	public List<PracticeScheduleDTO> listPracticeSchedule(int year, int week) {
-		List<PracticeScheduleDTO> dtos = new ArrayList<>();
-		try{
-			dtos = practiceScheduleRepository.filterPracticeScheduleByYearNWeek(year, week);
-		}catch(Exception e){
-			System.out.println("No Practice Schedule found");
-		}
-		return dtos;
-	}
+	// @Override
+	// public List<PracticeScheduleDTO> listPracticeSchedule(int year, int week) {
+	// 	List<PracticeScheduleDTO> dtos = new ArrayList<>();
+	// 	try{
+	// 		dtos = practiceScheduleRepository.filterPracticeScheduleByYearNWeek(year, week);
+	// 	}catch(Exception e){
+	// 		System.out.println("No Practice Schedule found");
+	// 	}
+	// 	return dtos;
+	// }
 
 	@Override
 	public List<SimpleBasketDTO> loadExtrawork(String grade) {
@@ -1020,6 +1018,28 @@ public class ConnectedServiceImpl implements ConnectedService {
 			System.out.println("No Extrawork Progress found");
 		}
 		return percentage;
+	}
+
+	@Override
+	public List<PracticeScheduleDTO> checkPracticeSchedule(String practiceGroup, String grade, LocalDateTime now) {
+		List<PracticeScheduleDTO> dtos = new ArrayList<>();
+		try{
+			dtos = practiceScheduleRepository.getPracticeScheduleByGroupAndGrade(practiceGroup, grade, now);
+		}catch(Exception e){
+			System.out.println("No Practice Schedule found");
+		}
+		return dtos;
+	}
+
+	@Override
+	public List<PracticeDTO> getPracticeInfoByGroup(int practiceGroup, String grade, int week) {
+		List<PracticeDTO> dtos = new ArrayList<>();
+		try{
+			dtos = practiceRepository.getPracticeByGroupNGradeNWeek(practiceGroup, grade, week);
+		}catch(Exception e){
+			System.out.println("No Practice found");
+		}
+		return dtos;
 	}
 
 }

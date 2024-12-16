@@ -306,4 +306,14 @@ public interface JaeConstants {
 	int STATUS_PROCESSING = 1;
 
 	int STATUS_COMPLETED = 2;
+
+	////////////////////////////////////
+	//
+	//	WEEK
+	//
+	////////////////////////////////////
+	int FIRST_WEEK = 1;
+
+	int SECOND_WEEK = 2;
+
 }

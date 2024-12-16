@@ -1,5 +1,10 @@
 <script>
 
+
+
+const PRACTICE_GROUP = 5; // 5 is NAPLAN
+
+
 const PRACTICE_TYPE = 6; // 6 is NAPLAN Language Conventions
 const MOVIE = 0;
 const PDF = 1;
@@ -7,14 +12,14 @@ const DONE= 'DONE';
 // console.log(studentId);
 $(function() {
     $.ajax({
-        // url : '${pageContext.request.contextPath}/connected/summaryPractice/' + studentId + '/' + PRACTICE_TYPE + '/' + numericGrade,
-        url : '${pageContext.request.contextPath}/connected/summaryPractice/' + PRACTICE_TYPE + '/' + numericGrade,
+        url : '${pageContext.request.contextPath}/connected/summaryPractice/' + PRACTICE_GROUP + '/' + numericGrade,
         method: "GET",
         success: function(data) {
             $.each(data, function(index, basket) {
-
-                var title = basket.name;
-                var id = basket.value;
+                console.log(basket);
+                var title = basket.title;
+                var id = basket.id;
+                var week = basket.week;
                 var icon = '<i class="bi bi-send h5 text-primary" title="unsubmitted yet"></i>';
                 var cardBody = '<div class="card-body mx-auto" style="cursor: pointer; max-width: 75%; min-width: 235px;" onclick="displayMaterial(' + id +  ', \'' +  title + '\');">'
                 if (title.endsWith('DONE')) {
@@ -27,7 +32,7 @@ $(function() {
                 var topicDiv = '<div class="col-md-4 ' + columnClass + '">'
                 + cardBody
                 + '<div class="alert alert-info topic-card" role="alert"><p id="onlineLesson" style="margin: 30px;">'
-                + '<strong><span id="topicTitle">Set ' + title + '</span></strong>&nbsp;&nbsp;' + icon
+                + '<strong><span id="topicTitle">Set ' + week + ' - '+ title + '</span></strong>&nbsp;&nbsp;' + icon
                 + '</p></div></div></div>';
                 $('#topicContainer').append(topicDiv);    
             });
@@ -44,7 +49,7 @@ $(function() {
     
 <div class="col-md-12 pt-3">
     <div class="card-body text-center">
-        <h2 style="color: #6c757d; font-weight: bold; text-transform: uppercase; text-shadow: 2px 2px 4px rgba(235, 177, 249, 1);">Naplan Language Conventions</h2>
+        <h2 style="color: #6c757d; font-weight: bold; text-transform: uppercase; text-shadow: 2px 2px 4px rgba(235, 177, 249, 1);">Naplan Practice</h2>
     </div>
 </div>
 

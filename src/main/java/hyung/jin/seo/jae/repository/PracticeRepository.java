@@ -28,4 +28,8 @@ public interface PracticeRepository extends JpaRepository<Practice, Long>{
 	@Query(value = "SELECT p.volume, p.id FROM Practice p WHERE p.practiceTypeId = ?1 AND p.gradeId = ?2 AND p.active = true", nativeQuery = true)   
 	List<Object[]> summaryPractice(int type, int grade);
 
+	// bring PracticeDTO by group & volume
+	@Query("SELECT new hyung.jin.seo.jae.dto.PracticeDTO(p.id, p.pdfPath, p.volume, p.active, p.info, p.grade.code, p.practiceType.id, p.registerDate, p.practiceType.name) FROM Practice p WHERE (p.practiceType.practiceGroup = ?1) AND (p.grade.code = ?2) AND (p.volume = ?3) AND (p.active = true)")
+	List<PracticeDTO> getPracticeByGroupNGradeNWeek(int type, String grade, int volume);
+
 }

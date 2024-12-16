@@ -140,6 +140,17 @@ public class JaeController {
 		return "naplanReadPracticePage";
 	}
 
+
+
+	// naplan Reading
+	@GetMapping("/connected/practice/naplan")
+	public String dispayNaplanPractice() {
+		return "naplanPracticePage";
+	}
+
+
+
+
 	// edu math
 	@GetMapping("/connected/practice/eduMath")
 	public String dispayEduMathPractice() {

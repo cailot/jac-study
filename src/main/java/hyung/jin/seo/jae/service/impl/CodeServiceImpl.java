@@ -320,6 +320,17 @@ public class CodeServiceImpl implements CodeService {
 	}
 
 	@Override
+	public int getPracticeGroup(Long id) {
+		int group = 0;
+		try{
+			group = practiceTypeRepository.getPracticeGroupById(id);
+		}catch(Exception e){
+			System.out.println("No Practice Type Group found");
+		}
+		return group;
+	}
+
+	@Override
 	public List<SimpleBasketDTO> loadPracticeType() {
 		List<Object[]> objects = new ArrayList<>();
 		try{
