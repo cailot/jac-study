@@ -20,7 +20,7 @@ $(function() {
                     cardBody = '<div class="card-body mx-auto text-center" style="cursor: pointer; max-width: 75%; min-width: 235px;" onclick="displayAnswer(' + id + ', \'' + title + '\', ' + week + ');">'
                 }
                 var columnClass = data.length === 2 ? 'mr-5' : ''; // padding in case of 2 cards
-                var topicDiv = '<div class="col-md-4 ' + columnClass + '">'
+                var topicDiv = '<div class="col-md-5 ' + columnClass + '">'
                 + cardBody
                 + '<div class="alert alert-info topic-card" role="alert"><p id="onlineLesson" style="margin-top: 30px; margin-bottom: 30px;">'
                 + '<strong><span id="topicTitle" class="badge badge-primary custom-badge">' + title + '</span></strong><br>Set <strong><i>' + week +'</i></strong>&nbsp;&nbsp;' + icon

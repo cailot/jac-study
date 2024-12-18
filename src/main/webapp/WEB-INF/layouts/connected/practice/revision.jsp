@@ -56,7 +56,7 @@ $(function() {
                 var topicDiv = '<div class="col-md-4 ' + columnClass + '">'
                 + cardBody
                 + '<div class="alert alert-info topic-card" role="alert"><p id="onlineLesson" style="margin-top: 30px; margin-bottom: 30px;">'
-                + '<strong><span id="topicTitle" class="badge badge-primary custom-badge">' + title + '</span></strong><br>Set <strong><i>' + week +'</i></strong>&nbsp;&nbsp;' + icon
+                + '<strong><span id="topicTitle" class="badge badge-primary custom-badge">' + title + '</span></strong><br>Set <strong><i>' + setName +'</i></strong>&nbsp;&nbsp;' + icon
                 + '</p></div></div></div>';
                 $('#topicContainer').append(topicDiv);    
             });
