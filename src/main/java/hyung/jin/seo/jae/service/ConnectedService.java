@@ -174,6 +174,9 @@ public interface ConnectedService {
 	// retrieve Practice by Id
 	Practice getPractice(Long id);
 
+	// retrieve Practice by Id
+	PracticeDTO getPracticeInfo(Long id);
+
 	// get Practice by practice group, grade & week
 	List<PracticeDTO> getPracticeInfoByGroup(int practiceGroup, String grade, int week);
 	
@@ -215,7 +218,10 @@ public interface ConnectedService {
 
 	// get how many question answer sheet has
 	int getPracticeAnswerCount(Long practiceId);
-	
+
+	// get how many answers per question
+	int getPracticeAnswerCountPerQuestion(Long practiceId);
+
 	// retrieve StudentPractice by Id
 	StudentPractice getStudentPractice(Long id);
 

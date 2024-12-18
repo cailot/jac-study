@@ -16,7 +16,6 @@
 <script src="${pageContext.request.contextPath}/js/bootstrap.bundle-4.5.3.min.js"></script>	
 <!-- Bootstrap Icons -->
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap-icons.min.css"/>
-
 </head>
 <body>
 	<div class="container-fluid d-flex h-100 flex-column">

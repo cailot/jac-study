@@ -1,5 +1,5 @@
 <script>
-const PRACTICE_GROUP = 5; // 5 is NAPLAN
+const PRACTICE_GROUP = 2; // 2 is REVISION
 const DONE= 'DONE';
 $(function() {
     $.ajax({
@@ -11,13 +11,46 @@ $(function() {
                 var title = basket.title;
                 var id = basket.id;
                 var week = basket.week;
+                var setName = week;
+                switch (week) {
+                    case 1:
+                        setName = 'Vol.1-1';
+                        break;
+                    case 2:
+                        setName = 'Vol.1-2';
+                        break;
+                    case 3:
+                        setName = 'Vol.2-1';
+                        break;
+                    case 4:
+                        setName = 'Vol.2-2';
+                        break;
+                    case 5:
+                        setName = 'Vol.3-1';
+                        break;
+                    case 6:
+                        setName = 'Vol.3-2';
+                        break;
+                    case 7:
+                        setName = 'Vol.4-1';
+                        break;
+                    case 8:
+                        setName = 'Vol.4-2';
+                        break;
+                    case 9:
+                        setName = 'Vol.5-1';
+                        break;
+                    case 10:
+                        setName = 'Vol.5-2';
+                        break;
+                }
                 var icon = '<i class="bi bi-send h5 text-primary" data-toggle="tooltip" title="Not Submitted Yet"></i>';
                 var cardBody = '<div class="card-body mx-auto text-center" style="cursor: pointer; max-width: 75%; min-width: 235px;" onclick="displayMaterial(' + id +  ');">'
                 if (title.endsWith('DONE')) {
                     // title ends with 'DONE'
                     title = title.slice(0, -4);
                     icon = '<i class="bi bi-send-fill h5 text-primary" data-toggle="tooltip" title="submitted"></i>';
-                    cardBody = '<div class="card-body mx-auto text-center" style="cursor: pointer; max-width: 75%; min-width: 235px;" onclick="displayAnswer(' + id + ', \'' + title + '\', ' + week + ');">'
+                    cardBody = '<div class="card-body mx-auto text-center" style="cursor: pointer; max-width: 75%; min-width: 235px;" onclick="displayAnswer(' + id + ', \'' + title + '\', \'' + setName + '\');">'
                 }
                 var columnClass = data.length === 2 ? 'mr-5' : ''; // padding in case of 2 cards
                 var topicDiv = '<div class="col-md-4 ' + columnClass + '">'
@@ -39,7 +72,7 @@ $(function() {
   
 <div class="col-md-12 pt-3">
     <div class="card-body text-center">
-        <h2 style="color: #6c757d; font-weight: bold; text-transform: uppercase; text-shadow: 2px 2px 4px rgba(235, 177, 249, 1);">Naplan Practice</h2>
+        <h2 style="color: #6c757d; font-weight: bold; text-transform: uppercase; text-shadow: 2px 2px 4px rgba(235, 177, 249, 1);">Revision Practice</h2>
     </div>
 </div>
 

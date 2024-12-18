@@ -86,105 +86,34 @@ public class JaeController {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Practice Menu
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// mega english
-	@GetMapping("/connected/practice/megaEng")
-	public String dispayMegaEngPractice() {
-		return "megaEngPracticePage";
+	// mega practice
+	@GetMapping("/connected/practice/mega")
+	public String dispayMegaPractice() {
+		return "megaPracticePage";
 	}
 
-	// mega math
-	@GetMapping("/connected/practice/megaMath")
-	public String dispayMegaMathPractice() {
-		return "megaMathPracticePage";
+	// revision practice
+	@GetMapping("/connected/practice/revision")
+	public String dispayRevisionPractice() {
+		return "revisionPracticePage";
 	}
 
-	// mega GA
-	@GetMapping("/connected/practice/megaGA")
-	public String dispayMegaGAPractice() {
-		return "megaGAPracticePage";
-	}
-
-	// revision english
-	@GetMapping("/connected/practice/revisionEng")
-	public String dispayRevisionEngPractice() {
-		return "revsionEngPracticePage";
-	}
-
-	// revision math
-	@GetMapping("/connected/practice/revisionMath")
-	public String dispayRevisionMathPractice() {
-		return "revsionMathPracticePage";
-	}
-
-	// revision science
-	@GetMapping("/connected/practice/revisionSci")
-	public String dispayRevisionSciencePractice() {
-		return "revsionSciPracticePage";
-	}
-
-	// naplan math
-	@GetMapping("/connected/practice/naplanMath")
-	public String dispayNaplanMathPractice() {
-		return "naplanMathPracticePage";
-	}
-
-	// naplan LC
-	@GetMapping("/connected/practice/naplanLC")
-	public String dispayNaplanLCPractice() {
-		return "naplanLCPracticePage";
-	}
-
-	// naplan Reading
-	@GetMapping("/connected/practice/naplanRead")
-	public String dispayNaplanReadPractice() {
-		return "naplanReadPracticePage";
-	}
-
-
-
-	// naplan Reading
+	// naplan practice
 	@GetMapping("/connected/practice/naplan")
 	public String dispayNaplanPractice() {
 		return "naplanPracticePage";
 	}
 
-
-
-
-	// edu math
-	@GetMapping("/connected/practice/eduMath")
-	public String dispayEduMathPractice() {
-		return "eduMathPracticePage";
+	// edu practice
+	@GetMapping("/connected/practice/edu")
+	public String dispayEduPractice() {
+		return "eduPracticePage";
 	}
 
-	// edu NR
-	@GetMapping("/connected/practice/eduNR")
-	public String dispayEduNRPractice() {
-		return "eduNRPracticePage";
-	}
-
-	// edu RC
-	@GetMapping("/connected/practice/eduRC")
-	public String dispayEduRCPractice() {
-		return "eduRCPracticePage";
-	}
-
-	// edu VR
-	@GetMapping("/connected/practice/eduVR")
-	public String dispayEduVRPractice() {
-		return "eduVRPracticePage";
-	}
-
-	// acer Humanities
-	@GetMapping("/connected/practice/acerH")
-	public String dispayAcerHumanitiesPractice() {
-		return "acerHPracticePage";
-	}
-
-	// acer Math
-	@GetMapping("/connected/practice/acerMath")
-	public String dispayAcerMathPractice() {
-		return "acerMathPracticePage";
+	// acer practice
+	@GetMapping("/connected/practice/acer")
+	public String dispayAcerPractice() {
+		return "acerPracticePage";
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////

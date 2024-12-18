@@ -1,4 +1,26 @@
+<script src="${pageContext.request.contextPath}/js/pdf-2.16.105.min.js"></script>
+
 <style>
+
+    /* Make the modal take 90% of the viewport height */
+    .modal-dialog {
+        display: flex;
+        align-items: center; /* Vertically center modal */
+        justify-content: center;
+        height: 90vh; /* 90% of the viewport height */
+        margin-top: 2%;
+    }
+
+    .modal-content {
+        height: 90vh; /* Ensure the content takes 90% height */
+        overflow: hidden; /* Prevent content overflow */
+    }
+
+    .modal-body {
+        height: calc(100% - 120px); /* Adjust for header and footer height */
+        overflow-y: auto; /* Enable scrolling for content */
+    }
+
     .topic-card {
         background-color: #d1ecf1; 
         padding: 20px; 
@@ -18,6 +40,7 @@
     .custom-control-label::before, .custom-control-label::after {
         display: none;
     }
+
     .circle {
         display: flex;
         justify-content: center;
@@ -50,123 +73,376 @@
         background-color: #FDEFB2;
     }
 
+    .custom-badge {
+        font-size: 1.0em; /* Increase font size */
+        padding: 0.5em; /* Adjust padding */
+        margin-bottom: 1.0em;
+    }
+
+    /* Toolbar Styling */
+    .pdf-toolbar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f1f1f1;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+    .pdf-toolbar button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        margin: 0 5px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    .pdf-toolbar button:disabled {
+        background-color: #aaa;
+        cursor: not-allowed;
+    }
+    .pdf-toolbar span {
+        font-weight: bold;
+        margin: 0 10px;
+    }
+    /* Centering PDF Document */
+    .pdfViewerContainer {
+        width: 100%;
+        height: auto;
+        overflow: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f8f9fa;
+    }
+    .pdfCanvas {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
 </style>
+
 <script>
+
+var pdfDoc = null;
+let pageNum = 1;
+let scale = 1.5;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//          Load Practice PDF
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function loadPracticePdf(pdfPath) {
+    // Set the workerSrc before loading the PDF
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '${pageContext.request.contextPath}/js/pdf.worker-2.16.105.min.js';
+    // pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+
+    pdfjsLib.getDocument(pdfPath).promise.then((pdf) => {
+        pdfDoc = pdf;
+        document.getElementById("practiceTotalPages").textContent = pdf.numPages;
+        renderPracticePage(pageNum);
+    });
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//          Load Answer PDF
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function loadAnswerPdf(pdfPath) {
+    // Set the workerSrc before loading the PDF
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '${pageContext.request.contextPath}/js/pdf.worker-2.16.105.min.js';
+    // pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+
+    pdfjsLib.getDocument(pdfPath).promise.then((pdf) => {
+        pdfDoc = pdf;
+        document.getElementById("answerTotalPages").textContent = pdf.numPages;
+        renderAnswerPage(pageNum);
+    });
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//          Render Practice PDF
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+let renderPracticeTask = null; // Track the rendering task
+function renderPracticePage(num) {
+    const canvas = document.getElementById("practicePdfCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Cancel the previous render task if it exists
+    if (renderPracticeTask) {
+        renderPracticeTask.cancel();
+    }
+
+    pdfDoc.getPage(num).then((page) => {
+        const viewport = page.getViewport({ scale });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: ctx,
+            viewport: viewport,
+        };
+
+        // Render the page and track the task
+        renderPracticeTask = page.render(renderContext);
+
+        // When rendering is complete, update toolbar
+        renderPracticeTask.promise.then(() => {
+            document.getElementById("practiceCurrentPage").textContent = num;
+            document.getElementById("practicePrevPage").disabled = num <= 1;
+            document.getElementById("practiceNextPage").disabled = num >= pdfDoc.numPages;
+        }).catch((err) => {
+            console.log("Render cancelled:", err);
+        });
+    });
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//          Render Answer PDF
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+let renderAnswerTask = null; // Track the rendering task
+function renderAnswerPage(num) {
+    const canvas = document.getElementById("answerPdfCanvas");
+    const ctx = canvas.getContext("2d");
+    const container = document.querySelector(".pdfViewerContainer");
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (renderAnswerTask) {
+        renderAnswerTask.cancel();
+    }
+
+    pdfDoc.getPage(num).then((page) => {
+        // Calculate container width safely
+        const containerWidth = container.clientWidth || 800;
+        const viewport = page.getViewport({ scale: 1 });
+        const scale = containerWidth / viewport.width || 1;
+
+        // console.log("Container width:", containerWidth);
+        // console.log("Calculated scale:", scale);
+
+        const scaledViewport = page.getViewport({ scale });
+        canvas.height = scaledViewport.height;
+        canvas.width = scaledViewport.width;
+
+        const renderContext = {
+            canvasContext: ctx,
+            viewport: scaledViewport,
+        };
+
+        renderAnswerTask = page.render(renderContext);
+        renderAnswerTask.promise.then(() => {
+            document.getElementById("answerCurrentPage").textContent = num;
+            document.getElementById("answerPrevPage").disabled = num <= 1;
+            document.getElementById("answerNextPage").disabled = num >= pdfDoc.numPages;
+            // console.log("Page rendered successfully");
+        }).catch((err) => {
+            console.error("Render failed:", err);
+        });
+    }).catch((err) => {
+        console.error("Failed to load page:", err);
+    });
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 			Display Material (Pdf/Answer Sheet)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-function displayMaterial(practiceId, setNumber) {
-    // set dialogSet value as setNumber
-    document.getElementById("dialogSet").innerHTML = setNumber;  
+function displayMaterial(practiceId) {
     $.ajax({
-        url : '${pageContext.request.contextPath}/connected/getPractice/' + practiceId,
+        url: '${pageContext.request.contextPath}/connected/getPractice/' + practiceId,
         method: "GET",
-        success: function(practice) {
-            // console.log(practice);
-            document.getElementById("pdfViewer").data = practice.pdfPath;
-            // manipulate answer sheet
-            var numQuestion = practice.questionCount; // replace with the actual property name
-            var container = $('.answerSheet');
-            container.empty(); // remove existing question elements
-            // header
-            var header = '<div class="h5 bg-primary" style="position: relative; display: flex; justify-content: center; align-items: center; color: #ffffff; text-align: center; margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 5px;">'
-            + 'Answers&nbsp;&nbsp;<span id="chosenAnswerNum" name="chosenAnswerNum" class="text-warning" title="Student Answer">0</span>&nbsp;/&nbsp;<span id="numQuestion" name="numQuestion" title="Total Question">'+ numQuestion +'</span></div>';
-            container.append(header);
-            for (var i = 1; i <= numQuestion; i++) {
-                var questionDiv = $('<div>').addClass('mt-5 mb-4');
-                var questionLabel = $('<div>').addClass('form-check form-check-inline h5 ml-1').text(' ' + i + '. ');
-                questionLabel.css('width', '30px');
-                questionDiv.append(questionLabel);
-                ['A', 'B', 'C', 'D', 'E'].forEach(function(option, index) {
-                    var optionDiv = $('<div>').addClass('form-check form-check-inline h5 ml-1');
-                    var input = $('<input>').addClass('form-check-input mr-3 ml-1').attr({
-                        type: 'radio',
-                        name: 'inlineRadioOptions' + i,
-                        id: 'inlineRadio' + i + (index + 1), // append the question number to the id
-                        value: index + 1
+        success: function (practice) {
+            const pdfPath = practice.pdfPath;
+            $('#practiceModal').off('shown.bs.modal'); // Remove previous modal event
+            $('#practiceModal').on('shown.bs.modal', function () {
+                // Render the PDF
+                pageNum = 1; // Reset page
+                loadPracticePdf(pdfPath);
+                // Ensure event listeners are not duplicated
+                document.getElementById("practicePrevPage").onclick = () => {
+                    if (pageNum > 1) {
+                        pageNum--;
+                        renderPracticePage(pageNum);
+                    }
+                };
+                document.getElementById("practiceNextPage").onclick = () => {
+                    if (pageNum < pdfDoc.numPages) {
+                        pageNum++;
+                        renderPracticePage(pageNum);
+                    }
+                };
+                // Manipulate answer sheet
+                var numAnswer = practice.answerCount;
+                var numQuestion = practice.questionCount; // replace with the actual property name
+                var container = $('.answerSheet');
+                container.empty(); // remove existing question elements
+                
+                // header
+                var header = '<div class="h5 bg-primary" style="position: relative; display: flex; justify-content: center; align-items: center; color: #ffffff; text-align: center; margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 5px;">'
+                    + 'Answers&nbsp;&nbsp;<span id="chosenAnswerNum" name="chosenAnswerNum" class="text-warning" title="Student Answer">0</span>&nbsp;/&nbsp;<span id="numQuestion" name="numQuestion" title="Total Question">'+ numQuestion +'</span></div>';
+                container.append(header);
+                
+                for (var i = 1; i <= numQuestion; i++) {
+                    var questionDiv = $('<div>').addClass('mt-5 mb-4');
+                    var questionLabel = $('<div>').addClass('form-check form-check-inline h5 ml-1').text(' ' + i + '. ');
+                    questionLabel.css('width', '30px');
+                    questionDiv.append(questionLabel);
+                
+                    // Determine the options to display based on numAnswer
+                    var options = ['A', 'B', 'C', 'D', 'E'].slice(0, numAnswer);
+                
+                    options.forEach(function(option, index) {
+                        var optionDiv = $('<div>').addClass('form-check form-check-inline h5 ml-1');
+                        var input = $('<input>').addClass('form-check-input mr-3 ml-1').attr({
+                            type: 'radio',
+                            name: 'inlineRadioOptions' + i,
+                            id: 'inlineRadio' + i + (index + 1), // append the question number to the id
+                            value: index + 1
+                        });
+                        var label = $('<label>').addClass('form-check-label').attr('for', 'inlineRadio' + i + (index + 1)).text(option);
+                        optionDiv.append(input, label);
+                        questionDiv.append(optionDiv);
                     });
-                    var label = $('<label>').addClass('form-check-label').attr('for', 'inlineRadio' + i + (index + 1)).text(option);
-                    optionDiv.append(input, label);
-                    questionDiv.append(optionDiv);
+                    container.append(questionDiv);
+                }
+
+                // Add event listener to radio buttons
+                $('.form-check-input').on('change', function() {
+                    var chosenAnswerNum = $('input[type=radio]:checked').length;
+                    $('#chosenAnswerNum').text(chosenAnswerNum);
                 });
-                container.append(questionDiv);
-            }
-
-            // Add event listener to radio buttons
-            $('.form-check-input').on('change', function() {
-                var chosenAnswerNum = $('input[type=radio]:checked').length;
-                $('#chosenAnswerNum').text(chosenAnswerNum);
+                var footer = '<div><button type="submit" class="btn btn-primary w-100" onclick="checkAnswer(' + practiceId + ', ' +  numQuestion +')">SUBMIT</button></div>';
+                container.append(footer);
             });
-            var footer = '<div><button type="submit" class="btn btn-primary w-100" onclick="checkAnswer(' + practiceId + ', ' +  numQuestion +')">SUBMIT</button></div>';
-            container.append(footer);
-
-            // pop-up pdf & answer sheet
+            // console.log(practice);
+            var setName = practice.volume;
+            if((PRACTICE_GROUP == 1) || (PRACTICE_GROUP == 2)){
+                switch (practice.volume) {
+                    case 1:
+                        setName = 'Vol.1-1';
+                        break;
+                    case 2:
+                        setName = 'Vol.1-2';
+                        break;
+                    case 3:
+                        setName = 'Vol.2-1';
+                        break;
+                    case 4:
+                        setName = 'Vol.2-2';
+                        break;
+                    case 5:
+                        setName = 'Vol.3-1';
+                        break;
+                    case 6:
+                        setName = 'Vol.3-2';
+                        break;
+                    case 7:
+                        setName = 'Vol.4-1';
+                        break;
+                    case 8:
+                        setName = 'Vol.4-2';
+                        break;
+                    case 9:
+                        setName = 'Vol.5-1';
+                        break;
+                    case 10:
+                        setName = 'Vol.5-2';
+                        break;
+                }
+            } 
+            // Open the modal
+            document.getElementById("practiceModalLabel").innerHTML = practice.title + ' Practice - Set <span class="text-warning">' + setName + "</span>";
             $('#practiceModal').modal('show');
         },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.log('Error : ' + errorThrown);
-        }
-    });  
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log("Error: " + errorThrown);
+        },
+    });
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 			Display Answer (Video/Pdf)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-function displayAnswer(practiceId, setNumber) {
-   // set dialogSet value as weekNumber
-    document.getElementById("dialogAnswerSet").innerHTML = setNumber;  
-//     var year = document.getElementById("academicYear").value;
+function displayAnswer(practiceId, title, week) {
     $.ajax({
         url : '${pageContext.request.contextPath}/connected/practiceAnswer/' + studentId + '/' + practiceId,
         method: "GET",
         success: function(value) {
-            //console.log(value);
-            // Add this part for displaying played percentage
-            var videoPlayer = document.getElementById("answerVideoPlayer");
-            videoPlayer.src = value.videoPath;
-            document.getElementById("answerPdfViewer").data = value.pdfPath;
-            // manipulate answer sheet
-            var answerNumQuestion = value.answers.length;
-            var result = calculateScore(value.students, value.answers);
-            var score = result.score;
-            var countCorrect = result.numCorrect;    
-            var container = $('.resultSheet');
-            container.empty(); // remove existing question elements
-            // header
-            var header = '<div id="stickyHeader" class="h5" style="position: relative; display: flex; justify-content: center; align-items: center; color: #333; text-align: center; margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 5px;">'
-            //+ '<button onclick="retestRequest(' + value.practiceId + ')" style="position: absolute; left: 20px; padding: 5px 10px; background-color: #007bff; color: #fff; border: none; border-radius: 5px; cursor: pointer;"><i class="bi bi-arrow-clockwise"></i>&nbsp;Retake</button>' 
-            + '<button onclick="confirmRetake(' + value.practiceId + ')" style="position: absolute; left: 20px; padding: 5px 10px; background-color: #007bff; color: #fff; border: none; border-radius: 5px; cursor: pointer;"><i class="bi bi-arrow-clockwise"></i>&nbsp;Retake</button>' 
-            + 'My Score : ' + score + '% (<span id="correctAnswerNum" name="correctAnswerNum" style="color:blue;" title="Student Answer">' + countCorrect + '</span>/<span id="answerNumQuestion" name="answerNumQuestion" style="color:red;" title="Correct Answer">'+ (answerNumQuestion-1) +'</span>)</div>';
-            container.append(header);
-            for (var i = 1; i < answerNumQuestion; i++) {
-                var questionDiv = $('<div>').addClass('m-4');
-                var questionLabel = $('<div>').addClass('form-check form-check-inline h6 ml-5').text(' ' + i + '. ');
-                // Set a consistent width for the question label container
-                questionLabel.css('width', '50px'); // Adjust the width as needed
-                questionDiv.append(questionLabel);
-                ['A', 'B', 'C', 'D', 'E'].forEach(function (option, index) {
-                    var optionDiv = $('<div>').addClass('custom-control custom-control-inline h6');
-                    var label = $('<label>').addClass('custom-control-label circle').attr('for', 'customCheck' + i + (index + 1)).text(option);
-                    if (value.students[i] == index + 1 && value.answers[i] == index + 1) {
-                        // If student's answer and correct answer are the same, add 'correct' class
-                        label.addClass('correct');
-                    } else if (value.students[i] == index + 1) {
-                        // If only student's answer is this option, add 'student' class
-                        label.addClass('student');
-                    } else if (value.answers[i] == index + 1) {
-                        // If only correct answer is this option, add 'answer' class
-                        label.addClass('answer');
+            // console.log(value);
+            $('#answerModal').off('shown.bs.modal'); // Remove previous modal event
+            $('#answerModal').on('shown.bs.modal', function () {
+                // Video player
+                var videoPlayer = document.getElementById("answerVideoPlayer");
+                videoPlayer.src = value.videoPath;
+                // Render the PDF
+                pageNum = 1; // Reset page
+                loadAnswerPdf(value.pdfPath);
+                // Ensure event listeners are not duplicated
+                document.getElementById("answerPrevPage").onclick = () => {
+                    if (pageNum > 1) {
+                        pageNum--;
+                        renderAnswerPage(pageNum);
                     }
-                    if (value.students[i] != value.answers[i]) {
-                        // If student's answer and correct answer are different, add 'different' class to the question div
-                        questionDiv.addClass('different');
+                };
+                document.getElementById("answerNextPage").onclick = () => {
+                    if (pageNum < pdfDoc.numPages) {
+                        pageNum++;
+                        renderAnswerPage(pageNum);
                     }
-                    optionDiv.append(label);
-                    questionDiv.append(optionDiv);
-                });
-                container.append(questionDiv);    
-            }
-            // pop-up video & pdf
+                };
+                // manipulate answer sheet
+                var answerNumQuestion = value.answers.length;
+                var answerCount = value.answerCount;
+                var result = calculateScore(value.students, value.answers);
+                var score = result.score;
+                var countCorrect = result.numCorrect;    
+                var container = $('.resultSheet');
+                container.empty(); // remove existing question elements
+
+                // header
+                var header = '<div id="stickyHeader" class="h5" style="position: relative; display: flex; justify-content: center; align-items: center; color: #333; text-align: center; margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 5px;">'
+                    + '<button onclick="confirmRetake(' + value.practiceId + ')" style="position: absolute; left: 20px; padding: 5px 10px; background-color: #007bff; color: #fff; border: none; border-radius: 5px; cursor: pointer;"><i class="bi bi-arrow-clockwise"></i>&nbsp;Retake</button>' 
+                    + 'My Score : ' + score + '% (<span id="correctAnswerNum" name="correctAnswerNum" style="color:blue;" title="Student Answer">' + countCorrect + '</span>/<span id="answerNumQuestion" name="answerNumQuestion" style="color:red;" title="Correct Answer">'+ (answerNumQuestion-1) +'</span>)</div>';
+                container.append(header);
+
+                for (var i = 1; i < answerNumQuestion; i++) {
+                    var questionDiv = $('<div>').addClass('m-4');
+                    var questionLabel = $('<div>').addClass('form-check form-check-inline h6 ml-5').text(' ' + i + '. ');
+                    // Set a consistent width for the question label container
+                    questionLabel.css('width', '50px'); // Adjust the width as needed
+                    questionDiv.append(questionLabel);
+
+                    // Determine the options to display based on answerCount
+                    var options = ['A', 'B', 'C', 'D', 'E'].slice(0, answerCount);
+
+                    options.forEach(function (option, index) {
+                        var optionDiv = $('<div>').addClass('custom-control custom-control-inline h6');
+                        var label = $('<label>').addClass('custom-control-label circle').attr('for', 'customCheck' + i + (index + 1)).text(option);
+                        if (value.students[i] == index + 1 && value.answers[i] == index + 1) {
+                            // If student's answer and correct answer are the same, add 'correct' class
+                            label.addClass('correct');
+                        } else if (value.students[i] == index + 1) {
+                            // If only student's answer is this option, add 'student' class
+                            label.addClass('student');
+                        } else if (value.answers[i] == index + 1) {
+                            // If only correct answer is this option, add 'answer' class
+                            label.addClass('answer');
+                        }
+                        if (value.students[i] != value.answers[i]) {
+                            // If student's answer and correct answer are different, add 'different' class to the question div
+                            questionDiv.addClass('different');
+                        }
+                        optionDiv.append(label);
+                        questionDiv.append(optionDiv);
+                    });
+                    container.append(questionDiv);    
+                }
+            });
+            // Open the modal
+            document.getElementById("practiceAnswerModalLabel").innerHTML = title + ' Practice - Set <span class="text-warning">' + week + "</span>";
             $('#answerModal').modal('show');
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -175,6 +451,9 @@ function displayAnswer(practiceId, setNumber) {
     });   
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 			Confirm take the practice again
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function confirmRetake(practiceId) {
     // Show the warning modal
     $('#practiceWarningModal').modal('show');
@@ -283,19 +562,24 @@ function calculateScore(studentAnswers, answerSheet) {
     <div class="modal-dialog modal-extra-large" role="document">
         <div class="modal-content" style="height: 90vh;">
             <div class="modal-header bg-primary text-white text-center">
-                <h5 class="modal-title w-100" id="practiceModalLabel">NAPLAN Mathematics Practice - Set <span id="dialogSet" name="dialogSet" class="text-warning"></span></h5>
+                <h5 class="modal-title w-100" id="practiceModalLabel"></h5>
                 <button type="button" class="close position-absolute" style="right: 1rem;" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>            
             <div class="modal-body bg-light">
                 <div class="row">
-                    <div class="col-md-9 bg-white p-3 border">
-                        <object id="pdfViewer" data="" type="application/pdf" style="width: 100%; height: 80vh;">
-                            <p>It appears you don't have a PDF plugin for this browser. No biggie... you can <a href="your_pdf_url">click here to download the PDF file.</a></p>
-                        </object>
+                    <div class="col-md-9 bg-white p-1 border">
+                        <div class="pdf-toolbar">
+                            <button id="practicePrevPage">Previous</button>
+                                <span>Page: <span id="practiceCurrentPage">1</span> / <span id="practiceTotalPages">1</span></span>
+                            <button id="practiceNextPage">Next</button>
+                        </div>
+                        <div class="pdfViewerContainer">
+                            <canvas id="practicePdfCanvas" class="pdfCanvas"></canvas>
+                        </div>
                     </div>
-                    <div class="col-md-3 bg-white p-3 border" style="height: 85vh;">
+                    <div class="col-md-3 bg-white p-1 border" style="height: 85vh;">
                         <div style="display: flex; flex-direction: column; height: 100%;">
                             <!-- ANSWER SHEET -->
                             <div class="answerSheet" style="overflow-y: auto; flex-grow: 1;"></div>
@@ -314,14 +598,14 @@ function calculateScore(studentAnswers, answerSheet) {
     <div class="modal-dialog modal-extra-large" role="document">
         <div class="modal-content" style="height: 90vh;">
             <div class="modal-header bg-primary text-white text-center">
-                <h5 class="modal-title w-100" id="practiceAnswerModalLabel">NAPLAN Mathematics Practice - Set <span id="dialogAnswerSet" name="dialogAnswerSet" class="text-warning"></span></h5>
+                <h5 class="modal-title w-100" id="practiceAnswerModalLabel"></h5>
                 <button type="button" class="close position-absolute" style="right: 1rem;" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body bg-light">
                 <div class="row">
-                    <div class="col-md-6 d-flex flex-column justify-content-center bg-white p-3 border">
+                    <div class="col-md-6 d-flex flex-column justify-content-center bg-white p-1 border">
                         <div style="display: flex; flex-direction: column; height: 80vh;">
                             <video id="answerVideoPlayer" controls controlsList="nodownload" style="flex: 6;">
                                 <source src="" type="video/mp4">
@@ -331,10 +615,15 @@ function calculateScore(studentAnswers, answerSheet) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 bg-white p-3 border">
-                        <object id="answerPdfViewer" data="" type="application/pdf" style="width: 100%; height: 80vh;">
-                            <p>It appears you don't have a PDF plugin for this browser. No biggie... you can <a href="your_pdf_url">click here to download the PDF file.</a></p>
-                        </object>
+                    <div class="col-md-6 bg-white p-1 border">
+                        <div class="pdf-toolbar">
+                            <button id="answerPrevPage">Previous</button>
+                                <span>Page: <span id="answerCurrentPage">1</span> / <span id="answerTotalPages">1</span></span>
+                            <button id="answerNextPage">Next</button>
+                        </div>
+                        <div class="pdfViewerContainer">
+                            <canvas id="answerPdfCanvas" class="pdfCanvas"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>

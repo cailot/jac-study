@@ -180,6 +180,12 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
+	public PracticeDTO getPracticeInfo(Long id) {
+		PracticeDTO dto = practiceRepository.getPracticeById(id);
+		return dto;
+	}
+
+	@Override
 	public PracticeAnswer getPracticeAnswer(Long id) {
 		Optional<PracticeAnswer> answer = practiceAnswerRepository.findById(id);
 		if(!answer.isPresent()) return null;
@@ -877,6 +883,17 @@ public class ConnectedServiceImpl implements ConnectedService {
 			if((answers != null) && (answers.size()>0)) return answers.get(0);
 		}
 		return 0;
+	}
+
+	@Override
+	public int getPracticeAnswerCountPerQuestion(Long practiceId) {
+		int count = 0;
+		try{
+			count = practiceAnswerRepository.getAnswerCountByPractice(practiceId);
+		}catch(Exception e){
+			System.out.println("No PracticeAnswer found");
+		}
+		return count;
 	}
 
 	@Override

@@ -18,6 +18,12 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap-icons.min.css"/>
 <!-- Google Icons -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<script>
+	$(function() {
+		// Enable Bootstrap tooltips
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+</script>
 </head>
 <body>
 	<div class="container-fluid d-flex h-100 flex-column">
@@ -29,9 +35,9 @@
 		</div>
 		<footer class="mt-auto">
 			<div class="row" style="padding: 15px 20px;">
-				<div class="col-12 text-center">
+				<div class="col-12 text-center" >
 					2015 - <%=new java.util.Date().getYear() + 1900%> &copy; All rights reserved.
-					<div class="copyright-font-color">James An College</div>
+					<div class="copyright-font-color">James An College</div> 
 				</div>
 			</div>
 		</footer>

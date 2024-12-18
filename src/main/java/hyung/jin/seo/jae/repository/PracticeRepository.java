@@ -32,4 +32,8 @@ public interface PracticeRepository extends JpaRepository<Practice, Long>{
 	@Query("SELECT new hyung.jin.seo.jae.dto.PracticeDTO(p.id, p.pdfPath, p.volume, p.active, p.info, p.grade.code, p.practiceType.id, p.registerDate, p.practiceType.name) FROM Practice p WHERE (p.practiceType.practiceGroup = ?1) AND (p.grade.code = ?2) AND (p.volume = ?3) AND (p.active = true)")
 	List<PracticeDTO> getPracticeByGroupNGradeNWeek(int type, String grade, int volume);
 
+	// bring PracticeDTO by id
+	@Query("SELECT new hyung.jin.seo.jae.dto.PracticeDTO(p.id, p.pdfPath, p.volume, p.active, p.info, p.grade.code, p.practiceType.id, p.registerDate, p.practiceType.name) FROM Practice p WHERE (p.id = ?1) AND (p.active = true)")
+	PracticeDTO getPracticeById(Long id);
+
 }

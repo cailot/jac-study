@@ -24,6 +24,8 @@ public class PracticeDTO implements Serializable {
 
 	private int volume;
 
+	private int answerCount;
+
 	private int questionCount;
 
 	private boolean active;

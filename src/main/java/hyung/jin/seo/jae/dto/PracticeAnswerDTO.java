@@ -26,6 +26,8 @@ public class PracticeAnswerDTO implements Serializable {
 
 	private long practiceId;
 
+	private int answerCount;
+
 	private List<Integer> answers;
 
 	private List<Integer> students;

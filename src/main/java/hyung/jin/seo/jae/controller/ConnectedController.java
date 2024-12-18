@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,15 +39,12 @@ import hyung.jin.seo.jae.dto.TestAnswerDTO;
 import hyung.jin.seo.jae.dto.TestDTO;
 import hyung.jin.seo.jae.model.Extrawork;
 import hyung.jin.seo.jae.model.ExtraworkProgress;
-import hyung.jin.seo.jae.model.Grade;
 import hyung.jin.seo.jae.model.Homework;
 import hyung.jin.seo.jae.model.HomeworkProgress;
 import hyung.jin.seo.jae.model.Practice;
-import hyung.jin.seo.jae.model.PracticeType;
 import hyung.jin.seo.jae.model.Student;
 import hyung.jin.seo.jae.model.StudentPractice;
 import hyung.jin.seo.jae.model.StudentTest;
-import hyung.jin.seo.jae.model.Subject;
 import hyung.jin.seo.jae.model.Test;
 import hyung.jin.seo.jae.model.TestAnswerItem;
 import hyung.jin.seo.jae.service.CodeService;
@@ -284,11 +280,15 @@ public class ConnectedController {
 	@GetMapping("/getPractice/{id}")
 	@ResponseBody
 	public PracticeDTO getPractice(@PathVariable Long id) {
-		Practice work = connectedService.getPractice(id);
-		PracticeDTO dto = new PracticeDTO(work);
-		// get question count
-		int count = connectedService.getPracticeAnswerCount(id);
-		dto.setQuestionCount(count);
+		// 1. get PracticeDTO
+		PracticeDTO dto = connectedService.getPracticeInfo(id);
+		// 2. get answer count
+		int answerCount = connectedService.getPracticeAnswerCountPerQuestion(id);
+		dto.setAnswerCount(answerCount);
+		// 3. get question count
+		int questionCount = connectedService.getPracticeAnswerCount(id);
+		dto.setQuestionCount(questionCount);
+		// 4. return dto
 		return dto;
 	}
 
@@ -320,6 +320,9 @@ public class ConnectedController {
 		String filteredStudentId = StringUtils.defaultString(studentId, "0");
 		String filteredPracticeId = StringUtils.defaultString(practiceId, "0");
 		PracticeAnswerDTO dto = connectedService.findPracticeAnswerByPractice(Long.parseLong(filteredPracticeId));
+		// get answer count
+		int answerCount = connectedService.getPracticeAnswerCountPerQuestion(Long.parseLong(filteredPracticeId));
+		dto.setAnswerCount(answerCount);
 		// get student's answer....
 		List<Integer> answers = connectedService.getStudentPracticeAnswer(Long.parseLong(filteredStudentId), Long.parseLong(filteredPracticeId));
 		dto.setStudents(answers);
@@ -408,88 +411,57 @@ public class ConnectedController {
 		return dtos;
 	}
 
-	@GetMapping("/summaryPractice/{practiceGroup}/{grade}")
+	@GetMapping("/summaryPractice/{practiceGroup}/{studentId}/{grade}")
 	@ResponseBody
-	public List<PracticeSummaryDTO> summaryPractices(@PathVariable int practiceGroup, @PathVariable String grade) {
+	public List<PracticeSummaryDTO> summaryPractices(@PathVariable int practiceGroup, @PathVariable long studentId, @PathVariable String grade) {
 		
-		// 1. get practice group by practiceType
-		// int group = codeService.getPracticeGroup(Long.parseLong(practiceType));
-
-		// 2. get current LocalDateTime & current week
+		// 1. get current LocalDateTime & current week
 		LocalDateTime now = LocalDateTime.now();
 		
-		// 3. get PracticeScheduleDTO by current time, practiceType & grade
+		// 2. get PracticeScheduleDTO by current time, practiceType & grade
 		List<PracticeScheduleDTO> schedules = connectedService.checkPracticeSchedule(practiceGroup+"", grade, now);
 
-
-		// 4. check if schedule is empty
+		// 3. check if schedule is empty
 		if(schedules.isEmpty()){
-			// 4-1. if empty, return empty list
+			// 3-1. if empty, return empty list
 			return new ArrayList<>();
 		}else{
-			// // 4-2. if not empty, get practice list
+			// 3-2. if not empty, get practice list
 			List<PracticeSummaryDTO> dtos = new ArrayList<>();
-			for(PracticeScheduleDTO schedule : schedules){
+			outter:for(PracticeScheduleDTO schedule : schedules){
 				
 				String[] groups = schedule.getPracticeGroup();
-				// get index by practiceGroup
-				int index = 0;
-				for(int i=0; i<groups.length; i++){
-					if(groups[i].equals(practiceGroup+"")){
-						index = i;
-						break;
+				String[] weeks = schedule.getWeek();
+				
+				inner:for(int i=0; i<groups.length; i++){
+					System.out.println(groups[i] + " : " + weeks[i]);
+					int group = Integer.parseInt(groups[i]);
+					if(group != practiceGroup) continue inner;
+					int week = Integer.parseInt(weeks[i]);
+
+					List<PracticeDTO> practices = connectedService.getPracticeInfoByGroup(practiceGroup, grade, week);
+				
+					for(PracticeDTO practice : practices){
+						// add to list
+						PracticeSummaryDTO dto = new PracticeSummaryDTO();
+						long practiceId = Long.parseLong(practice.getId());
+						String title = practice.getTitle();
+						boolean done = connectedService.isStudentPracticeExist(studentId, practiceId);
+						if(done){
+							title = title + JaeConstants.PRACTICE_COMPLETE;
+						}
+						dto.setId(practiceId);
+						dto.setTitle(title);
+						dto.setWeek(week);
+						dtos.add(dto);
 					}
 				}
-				// what about groups = [1,1,1] ?
-				// get week by index
-				String[] weeks = schedule.getWeek();
-				int week = Integer.parseInt(weeks[index]);
-				// get PracticeDTO by group, grade & week
-				List<PracticeDTO> practices = connectedService.getPracticeInfoByGroup(practiceGroup, grade, week);
-				
-				for(PracticeDTO practice : practices){
-					// add to list
-					PracticeSummaryDTO dto = new PracticeSummaryDTO();
-					dto.setId(Long.parseLong(practice.getId()));
-					dto.setTitle(practice.getTitle());
-					dto.setWeek(week);
-					dtos.add(dto);
-				}
-				// // add to list
-				// PracticeSummaryDTO dto = new PracticeSummaryDTO();
-				// dto.setId(Long.parseLong(practice.getId()));
-				// dto.setTitle(practice.getTitle());
-				// dto.setWeek(week);
-				// dtos.add(dto);
 
 			}
-			// // 7. return dtos
 			return dtos;
 		}
 
-
 	}
-
-	// @GetMapping("/summaryPractice/{studentId}/{practiceType}/{grade}")
-	// @ResponseBody
-	// public List<SimpleBasketDTO> summaryPractices(@PathVariable String studentId, @PathVariable String practiceType, @PathVariable String grade) {
-	// 	List<SimpleBasketDTO> dtos = new ArrayList();
-	// 	String filteredStudentId = StringUtils.defaultString(studentId, "0");
-	// 	String filteredPracticeType = StringUtils.defaultString(practiceType, "0");
-	// 	String filteredGrade = StringUtils.defaultString(grade, "0");
-	// 	dtos = connectedService.loadPractice(Integer.parseInt(filteredPracticeType), Integer.parseInt(filteredGrade));
-	// 	// check whether the volume is finished or not
-	// 	for(SimpleBasketDTO dto : dtos){
-	// 		// get practiceId
-	// 		String practiceId = StringUtils.defaultString(dto.getValue(), "0");
-	// 		boolean done = connectedService.isStudentPracticeExist(Long.parseLong(filteredStudentId), Long.parseLong(practiceId));
-	// 		if(done){
-	// 			String name = dto.getName();
-	// 			dto.setName(name + JaeConstants.PRACTICE_COMPLETE);
-	// 		}
-	// 	}
-	// 	return dtos;
-	// }
 
 	@GetMapping("/summaryTest/{studentId}/{testType}/{grade}")
 	@ResponseBody

@@ -1,5 +1,5 @@
 <script>
-const PRACTICE_GROUP = 5; // 5 is NAPLAN
+const PRACTICE_GROUP = 4; // 4 is ACER
 const DONE= 'DONE';
 $(function() {
     $.ajax({
@@ -39,7 +39,7 @@ $(function() {
   
 <div class="col-md-12 pt-3">
     <div class="card-body text-center">
-        <h2 style="color: #6c757d; font-weight: bold; text-transform: uppercase; text-shadow: 2px 2px 4px rgba(235, 177, 249, 1);">Naplan Practice</h2>
+        <h2 style="color: #6c757d; font-weight: bold; text-transform: uppercase; text-shadow: 2px 2px 4px rgba(235, 177, 249, 1);">Acer Practice</h2>
     </div>
 </div>
 

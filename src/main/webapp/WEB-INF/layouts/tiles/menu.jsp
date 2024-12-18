@@ -176,82 +176,28 @@ function updatePassword() {
 				<!-- Mega Practice submenu -->
 				<c:if test="${grade == '[1]' ||grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]'}">
 					<div class="dropdown-submenu">
-						<a class="dropdown-item" href="#" id="megaPracticeDropdown" role="button" aria-haspopup="true" aria-expanded="false">
-							Mega Practice
-						</a>
-						<div class="dropdown-menu" aria-labelledby="megaPracticeDropdown">
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/megaEng">MEGA English</a>
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/megaMath">MEGA Mathematics</a>
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/megaGA">MEGA General Ability</a>
-						</div>
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/mega">Mega Practice</a>
 					</div>
 				</c:if>
 				<!-- Revision submenu -->
 				<c:if test="${grade == '[6]' ||grade == '[7]' || grade == '[8]' || grade == '[9]'}">
 					<div class="dropdown-submenu">
-						<a class="dropdown-item" href="#" id="revisionPracticeDropdown" role="button" aria-haspopup="true" aria-expanded="false">
-							Revision Practice
-						</a>
-						<div class="dropdown-menu" aria-labelledby="revisionPracticeDropdown">
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/revisionEng">Revision English</a>
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/revisionMath">Revision Mathematics</a>
-						</div>
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/revision">Revision Practice</a>
 					</div>
 				</c:if>
 				<!-- NAPLAN submenu -->
 				<c:if test="${grade == '[2]' || grade == '[4]' || grade == '[6]' || grade == '[8]'}">
 					<div class="dropdown-submenu">
-						<a class="dropdown-item" href="#" id="naplanPracticeDropdown" role="button" aria-haspopup="true" aria-expanded="false">
-							NAPLAN
-						</a>
-						<div class="dropdown-menu" aria-labelledby="naplanPracticeDropdown">
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplanLC">NAPLAN Language Conventions</a>
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplanMath">NAPLAN Mathematics</a>
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplanRead">NAPLAN Reading</a>
-						</div>
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplan">Naplan</a>
 					</div>
-
-
-
-
-
-
-
-
-
-
-
-					<div class="dropdown-submenu">
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplan">[Naplan]</a>
-					</div>
-
-
-
-
-
-
 				</c:if>
 				<!-- Acer & Edu submenu -->
 				<c:if test="${grade == '[11]' ||grade == '[12]'}">
 					<div class="dropdown-submenu">
-						<a class="dropdown-item" href="#" id="acerPracticeDropdown" role="button" aria-haspopup="true" aria-expanded="false">
-							Acer Practice
-						</a>
-						<div class="dropdown-menu" aria-labelledby="acerPracticeDropdown">
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/acerEng">Acer English</a>
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/acerMath">Acer Mathematics</a>
-						</div>
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/acer">ACER Practice</a>
 					</div>
 					<div class="dropdown-submenu">
-						<a class="dropdown-item" href="#" id="eduPracticeDropdown" role="button" aria-haspopup="true" aria-expanded="false">
-							Edu Practice
-						</a>
-						<div class="dropdown-menu" aria-labelledby="eduPracticeDropdown">
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/eduEng">Edu RC</a>
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/eduMath">Edu Mathematics</a>
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/eduMath">Edu NR</a>
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/eduMath">Edu VR</a>
-						</div>
+						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/edu">EDU Practice</a>
 					</div>
 				</c:if>				
 			</div>
