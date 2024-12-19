@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,11 +35,11 @@ public class HomeworkProgress{ // bridge table between Student & Practice
     @GeneratedValue(strategy = GenerationType.IDENTITY) // auto increment
     private Long id;
     
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "studentId", foreignKey = @ForeignKey(name = "FK_HomeworkProgress_Student"))
 	private Student student;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "homeworkId", foreignKey = @ForeignKey(name = "FK_HomeworkProgress_Homework"))
 	private Homework homework;
 	

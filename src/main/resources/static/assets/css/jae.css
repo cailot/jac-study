@@ -245,6 +245,49 @@ td a i.fa-trash {
 	font-weight: bold;
 }
 
+/* Toolbar Styling */
+.pdf-toolbar {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #f1f1f1;
+	padding: 10px;
+	border-bottom: 1px solid #ddd;
+}
+.pdf-toolbar button {
+	background-color: #007bff;
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	margin: 0 5px;
+	cursor: pointer;
+	border-radius: 4px;
+}
+.pdf-toolbar button:disabled {
+	background-color: #aaa;
+	cursor: not-allowed;
+}
+.pdf-toolbar span {
+	font-weight: bold;
+	margin: 0 10px;
+}
+/* Centering PDF Document */
+.pdfViewerContainer {
+	width: 100%;
+	height: auto;
+	overflow: auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #f8f9fa;
+}
+.pdfCanvas {
+	display: block;
+	max-width: 100%;
+	height: 80vh;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 @media screen and (max-width: 768px){
 	.navbar{
 		flex-direction: column;

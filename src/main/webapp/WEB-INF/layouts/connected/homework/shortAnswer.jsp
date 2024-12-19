@@ -1,13 +1,12 @@
+<script src="${pageContext.request.contextPath}/js/pdf-2.16.105.min.js"></script>
+
 <style>
-    .english-homework {
-        background-color: #d1ecf1; 
-        padding: 20px; 
-        border-radius: 10px; 
-        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); 
+    #homeworkModal .modal-dialog {
+        max-width: 80%;
+        height: 90vh;
     }
-    .modal-extra-large {
-        max-width: 90%;
-        max-height: 90%;
+    #homeworkModal .modal-body {
+        overflow-y: auto;
     }
 </style>
 <script>
@@ -46,8 +45,62 @@ $(function() {
     });
 });
 
+var pdfDoc = null;
+let pageNum = 1;
+let scale = 1.5;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//          Load Practice PDF
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function loadPdf(pdfPath) {
+    // Set the workerSrc before loading the PDF
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '${pageContext.request.contextPath}/js/pdf.worker-2.16.105.min.js';
+ 
+    pdfjsLib.getDocument(pdfPath).promise.then((pdf) => {
+        pdfDoc = pdf;
+        document.getElementById("totalPages").textContent = pdf.numPages;
+        renderPage(pageNum);
+    });
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//          Render Practice PDF
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+let renderTask = null; // Track the rendering task
+function renderPage(num) {
+    const canvas = document.getElementById("pdfCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Cancel the previous render task if it exists
+    if (renderTask) {
+        renderTask.cancel();
+    }
+
+    pdfDoc.getPage(num).then((page) => {
+        const viewport = page.getViewport({ scale });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: ctx,
+            viewport: viewport,
+        };
+
+        // Render the page and track the task
+        renderTask = page.render(renderContext);
+
+        // When rendering is complete, update toolbar
+        renderTask.promise.then(() => {
+            document.getElementById("currentPage").textContent = num;
+            document.getElementById("prevPage").disabled = num <= 1;
+            document.getElementById("nextPage").disabled = num >= pdfDoc.numPages;
+        }).catch((err) => {
+            console.log("Render cancelled:", err);
+        });
+    });
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-// 			Display Material (Video/Pdf)
+// 			Display Material (Pdf)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function displayMaterial(homeworkId) {
     var year = document.getElementById("academicYear").value;
@@ -55,11 +108,29 @@ function displayMaterial(homeworkId) {
         url : '${pageContext.request.contextPath}/connected/homework/' + homeworkId,
         method: "GET",
         success: function(value) {
-
-            document.getElementById("dialogSet").innerHTML = value.week;  
-            document.getElementById("pdfViewer").data = value.pdfPath;
-              
-            // pop-up video & pdf
+            // console.log(value);
+            // Render the PDF
+            const pdfPath = value.pdfPath;
+            $('#homeworkModal').off('shown.bs.modal'); // Remove previous modal event
+            $('#homeworkModal').on('shown.bs.modal', function () {            
+                pageNum = 1; // Reset page
+                loadPdf(pdfPath);
+                // Ensure event listeners are not duplicated
+                document.getElementById("prevPage").onclick = () => {
+                    if (pageNum > 1) {
+                        pageNum--;
+                        renderPage(pageNum);
+                    }
+                };
+                document.getElementById("nextPage").onclick = () => {
+                    if (pageNum < pdfDoc.numPages) {
+                        pageNum++;
+                        renderPage(pageNum);
+                    }
+                };
+            });
+            // Open the modal
+            document.getElementById("mediaModalLabel").innerHTML = 'Short Answer - Set <span class="text-warning">' + value.week + "</span>";
             $('#homeworkModal').modal('show');
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -80,7 +151,7 @@ function createCard(weekData) {
         <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(` + weekData.id + `)">
             <div class="alert alert-info english-homework" role="alert" style="background-color: false;">
                 <p id="` + weekData.week + `OnlineLesson" style="margin: 30px;">
-                    <strong>Set</strong> <span>` + weekData.week +`</span>&nbsp;&nbsp;<i class="bi bi-journal-text h5 text-primary"></i>
+                    <strong>Set</strong> <span>` + weekData.week +`</span>&nbsp;&nbsp;<i class="bi bi-journal-text h3 text-primary"></i>
                 </p>
             </div>
         </div>
@@ -96,7 +167,7 @@ function createNextCard(week) {
             <div class="alert alert-secondary english-homework" role="alert" style="background-color: lightgrey;">
                 <p style="margin: 30px;">
                     <strong>Set</strong> <span>` + (week-1) + `</span>
-                    &nbsp;&nbsp;<i class="bi bi-lock-fill h5 text-secondary"></i>
+                    &nbsp;&nbsp;<i class="bi bi-lock-fill h3 text-secondary"></i>
                 </p>
             </div>
         </div>
@@ -132,26 +203,24 @@ function displayCards() {
 <!-- Pop up Video modal -->
 <div class="modal fade" id="homeworkModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-extra-large" role="document">
-        <div class="modal-content" style="height: 80vh;">
+        <div class="modal-content" style="height: 95vh;">
             <div class="modal-header bg-primary text-white text-center">
-                <h5 class="modal-title w-100" id="exampleModalLabel">Short Answer - Set <span id="dialogSet" name="dialogSet" class="text-warning"></span></h5>
+                <h5 class="modal-title w-100" id="mediaModalLabel"></h5>
                 <button type="button" class="close position-absolute" style="right: 1rem;" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body bg-light">
                 <div class="row">
-                    <%--
-                    <div class="col-md-6 d-flex justify-content-center bg-white p-3 border">
-                        <video id="videoPlayer" controls controlsList="nodownload" style="width: 100%; height: auto;">
-                            <source src="" type="video/mp4">
-                        </video>
-                    </div>
-                    --%>
-                    <div class="col-md-12 bg-white p-3 border">
-                        <object id="pdfViewer" data="" type="application/pdf" style="width: 100%; height: 80vh;">
-                            <p>It appears you don't have a PDF plugin for this browser. No biggie... you can <a href="your_pdf_url">click here to download the PDF file.</a></p>
-                        </object>
+                    <div class="col-md-12 bg-white p-1 border">
+                        <div class="pdf-toolbar">
+                            <button id="prevPage">Previous</button>
+                                <span>Page: <span id="currentPage">1</span> / <span id="totalPages">1</span></span>
+                            <button id="nextPage">Next</button>
+                        </div>
+                        <div class="pdfViewerContainer">
+                            <canvas id="pdfCanvas" class="pdfCanvas"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>

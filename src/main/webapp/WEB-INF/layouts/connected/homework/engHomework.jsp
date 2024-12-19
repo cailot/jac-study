@@ -1,5 +1,7 @@
+<script src="${pageContext.request.contextPath}/js/pdf-2.16.105.min.js"></script>
+
 <style>
-    .english-homework {
+    /* .english-homework {
         background-color: #d1ecf1; 
         padding: 20px; 
         border-radius: 10px; 
@@ -8,6 +10,13 @@
     .modal-extra-large {
         max-width: 90%;
         max-height: 90%;
+    } */
+    #homeworkModal .modal-dialog {
+        max-width: 80%;
+        height: 90vh;
+    }
+    #homeworkModal .modal-body {
+        overflow-y: auto;
     }
 </style>
 <script>
@@ -46,6 +55,60 @@ $(function() {
     });
 });
 
+var pdfDoc = null;
+let pageNum = 1;
+let scale = 1.5;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//          Load Practice PDF
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function loadPdf(pdfPath) {
+    // Set the workerSrc before loading the PDF
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '${pageContext.request.contextPath}/js/pdf.worker-2.16.105.min.js';
+ 
+    pdfjsLib.getDocument(pdfPath).promise.then((pdf) => {
+        pdfDoc = pdf;
+        document.getElementById("totalPages").textContent = pdf.numPages;
+        renderPage(pageNum);
+    });
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//          Render Practice PDF
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+let renderTask = null; // Track the rendering task
+function renderPage(num) {
+    const canvas = document.getElementById("pdfCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Cancel the previous render task if it exists
+    if (renderTask) {
+        renderTask.cancel();
+    }
+
+    pdfDoc.getPage(num).then((page) => {
+        const viewport = page.getViewport({ scale });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: ctx,
+            viewport: viewport,
+        };
+
+        // Render the page and track the task
+        renderTask = page.render(renderContext);
+
+        // When rendering is complete, update toolbar
+        renderTask.promise.then(() => {
+            document.getElementById("currentPage").textContent = num;
+            document.getElementById("prevPage").disabled = num <= 1;
+            document.getElementById("nextPage").disabled = num >= pdfDoc.numPages;
+        }).catch((err) => {
+            console.log("Render cancelled:", err);
+        });
+    });
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 			Display Material (Video/Pdf)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,12 +119,30 @@ function displayMaterial(homeworkId) {
         method: "GET",
         success: function(value) {
             // console.log(value);
-            document.getElementById("dialogSet").innerHTML = value.week;  
+            // Render the PDF
+            const pdfPath = value.pdfPath;
+            $('#homeworkModal').off('shown.bs.modal'); // Remove previous modal event
+            $('#homeworkModal').on('shown.bs.modal', function () {            
+                pageNum = 1; // Reset page
+                loadPdf(pdfPath);
+                // Ensure event listeners are not duplicated
+                document.getElementById("prevPage").onclick = () => {
+                    if (pageNum > 1) {
+                        pageNum--;
+                        renderPage(pageNum);
+                    }
+                };
+                document.getElementById("nextPage").onclick = () => {
+                    if (pageNum < pdfDoc.numPages) {
+                        pageNum++;
+                        renderPage(pageNum);
+                    }
+                };
+            });
+
             // Add this part for displaying played percentage
             var videoPlayer = document.getElementById("videoPlayer");
             videoPlayer.src = value.videoPath;
-            document.getElementById("pdfViewer").data = value.pdfPath;
-
             var progressPercentage = document.getElementById(homeworkId+"Percentage");
             var progressBar = document.getElementById(homeworkId+"Bar");
             // Define the event listener function
@@ -81,7 +162,6 @@ function displayMaterial(homeworkId) {
             videoPlayer.addEventListener('timeupdate', updateProgressBar);
 
             var updateCalled = false;
-
             function updateProgress() {
                 if (!updateCalled) {
                     updateCalled = true;
@@ -100,7 +180,8 @@ function displayMaterial(homeworkId) {
             // Update progress on the server when the user navigates away or closes the browser
             window.addEventListener('beforeunload', updateProgress);
 
-            // Show the modal
+            // Open the modal
+            document.getElementById("mediaModalLabel").innerHTML = 'English Homework Details - Set <span class="text-warning">' + value.week + "</span>";
             $('#homeworkModal').modal('show');
 
         },
@@ -122,7 +203,7 @@ function createCard(weekData) {
         <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(` + weekData.id + `)">
             <div class="alert alert-info english-homework" role="alert" style="background-color: false;">
                 <p id="` + weekData.week + `OnlineLesson" style="margin: 30px;">
-                    <strong>Set</strong> <span>` + weekData.week +`</span>&nbsp;&nbsp;<i class="bi-mortarboard-fill h5 text-primary"></i>
+                    <strong>Set</strong> <span>` + weekData.week +`</span>&nbsp;&nbsp;<i class="bi-mortarboard-fill h3 text-primary"></i>
                 </p>
                 <div class="progress" style="margin: 30px;">
                     <div id="` + weekData.id + `Bar" class="`+ getProgressBarClass(weekData.percentage) +`" role="progressbar" style="width: ` + weekData.percentage + `%;" aria-valuemin="0" aria-valuemax="100">
@@ -143,7 +224,7 @@ function createNextCard(week) {
             <div class="alert alert-secondary english-homework" role="alert" style="background-color: lightgrey;">
                 <p style="margin: 30px;">
                     <strong>Set</strong> <span>` + week + `</span>
-                    &nbsp;&nbsp;<i class="bi bi-lock-fill h5 text-secondary"></i>
+                    &nbsp;&nbsp;<i class="bi bi-lock-fill h3 text-secondary"></i>
                 </p>
                 <div class="progress" style="margin: 30px;">
                     <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">
@@ -224,9 +305,9 @@ function updateProgressOnServer(homeworkId, percentage){
 <!-- Pop up Video modal -->
 <div class="modal fade" id="homeworkModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-extra-large" role="document">
-        <div class="modal-content" style="height: 90vh;">
+        <div class="modal-content" style="height: 95vh;">
             <div class="modal-header bg-primary text-white text-center">
-                <h5 class="modal-title w-100" id="exampleModalLabel">English Homework Details - Set <span id="dialogSet" name="dialogSet" class="text-warning"></span></h5>
+                <h5 class="modal-title w-100" id="mediaModalLabel"></h5>
                 <button type="button" class="close position-absolute" style="right: 1rem;" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -238,10 +319,15 @@ function updateProgressOnServer(homeworkId, percentage){
                             <source src="" type="video/mp4">
                         </video>
                     </div>
-                    <div class="col-md-6 bg-white p-3 border">
-                        <object id="pdfViewer" data="" type="application/pdf" style="width: 100%; height: 80vh;">
-                            <p>It appears you don't have a PDF plugin for this browser. No biggie... you can <a href="your_pdf_url">click here to download the PDF file.</a></p>
-                        </object>
+                    <div class="col-md-6 bg-white p-1 border">
+                        <div class="pdf-toolbar">
+                            <button id="prevPage">Previous</button>
+                                <span>Page: <span id="currentPage">1</span> / <span id="totalPages">1</span></span>
+                            <button id="nextPage">Next</button>
+                        </div>
+                        <div class="pdfViewerContainer">
+                            <canvas id="pdfCanvas" class="pdfCanvas"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>

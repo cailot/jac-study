@@ -80,7 +80,7 @@
     }
 
     /* Toolbar Styling */
-    .pdf-toolbar {
+    /* .pdf-toolbar {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -105,7 +105,6 @@
         font-weight: bold;
         margin: 0 10px;
     }
-    /* Centering PDF Document */
     .pdfViewerContainer {
         width: 100%;
         height: auto;
@@ -120,7 +119,7 @@
         max-width: 100%;
         height: auto;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+    } */
 
 </style>
 
@@ -152,9 +151,7 @@ function loadPracticePdf(pdfPath) {
 function loadAnswerPdf(pdfPath) {
     // Set the workerSrc before loading the PDF
     pdfjsLib.GlobalWorkerOptions.workerSrc = '${pageContext.request.contextPath}/js/pdf.worker-2.16.105.min.js';
-    // pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-
-
+    // console.log(pdfPath);
     pdfjsLib.getDocument(pdfPath).promise.then((pdf) => {
         pdfDoc = pdf;
         document.getElementById("answerTotalPages").textContent = pdf.numPages;
@@ -371,7 +368,7 @@ function displayAnswer(practiceId, title, week) {
         url : '${pageContext.request.contextPath}/connected/practiceAnswer/' + studentId + '/' + practiceId,
         method: "GET",
         success: function(value) {
-            // console.log(value);
+            console.log(value);
             $('#answerModal').off('shown.bs.modal'); // Remove previous modal event
             $('#answerModal').on('shown.bs.modal', function () {
                 // Video player

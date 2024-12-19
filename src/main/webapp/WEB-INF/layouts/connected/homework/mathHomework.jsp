@@ -122,7 +122,7 @@ function createCard(weekData) {
         <div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(` + weekData.id + `)">
             <div class="alert alert-info english-homework" role="alert" style="background-color: false;">
                 <p id="` + weekData.week + `OnlineLesson" style="margin: 30px;">
-                    <strong>Set</strong> <span>` + weekData.week +`</span>&nbsp;&nbsp;<i class="bi-mortarboard-fill h5 text-primary"></i>
+                    <strong>Set</strong> <span>` + weekData.week +`</span>&nbsp;&nbsp;<i class="bi-mortarboard-fill h3 text-primary"></i>
                 </p>
                 <div class="progress" style="margin: 30px;">
                     <div id="` + weekData.id + `Bar" class="`+ getProgressBarClass(weekData.percentage) +`" role="progressbar" style="width: ` + weekData.percentage + `%;" aria-valuemin="0" aria-valuemax="100">
@@ -143,7 +143,7 @@ function createNextCard(week) {
             <div class="alert alert-secondary english-homework" role="alert" style="background-color: lightgrey;">
                 <p style="margin: 30px;">
                     <strong>Set</strong> <span>` + week + `</span>
-                    &nbsp;&nbsp;<i class="bi bi-lock-fill h5 text-secondary"></i>
+                    &nbsp;&nbsp;<i class="bi bi-lock-fill h3 text-secondary"></i>
                 </p>
                 <div class="progress" style="margin: 30px;">
                     <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">
