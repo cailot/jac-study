@@ -1,16 +1,6 @@
 <script src="${pageContext.request.contextPath}/js/pdf-2.16.105.min.js"></script>
 
 <style>
-    /* .english-homework {
-        background-color: #d1ecf1; 
-        padding: 20px; 
-        border-radius: 10px; 
-        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); 
-    }
-    .modal-extra-large {
-        max-width: 90%;
-        max-height: 90%;
-    } */
     #homeworkModal .modal-dialog {
         max-width: 80%;
         height: 90vh;
@@ -32,7 +22,6 @@ $(function() {
             // save the response into the variable
             academicYear = response[0];
             academicWeek = parseInt(response[1]);
-            //console.log('NumericGrade ---> ' + numericGrade);
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log('Error : ' + errorThrown);
@@ -45,7 +34,6 @@ $(function() {
         method: "GET",
         success: function(response) {
             // save the response into the variable
-            // console.log(response);
             weeksData = response;
             displayCards();
         },
@@ -58,6 +46,7 @@ $(function() {
 var pdfDoc = null;
 let pageNum = 1;
 let scale = 1.5;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //          Load Practice PDF
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,18 +64,15 @@ function loadPdf(pdfPath) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //          Render Practice PDF
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let renderTask = null; // Track the rendering task
 function renderPage(num) {
     const canvas = document.getElementById("pdfCanvas");
     const ctx = canvas.getContext("2d");
 
-    // Cancel the previous render task if it exists
-    if (renderTask) {
-        renderTask.cancel();
-    }
+    // Clear the canvas to ensure previous rendering does not overlap
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     pdfDoc.getPage(num).then((page) => {
-        const viewport = page.getViewport({ scale });
+        const viewport = page.getViewport({ scale: scale });
         canvas.height = viewport.height;
         canvas.width = viewport.width;
 
@@ -95,17 +81,16 @@ function renderPage(num) {
             viewport: viewport,
         };
 
-        // Render the page and track the task
-        renderTask = page.render(renderContext);
-
-        // When rendering is complete, update toolbar
-        renderTask.promise.then(() => {
+        // Render the page
+        page.render(renderContext).promise.then(() => {
             document.getElementById("currentPage").textContent = num;
             document.getElementById("prevPage").disabled = num <= 1;
             document.getElementById("nextPage").disabled = num >= pdfDoc.numPages;
         }).catch((err) => {
-            console.log("Render cancelled:", err);
+            console.log("Error rendering page:", err);
         });
+    }).catch((err) => {
+        console.log("Error loading page:", err);
     });
 }
 
@@ -118,7 +103,6 @@ function displayMaterial(homeworkId) {
         url : '${pageContext.request.contextPath}/connected/homework/' + homeworkId,
         method: "GET",
         success: function(value) {
-            // console.log(value);
             // Render the PDF
             const pdfPath = value.pdfPath;
             $('#homeworkModal').off('shown.bs.modal'); // Remove previous modal event
@@ -135,6 +119,18 @@ function displayMaterial(homeworkId) {
                 document.getElementById("nextPage").onclick = () => {
                     if (pageNum < pdfDoc.numPages) {
                         pageNum++;
+                        renderPage(pageNum);
+                    }
+                };
+                document.getElementById("zoomIn").onclick = () => {
+                    scale += 0.1;
+                    console.log('Zoom In: ', scale);
+                    renderPage(pageNum);
+                };
+                document.getElementById("zoomOut").onclick = () => {
+                    if (scale > 0.1) {
+                        scale -= 0.1;
+                        console.log('Zoom Out: ', scale);
                         renderPage(pageNum);
                     }
                 };
@@ -195,8 +191,6 @@ function displayMaterial(homeworkId) {
 // 			Create Card
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function createCard(weekData) {
-    // console.log(weekData);
-    // console.log(weekData.week);
     const card = document.createElement('div');
     card.className = 'col-md-6';
     card.innerHTML = `
@@ -322,8 +316,10 @@ function updateProgressOnServer(homeworkId, percentage){
                     <div class="col-md-6 bg-white p-1 border">
                         <div class="pdf-toolbar">
                             <button id="prevPage">Previous</button>
-                                <span>Page: <span id="currentPage">1</span> / <span id="totalPages">1</span></span>
+                            <span>Page: <span id="currentPage">1</span> / <span id="totalPages">1</span></span>
                             <button id="nextPage">Next</button>
+                            <button id="zoomOut">-</button>
+                            <button id="zoomIn">+</button>
                         </div>
                         <div class="pdfViewerContainer">
                             <canvas id="pdfCanvas" class="pdfCanvas"></canvas>
