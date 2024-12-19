@@ -79,48 +79,6 @@
         margin-bottom: 1.0em;
     }
 
-    /* Toolbar Styling */
-    /* .pdf-toolbar {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #f1f1f1;
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-    }
-    .pdf-toolbar button {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        margin: 0 5px;
-        cursor: pointer;
-        border-radius: 4px;
-    }
-    .pdf-toolbar button:disabled {
-        background-color: #aaa;
-        cursor: not-allowed;
-    }
-    .pdf-toolbar span {
-        font-weight: bold;
-        margin: 0 10px;
-    }
-    .pdfViewerContainer {
-        width: 100%;
-        height: auto;
-        overflow: auto;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #f8f9fa;
-    }
-    .pdfCanvas {
-        display: block;
-        max-width: 100%;
-        height: auto;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    } */
-
 </style>
 
 <script>
@@ -162,18 +120,15 @@ function loadAnswerPdf(pdfPath) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //          Render Practice PDF
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let renderPracticeTask = null; // Track the rendering task
 function renderPracticePage(num) {
     const canvas = document.getElementById("practicePdfCanvas");
     const ctx = canvas.getContext("2d");
 
-    // Cancel the previous render task if it exists
-    if (renderPracticeTask) {
-        renderPracticeTask.cancel();
-    }
+    // Clear the canvas to ensure previous rendering does not overlap
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     pdfDoc.getPage(num).then((page) => {
-        const viewport = page.getViewport({ scale });
+        const viewport = page.getViewport({ scale: scale });
         canvas.height = viewport.height;
         canvas.width = viewport.width;
 
@@ -182,65 +137,94 @@ function renderPracticePage(num) {
             viewport: viewport,
         };
 
-        // Render the page and track the task
-        renderPracticeTask = page.render(renderContext);
-
-        // When rendering is complete, update toolbar
-        renderPracticeTask.promise.then(() => {
+        // Render the page
+        page.render(renderContext).promise.then(() => {
             document.getElementById("practiceCurrentPage").textContent = num;
             document.getElementById("practicePrevPage").disabled = num <= 1;
             document.getElementById("practiceNextPage").disabled = num >= pdfDoc.numPages;
         }).catch((err) => {
-            console.log("Render cancelled:", err);
+            console.log("Error rendering page:", err);
         });
+    }).catch((err) => {
+        console.log("Error loading page:", err);
     });
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //          Render Answer PDF
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let renderAnswerTask = null; // Track the rendering task
+// let renderAnswerTask = null; // Track the rendering task
+// function renderAnswerPage(num) {
+//     const canvas = document.getElementById("answerPdfCanvas");
+//     const ctx = canvas.getContext("2d");
+//     const container = document.querySelector(".pdfViewerContainer");
+
+//     // Clear canvas
+//     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+//     if (renderAnswerTask) {
+//         renderAnswerTask.cancel();
+//     }
+
+//     pdfDoc.getPage(num).then((page) => {
+//         // Calculate container width safely
+//         const containerWidth = container.clientWidth || 800;
+//         const viewport = page.getViewport({ scale: 1 });
+//         const scale = containerWidth / viewport.width || 1;
+
+//         // console.log("Container width:", containerWidth);
+//         // console.log("Calculated scale:", scale);
+
+//         const scaledViewport = page.getViewport({ scale });
+//         canvas.height = scaledViewport.height;
+//         canvas.width = scaledViewport.width;
+
+//         const renderContext = {
+//             canvasContext: ctx,
+//             viewport: scaledViewport,
+//         };
+
+//         renderAnswerTask = page.render(renderContext);
+//         renderAnswerTask.promise.then(() => {
+//             document.getElementById("answerCurrentPage").textContent = num;
+//             document.getElementById("answerPrevPage").disabled = num <= 1;
+//             document.getElementById("answerNextPage").disabled = num >= pdfDoc.numPages;
+//             // console.log("Page rendered successfully");
+//         }).catch((err) => {
+//             console.error("Render failed:", err);
+//         });
+//     }).catch((err) => {
+//         console.error("Failed to load page:", err);
+//     });
+// }
+
 function renderAnswerPage(num) {
     const canvas = document.getElementById("answerPdfCanvas");
     const ctx = canvas.getContext("2d");
-    const container = document.querySelector(".pdfViewerContainer");
 
-    // Clear canvas
+    // Clear the canvas to ensure previous rendering does not overlap
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (renderAnswerTask) {
-        renderAnswerTask.cancel();
-    }
-
     pdfDoc.getPage(num).then((page) => {
-        // Calculate container width safely
-        const containerWidth = container.clientWidth || 800;
-        const viewport = page.getViewport({ scale: 1 });
-        const scale = containerWidth / viewport.width || 1;
-
-        // console.log("Container width:", containerWidth);
-        // console.log("Calculated scale:", scale);
-
-        const scaledViewport = page.getViewport({ scale });
-        canvas.height = scaledViewport.height;
-        canvas.width = scaledViewport.width;
+        const viewport = page.getViewport({ scale: scale });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
 
         const renderContext = {
             canvasContext: ctx,
-            viewport: scaledViewport,
+            viewport: viewport,
         };
 
-        renderAnswerTask = page.render(renderContext);
-        renderAnswerTask.promise.then(() => {
+        // Render the page
+        page.render(renderContext).promise.then(() => {
             document.getElementById("answerCurrentPage").textContent = num;
             document.getElementById("answerPrevPage").disabled = num <= 1;
             document.getElementById("answerNextPage").disabled = num >= pdfDoc.numPages;
-            // console.log("Page rendered successfully");
         }).catch((err) => {
-            console.error("Render failed:", err);
+            console.log("Error rendering page:", err);
         });
     }).catch((err) => {
-        console.error("Failed to load page:", err);
+        console.log("Error loading page:", err);
     });
 }
 
@@ -271,6 +255,19 @@ function displayMaterial(practiceId) {
                         renderPracticePage(pageNum);
                     }
                 };
+                document.getElementById("practiceZoomIn").onclick = () => {
+                    scale += 0.1;
+                    // console.log('Zoom In: ', scale);
+                    renderPracticePage(pageNum);
+                };
+                document.getElementById("practiceZoomOut").onclick = () => {
+                    if (scale > 0.1) {
+                        scale -= 0.1;
+                        // console.log('Zoom Out: ', scale);
+                        renderPracticePage(pageNum);
+                    }
+                };
+
                 // Manipulate answer sheet
                 var numAnswer = practice.answerCount;
                 var numQuestion = practice.questionCount; // replace with the actual property name
@@ -390,6 +387,19 @@ function displayAnswer(practiceId, title, week) {
                         renderAnswerPage(pageNum);
                     }
                 };
+                document.getElementById("answerZoomIn").onclick = () => {
+                    scale += 0.1;
+                    // console.log('Zoom In: ', scale);
+                    renderAnswerPage(pageNum);
+                };
+                document.getElementById("answerZoomOut").onclick = () => {
+                    if (scale > 0.1) {
+                        scale -= 0.1;
+                        // console.log('Zoom Out: ', scale);
+                        renderAnswerPage(pageNum);
+                    }
+                };
+
                 // manipulate answer sheet
                 var answerNumQuestion = value.answers.length;
                 var answerCount = value.answerCount;
@@ -571,6 +581,8 @@ function calculateScore(studentAnswers, answerSheet) {
                             <button id="practicePrevPage">Previous</button>
                                 <span>Page: <span id="practiceCurrentPage">1</span> / <span id="practiceTotalPages">1</span></span>
                             <button id="practiceNextPage">Next</button>
+                            <button id="practiceZoomOut">-</button>
+                            <button id="practiceZoomIn">+</button>
                         </div>
                         <div class="pdfViewerContainer">
                             <canvas id="practicePdfCanvas" class="pdfCanvas"></canvas>
@@ -617,6 +629,8 @@ function calculateScore(studentAnswers, answerSheet) {
                             <button id="answerPrevPage">Previous</button>
                                 <span>Page: <span id="answerCurrentPage">1</span> / <span id="answerTotalPages">1</span></span>
                             <button id="answerNextPage">Next</button>
+                            <button id="answerZoomOut">-</button>
+                            <button id="answerZoomIn">+</button>
                         </div>
                         <div class="pdfViewerContainer">
                             <canvas id="answerPdfCanvas" class="pdfCanvas"></canvas>
@@ -634,7 +648,7 @@ function calculateScore(studentAnswers, answerSheet) {
 <!--Practice Warning Modal -->
 <div class="modal fade" id="practiceWarningModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content" style="border: 2px solid #ffc107; border-radius: 10px;">
+        <div class="modal-content" style="border: 2px solid #ffc107; border-radius: 10px; height: 50vh;">
             <div class="modal-header bg-warning" style="display: block;">
                 <p style="text-align: center; margin-bottom: 0;"><span style="font-size:18px"><strong>Practice for James An College Class</strong></span></p>
             </div>
