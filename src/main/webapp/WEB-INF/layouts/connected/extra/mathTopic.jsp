@@ -1,3 +1,5 @@
+<script src="${pageContext.request.contextPath}/js/pdf-2.16.105.min.js"></script>
+
 <style>
     .topic-card {
         background-color: #d1ecf1; 
@@ -5,20 +7,23 @@
         border-radius: 10px; 
         box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); 
     }
-    .modal-extra-large {
-        max-width: 90%;
-        max-height: 90%;
-    }
     /* Define CSS styles for the decorated-header class */
-.decorated-header {
-    font-size: 25px; /* Change the font size */
-    color: #007bff; /* Change the text color */
-    text-shadow: 1px 1px 2px #000; /* Add a text shadow for depth */
-    font-weight: bold; /* Make the text bold */
-    text-align: left; /* Center-align the text */
-    margin-left: 50px;
-    margin-bottom: 10px; /* Add some space below the header */
-}
+    .decorated-header {
+        font-size: 25px; /* Change the font size */
+        color: #007bff; /* Change the text color */
+        text-shadow: 1px 1px 2px #000; /* Add a text shadow for depth */
+        font-weight: bold; /* Make the text bold */
+        text-align: left; /* Center-align the text */
+        margin-left: 50px;
+        margin-bottom: 10px; /* Add some space below the header */
+    }
+    #materialModal .modal-dialog {
+        max-width: 80%;
+        height: 90vh;
+    }
+    #materialModal .modal-body {
+        overflow-y: auto;
+    }
 </style>
 <script>
 $(function() {
@@ -38,7 +43,7 @@ $(function() {
                     var topicDiv = '<div class="col-md-4">'
                     +  '<div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(' + id + ', \'' +  title + '\');">'
                     + '<div class="alert alert-info topic-card" role="alert"><p id="onlineLesson" style="margin: 30px;">'
-                    + '<strong><span id="topicTitle">' + title + '</span></strong>&nbsp;&nbsp;<i class="bi bi-calculator h5 text-primary"></i></p>'
+                    + '<strong><span id="topicTitle">' + title + '</span></strong>&nbsp;&nbsp;<i class="bi bi-calculator h3 text-primary"></i></p>'
                     + '<div class="progress" style="margin: 30px;"><div id="' + id + 'topicPercentageBar" class="' + getProgressBarClass(percentage) +'" role="progressbar" style="width: '+ percentage +'%;" aria-valuemin="0" aria-valuemax="100">'
                     + '<span id="'+ id + 'topicPercentage" class="ml-auto">'+ percentage +'%</span></div></div></div></div></div>';
                     
@@ -81,7 +86,7 @@ $(function() {
                     var topicDiv = '<div class="col-md-4">'
                     + '<div class="card-body mx-auto" style="cursor: pointer; max-width: 75%;" onclick="displayMaterial(' + id + ', \'' + title + '\');">'
                     + '<div class="alert alert-info topic-card" role="alert"><p id="onlineLesson" style="margin: 30px;">'
-                    + '<strong><span id="topicTitle">' + title + '</span></strong>&nbsp;&nbsp;<i class="bi bi-calculator h5 text-primary"></i></p>'
+                    + '<strong><span id="topicTitle">' + title + '</span></strong>&nbsp;&nbsp;<i class="bi bi-calculator h3 text-primary"></i></p>'
                     + '<div class="progress" style="margin: 30px;"><div id="' + id + 'topicPercentageBar" class="" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">'
                     + '<span id="'+ id + 'topicPercentage" class="ml-auto">0%</span></div></div></div></div></div>';
             
@@ -93,6 +98,57 @@ $(function() {
 
 });
 
+var pdfDoc = null;
+let pageNum = 1;
+let scale = 1.5;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//          Load Practice PDF
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function loadPdf(pdfPath) {
+    // Set the workerSrc before loading the PDF
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '${pageContext.request.contextPath}/js/pdf.worker-2.16.105.min.js';
+ 
+    pdfjsLib.getDocument(pdfPath).promise.then((pdf) => {
+        pdfDoc = pdf;
+        document.getElementById("totalPages").textContent = pdf.numPages;
+        renderPage(pageNum);
+    });
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//          Render Practice PDF
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function renderPage(num) {
+    const canvas = document.getElementById("pdfCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Clear the canvas to ensure previous rendering does not overlap
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    pdfDoc.getPage(num).then((page) => {
+        const viewport = page.getViewport({ scale: scale });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: ctx,
+            viewport: viewport,
+        };
+
+        // Render the page
+        page.render(renderContext).promise.then(() => {
+            document.getElementById("currentPage").textContent = num;
+            document.getElementById("prevPage").disabled = num <= 1;
+            document.getElementById("nextPage").disabled = num >= pdfDoc.numPages;
+        }).catch((err) => {
+            console.log("Error rendering page:", err);
+        });
+    }).catch((err) => {
+        console.log("Error loading page:", err);
+    });
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 			Display Material (Video/Pdf)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,6 +159,9 @@ function displayMaterial(id, title) {
         url: '${pageContext.request.contextPath}/connected/getExtrawork/' + id,
         method: "GET",
         success: function(value) {
+
+            console.log(value);
+
             // Add this part for displaying played percentage
             var videoPlayer = document.getElementById("videoPlayer");
             videoPlayer.src = value.videoPath;
@@ -146,17 +205,38 @@ function displayMaterial(id, title) {
             // Update progress on the server when the user navigates away or closes the browser
             window.addEventListener('beforeunload', updateProgress);
 
-            // Force reload the PDF by removing and re-adding the object element
-            var pdfContainer = document.getElementById("pdfViewer").parentNode;
-            var oldPdfViewer = document.getElementById("pdfViewer");
-            var newPdfViewer = document.createElement("object");
-            newPdfViewer.id = "pdfViewer";
-            newPdfViewer.data = value.pdfPath + '?t=' + new Date().getTime(); // Append timestamp to prevent caching
-            newPdfViewer.type = "application/pdf";
-            newPdfViewer.style.width = "100%";
-            newPdfViewer.style.height = "80vh";
-            newPdfViewer.innerHTML = '<p>It appears you don\'t have a PDF plugin for this browser. No biggie... you can <a href="' + value.pdfPath + '">click here to download the PDF file.</a></p>';
-            pdfContainer.replaceChild(newPdfViewer, oldPdfViewer);
+            // Render the PDF
+            const pdfPath = value.pdfPath;
+            $('#materialModal').off('shown.bs.modal'); // Remove previous modal event
+            $('#materialModal').on('shown.bs.modal', function () {            
+                pageNum = 1; // Reset page
+                loadPdf(pdfPath);
+                // Ensure event listeners are not duplicated
+                document.getElementById("prevPage").onclick = () => {
+                    if (pageNum > 1) {
+                        pageNum--;
+                        renderPage(pageNum);
+                    }
+                };
+                document.getElementById("nextPage").onclick = () => {
+                    if (pageNum < pdfDoc.numPages) {
+                        pageNum++;
+                        renderPage(pageNum);
+                    }
+                };
+                document.getElementById("zoomIn").onclick = () => {
+                    scale += 0.1;
+                    console.log('Zoom In: ', scale);
+                    renderPage(pageNum);
+                };
+                document.getElementById("zoomOut").onclick = () => {
+                    if (scale > 0.1) {
+                        scale -= 0.1;
+                        console.log('Zoom Out: ', scale);
+                        renderPage(pageNum);
+                    }
+                };
+            });
 
             // Pop-up video & pdf
             $('#materialModal').modal('show');
@@ -234,9 +314,16 @@ function updateProgressOnServer(extraworkId, percentage){
                         </video>
                     </div>
                     <div class="col-md-6 bg-white p-3 border">
-                        <object id="pdfViewer" data="" type="application/pdf" style="width: 100%; height: 80vh;">
-                            <p>It appears you don't have a PDF plugin for this browser. No biggie... you can <a href="your_pdf_url">click here to download the PDF file.</a></p>
-                        </object>
+                        <div class="pdf-toolbar">
+                            <button id="prevPage">Previous</button>
+                            <span>Page: <span id="currentPage">1</span> / <span id="totalPages">1</span></span>
+                            <button id="nextPage">Next</button>
+                            <button id="zoomOut">-</button>
+                            <button id="zoomIn">+</button>
+                        </div>
+                        <div class="pdfViewerContainer">
+                            <canvas id="pdfCanvas" class="pdfCanvas"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -3,18 +3,13 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-
 <c:set var="grade" value="" />
-
-
-
 <sec:authorize access="isAuthenticated()">
-
-<sec:authentication var="role" property='principal.authorities'/>
-<sec:authentication var="id" property="principal.username"/>
-<sec:authentication var="firstName" property="principal.firstName"/>
-<sec:authentication var="lastName" property="principal.lastName"/>
-<c:set var="grade" value="${role}" />
+	<sec:authentication var="role" property='principal.authorities'/>
+	<sec:authentication var="id" property="principal.username"/>
+	<sec:authentication var="firstName" property="principal.firstName"/>
+	<sec:authentication var="lastName" property="principal.lastName"/>
+	<c:set var="grade" value="${role}" />
 	<script>
 		var role = '${role}';
 		var numericGrade = role.replace(/[\[\]]/g, ''); // replace '[' & ']' with an empty string
@@ -27,8 +22,19 @@
 	</script>
 </sec:authorize>
 
-<script>
+<style>
+  	.dropdown-toggle::after {
+		display: none;
+	}
+	.dropdown:hover .dropdown-menu {
+		display: block;
+	}
+	.nav-link-white {
+		color: white !important;
+	}
+</style>
 
+<script>
 $(function() {
 	// initialise state list when loading
 	listState('#editState');
@@ -132,140 +138,116 @@ function updatePassword() {
 		
 	}); 
 }
-
 </script>
 
 <div class="container-fluid jae-header pt-3 pb-3">
-<nav class="navbar">
-	<div class="navbar_logo">
-		<a href="${pageContext.request.contextPath}/connected/lesson">
-			<img src="${pageContext.request.contextPath}/image/logo-cc.png" title="JAC Connected Class" style="filter: brightness(0) invert(1);width:50px;" >
-		</a>
-	</div>
-	<ul class="navbar_menu">
-		<!-- Homework -->
-		<li class="nav-item dropdown">
-			<a class="nav-link" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-				<i class="bi bi-pencil-square custom-icon mr-2"></i><span class="h4">Homework</span>
-			</a>
-			<div class="dropdown-menu">
-				<!-- P2 .. S10, JMSS -->
-				<c:if test="${grade == '[1]' || grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]' || grade == '[6]' || grade == '[7]' || grade == '[8]' || grade == '[9]' || grade == '[19]'}">
-					<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/engHomework">English Homework</a>
-					<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/mathHomework">Mathematics Homework</a>
-				</c:if>
-				<!-- P3 .. P6 -->
-				<c:if test="${grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]'}">
-					<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/writeHomework">Writing Homework</a>
-				</c:if>
-				<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/shortAnswer">Short Answer</a>
-			</div>
-		</li>
-		<!-- Extra Materials -->
-		<li class="nav-item dropdown">
-			<a class="nav-link" href="${pageContext.request.contextPath}/connected/extraMaterial" role="button">
-				<i class="bi bi-pencil-square custom-icon mr-2"></i><span class="h4">Extra Materials</span>
-			</a>
-		</li>
-		<!-- Practice -->
-		<li class="nav-item dropdown">
-			<a class="nav-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				<i class="bi bi-pencil-square custom-icon mr-2"></i><span class="h4">Practice</span>
-			</a>			
-			<div class="dropdown-menu">
-				<!-- Mega Practice submenu -->
-				<c:if test="${grade == '[1]' ||grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]'}">
-					<div class="dropdown-submenu">
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/mega">Mega Practice</a>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="navbar_logo">
+            <a href="${pageContext.request.contextPath}/connected/lesson">
+                <img src="${pageContext.request.contextPath}/image/logo-cc.png" title="JAC Connected Class" style="filter: brightness(0) invert(1);width:50px;" >
+            </a>
+        </div>
+		<div class="collapse navbar-collapse justify-content-center">
+			<ul class="navbar-nav">
+				<div class="navbar-nav">
+					<!-- Homework -->
+					<div class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle nav-link-white" href="#" id="homeworkDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="bi bi-pencil-square custom-icon mr-2"></i><span class="h4">Homework</span>
+						</a>
+						<div class="dropdown-menu" aria-labelledby="homeworkDropdown">
+							<!-- P2 .. S10, JMSS -->
+							<c:if test="${grade == '[1]' || grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]' || grade == '[6]' || grade == '[7]' || grade == '[8]' || grade == '[9]' || grade == '[19]'}">
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/engHomework">English Homework</a>
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/mathHomework">Mathematics Homework</a>
+							</c:if>
+							<!-- P3 .. P6 -->
+							<c:if test="${grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]'}">
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/writeHomework">Writing Homework</a>
+							</c:if>
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/shortAnswer">Short Answer</a>
+						</div>
 					</div>
-				</c:if>
-				<!-- Revision submenu -->
-				<c:if test="${grade == '[6]' ||grade == '[7]' || grade == '[8]' || grade == '[9]'}">
-					<div class="dropdown-submenu">
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/revision">Revision Practice</a>
+					<!-- Extra Materials -->
+					<li class="nav-item">
+						<a class="nav-link nav-link-white" href="${pageContext.request.contextPath}/connected/extraMaterial" role="button">
+							<i class="bi bi-pencil-square custom-icon mr-2"></i><span class="h4">Extra Materials</span>
+						</a>
+					</li>
+					<!-- Practice -->
+					<div class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle nav-link-white" href="#" id="practiceDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="bi bi-pencil-square custom-icon mr-2"></i><span class="h4">Practice</span>
+						</a>
+						<div class="dropdown-menu" aria-labelledby="practiceDropdown">
+							<!-- Mega Practice submenu -->
+							<c:if test="${grade == '[1]' ||grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]'}">
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/mega">Mega Practice</a>
+							</c:if>
+							<!-- Revision submenu -->
+							<c:if test="${grade == '[6]' ||grade == '[7]' || grade == '[8]' || grade == '[9]'}">
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/revision">Revision Practice</a>
+							</c:if>
+							<!-- Naplan submenu -->
+							<c:if test="${grade == '[2]' || grade == '[4]' || grade == '[6]' || grade == '[8]'}">
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplan">NAPLAN</a>
+							</c:if>
+							<!-- Acer & Edu submenu -->
+							<c:if test="${grade == '[11]' ||grade == '[12]'}">
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/acer">ACER Practice</a>
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/edu">EDU Practice</a>
+							</c:if>
+						</div>
 					</div>
-				</c:if>
-				<!-- NAPLAN submenu -->
-				<c:if test="${grade == '[2]' || grade == '[4]' || grade == '[6]' || grade == '[8]'}">
-					<div class="dropdown-submenu">
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplan">Naplan</a>
+					<!-- Test -->
+					<div class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle nav-link-white" href="#" id="testDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="bi bi-pencil-square custom-icon mr-2"></i><span class="h4">Test</span>
+						</a>
+						<div class="dropdown-menu" aria-labelledby="testDropdown">
+							<!-- Mega Test submenu -->
+							<c:if test="${grade == '[1]' ||grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]'}">
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/mega">Mega Test</a>
+							</c:if>
+							<!-- Revision submenu -->
+							<c:if test="${grade == '[6]' ||grade == '[7]' || grade == '[8]' || grade == '[9]'}">
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/revision">Revision Test</a>
+							</c:if>
+							<!-- Test Result submenu -->
+							<c:if test="${grade == '[2]' || grade == '[4]' || grade == '[6]' || grade == '[8]'}">
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplan">Result</a>
+							</c:if>
+						</div>
 					</div>
-				</c:if>
-				<!-- Acer & Edu submenu -->
-				<c:if test="${grade == '[11]' ||grade == '[12]'}">
-					<div class="dropdown-submenu">
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/acer">ACER Practice</a>
-					</div>
-					<div class="dropdown-submenu">
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/edu">EDU Practice</a>
-					</div>
-				</c:if>				
-			</div>
-		</li>
-
-		<!-- Test -->
-		<li class="nav-item dropdown">
-			<a class="nav-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				<i class="bi bi-pencil-square custom-icon mr-2"></i><span class="h4">Test</span> 
-			</a>
-			<div class="dropdown-menu">
-				<!-- Mega Test submenu -->
-				<div class="dropdown-submenu">
-					<a class="dropdown-item" href="#" id="megaTestDropdown" role="button" aria-haspopup="true" aria-expanded="false">
-						Mega Test
-					</a>
-					<div class="dropdown-menu" aria-labelledby="megaTestDropdown">
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/megaEng">MEGA English</a>
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/megaMath">MEGA Mathematics</a>
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/megaGA">MEGA General Ability</a>
-					</div>
+					<!-- Link to Jac-eLearning -->
+					<li class="nav-item dropdown">
+						<a class="nav-link nav-link-white" href="${pageContext.request.contextPath}/online/lesson" role="button">
+							<i class="bi bi-pencil-square custom-icon mr-2"></i><span class="h4">Jac-eLearning</span>
+						</a>
+					</li>
 				</div>
-				<!-- Test Result submenu -->
-				<div class="dropdown-submenu">
-					<a class="dropdown-item" href="#" id="megaResultDropdown" role="button" aria-haspopup="true" aria-expanded="false">
-						Mega Test Results
-					</a>
-					<div class="dropdown-menu" aria-labelledby="megaResultDropdown">
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/result/megaVol1">MEGA Vol 1</a>
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/result/megaVol2">MEGA Vol 2</a>
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/result/megaVol3">MEGA Vol 3</a>
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/result/megaVol4">MEGA Vol 4</a>
-						<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/result/megaVol5">MEGA Vol 5</a>
+			</ul>
+		</div>
+		<ul class="navbar_icon" style="margin: 0; padding: 0;">
+			<sec:authorize access="isAuthenticated()">
+				<div class="card-body jae-background-color text-right" style="display: flex; justify-content: space-between; padding-top: 20px;">
+					<div>
+						<span class="card-text text-warning font-weight-bold font-italic h5" style="margin-left: 25px; cursor: pointer;" id="studentName" onclick="if(isStudent) { clearPassword(); retrieveStudentInfo(); }">${firstName} ${lastName}</span>
+						<span style="color: white;">&nbsp;&nbsp;(</span>
+						<span class="card-text h5" id="studentGrade" name="studentGrade" style="color: white;"></span>
+						<span style="color: white;">)  </span>
+						<script>document.getElementById("studentGrade").textContent = displayGrade();</script>
+						&nbsp;&nbsp;
 					</div>
+					<form:form action="${pageContext.request.contextPath}/connected/logout" method="POST" id="logout" style="margin-bottom: 0px;">
+						<button class="btn" style="margin-right: 20px;"><i class="bi bi-box-arrow-right custom-icon text-warning" title="Log Out"></i></button>
+					</form:form>
 				</div>
-			</div>
-		</li>
-		
-		<!-- Link to Jac-eLearning -->
-		<li class="nav-item dropdown">
-			<a class="nav-link" href="${pageContext.request.contextPath}/online/lesson" role="button">
-				<i class="bi bi-pencil-square custom-icon mr-2"></i><span class="h4">Jac-eLearning</span>
-			</a>
-		</li>
-
-	</ul>
-	<ul class="navbar_icon" style="margin: 0; padding: 0;">
-		<sec:authorize access="isAuthenticated()">
-			<div class="card-body jae-background-color text-right" style="display: flex; justify-content: space-between; padding-top: 20px;">
-				<div>
-					<span class="card-text text-warning font-weight-bold font-italic h5" style="margin-left: 25px; cursor: pointer;" id="studentName" onclick="if(isStudent) { clearPassword(); retrieveStudentInfo(); }">${firstName} ${lastName}</span>
-					<span style="color: white;">&nbsp;&nbsp;(</span>
-					<span class="card-text h5" id="studentGrade" name="studentGrade" style="color: white;"></span>
-					<span style="color: white;">)  </span>
-					<script>document.getElementById("studentGrade").textContent = displayGrade();</script>
-					&nbsp;&nbsp;
-				</div>
-				<form:form action="${pageContext.request.contextPath}/connected/logout" method="POST" id="logout" style="margin-bottom: 0px;">
-					<button class="btn" style="margin-right: 20px;"><i class="bi bi-box-arrow-right custom-icon text-warning" title="Log Out"></i></button>
-				</form:form>
-			</div>
-		</sec:authorize> 
-	</ul>
-</nav>
+			</sec:authorize> 
+		</ul>
+	</nav>
 </div>
  
-
-
 <!-- Edit Form Dialogue -->
 <div class="modal fade" id="editStudentModal" tabindex="-1" role="dialog" aria-labelledby="modalEditLabel" aria-hidden="true">	
 	<div class="modal-dialog">
