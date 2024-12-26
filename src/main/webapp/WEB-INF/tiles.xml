@@ -105,16 +105,14 @@
 
 	<!-- TEST MENU -->
 	<!-- Connected Mega English Test -->
-	<definition name="megaEngTestPage" extends="tile.definition">
+	<definition name="megaTestPage" extends="tile.definition">
 		<put-attribute name="title" value="James An College Connected Class Page" />
-		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/megaEng.jsp" />
+		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/mega.jsp" />
 	</definition>
-	<!-- Connected Mega Mathematics Test -->
 	<definition name="megaMathTestPage" extends="tile.definition">
 		<put-attribute name="title" value="James An College Connected Class Page" />
 		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/megaMath.jsp" />
 	</definition>
-	<!-- Connected Mega GA Test -->
 	<definition name="megaGATestPage" extends="tile.definition">
 		<put-attribute name="title" value="James An College Connected Class Page" />
 		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/megaGA.jsp" />

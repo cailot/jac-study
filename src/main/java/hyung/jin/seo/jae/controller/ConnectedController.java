@@ -37,6 +37,8 @@ import hyung.jin.seo.jae.dto.SimpleBasketDTO;
 import hyung.jin.seo.jae.dto.StudentTestDTO;
 import hyung.jin.seo.jae.dto.TestAnswerDTO;
 import hyung.jin.seo.jae.dto.TestDTO;
+import hyung.jin.seo.jae.dto.TestScheduleDTO;
+import hyung.jin.seo.jae.dto.TestSummaryDTO;
 import hyung.jin.seo.jae.model.Extrawork;
 import hyung.jin.seo.jae.model.ExtraworkProgress;
 import hyung.jin.seo.jae.model.Homework;
@@ -296,11 +298,15 @@ public class ConnectedController {
 	@GetMapping("/getTest/{id}")
 	@ResponseBody
 	public TestDTO getTest(@PathVariable Long id) {
-		Test work = connectedService.getTest(id);
-		TestDTO dto = new TestDTO(work);
-		// get question count
-		int count = connectedService.getTestAnswerCount(id);
-		dto.setQuestionCount(count);
+		// 1. get TestDTO
+		TestDTO dto = connectedService.getTestInfo(id);
+		// 2. get answer count
+		int answerCount = connectedService.getTestAnswerCountPerQuestion(id);
+		dto.setAnswerCount(answerCount);
+		// 3. get question count
+		int questionCount = connectedService.getTestAnswerCount(id);
+		dto.setQuestionCount(questionCount);
+		// 4. return dto
 		return dto;
 	}
 
@@ -414,13 +420,10 @@ public class ConnectedController {
 	@GetMapping("/summaryPractice/{practiceGroup}/{studentId}/{grade}")
 	@ResponseBody
 	public List<PracticeSummaryDTO> summaryPractices(@PathVariable int practiceGroup, @PathVariable long studentId, @PathVariable String grade) {
-		
 		// 1. get current LocalDateTime & current week
 		LocalDateTime now = LocalDateTime.now();
-		
 		// 2. get PracticeScheduleDTO by current time, practiceType & grade
 		List<PracticeScheduleDTO> schedules = connectedService.checkPracticeSchedule(practiceGroup+"", grade, now);
-
 		// 3. check if schedule is empty
 		if(schedules.isEmpty()){
 			// 3-1. if empty, return empty list
@@ -460,28 +463,49 @@ public class ConnectedController {
 			}
 			return dtos;
 		}
-
 	}
 
-	@GetMapping("/summaryTest/{studentId}/{testType}/{grade}")
+	@GetMapping("/summaryTest/{testGroup}/{studentId}/{grade}")
 	@ResponseBody
-	public List<SimpleBasketDTO> summaryTests(@PathVariable String studentId, @PathVariable String testType, @PathVariable String grade) {
-		List<SimpleBasketDTO> dtos = new ArrayList();
-		String filteredStudentId = StringUtils.defaultString(studentId, "0");
-		String filteredTestType = StringUtils.defaultString(testType, "0");
-		String filteredGrade = StringUtils.defaultString(grade, "0");
-		dtos = connectedService.loadTest(Integer.parseInt(filteredTestType), Integer.parseInt(filteredGrade));
-		// check whether the volume is finished or not
-		for(SimpleBasketDTO dto : dtos){
-			// get testId
-			String testId = StringUtils.defaultString(dto.getValue(), "0");
-			boolean done = connectedService.isStudentTestExist(Long.parseLong(filteredStudentId), Long.parseLong(testId));
-			if(done){
-				String name = dto.getName();
-				dto.setName(name + JaeConstants.PRACTICE_COMPLETE);
+	public List<TestSummaryDTO> summaryTests(@PathVariable int testGroup, @PathVariable long studentId, @PathVariable String grade) {
+		// 1. get current LocalDateTime & current week
+		LocalDateTime now = LocalDateTime.now();
+		// 2. get PracticeScheduleDTO by current time, practiceType & grade
+		List<TestScheduleDTO> schedules = connectedService.checkTestSchedule(testGroup+"", grade, now);
+		// 3. check if schedule is empty
+		if(schedules.isEmpty()){
+			// 3-1. if empty, return empty list
+			return new ArrayList<>();
+		}else{
+			// 3-2. if not empty, get practice list
+			List<TestSummaryDTO> dtos = new ArrayList<>();
+			outter:for(TestScheduleDTO schedule : schedules){				
+				String[] groups = schedule.getTestGroup();
+				String[] weeks = schedule.getWeek();
+				inner:for(int i=0; i<groups.length; i++){
+					System.out.println(groups[i] + " : " + weeks[i]);
+					int group = Integer.parseInt(groups[i]);
+					if(group != testGroup) continue inner;
+					int week = Integer.parseInt(weeks[i]);
+					List<TestDTO> tests = connectedService.getTestInfoByGroup(testGroup, grade, week);
+					for(TestDTO test : tests){
+						// add to list
+						TestSummaryDTO dto = new TestSummaryDTO();
+						long testId = Long.parseLong(test.getId());
+						String title = test.getTitle();
+						boolean done = connectedService.isStudentTestExist(studentId, testId);
+						if(done){
+							title = title + JaeConstants.PRACTICE_COMPLETE;
+						}
+						dto.setId(testId);
+						dto.setTitle(title);
+						dto.setWeek(week);
+						dtos.add(dto);
+					}
+				}
 			}
+			return dtos;
 		}
-		return dtos;
 	}
 
 	@GetMapping("/summaryTestResult/{studentId}/{testType}/{grade}/{volume}")

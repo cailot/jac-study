@@ -74,10 +74,11 @@
     }
 
     .custom-badge {
-        font-size: 1.0em; /* Increase font size */
-        padding: 0.5em; /* Adjust padding */
+        font-size: 1.0em;
+        padding: 0.5em;
         margin-bottom: 1.0em;
     }
+
 
 </style>
 
@@ -153,51 +154,6 @@ function renderPracticePage(num) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //          Render Answer PDF
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// let renderAnswerTask = null; // Track the rendering task
-// function renderAnswerPage(num) {
-//     const canvas = document.getElementById("answerPdfCanvas");
-//     const ctx = canvas.getContext("2d");
-//     const container = document.querySelector(".pdfViewerContainer");
-
-//     // Clear canvas
-//     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-//     if (renderAnswerTask) {
-//         renderAnswerTask.cancel();
-//     }
-
-//     pdfDoc.getPage(num).then((page) => {
-//         // Calculate container width safely
-//         const containerWidth = container.clientWidth || 800;
-//         const viewport = page.getViewport({ scale: 1 });
-//         const scale = containerWidth / viewport.width || 1;
-
-//         // console.log("Container width:", containerWidth);
-//         // console.log("Calculated scale:", scale);
-
-//         const scaledViewport = page.getViewport({ scale });
-//         canvas.height = scaledViewport.height;
-//         canvas.width = scaledViewport.width;
-
-//         const renderContext = {
-//             canvasContext: ctx,
-//             viewport: scaledViewport,
-//         };
-
-//         renderAnswerTask = page.render(renderContext);
-//         renderAnswerTask.promise.then(() => {
-//             document.getElementById("answerCurrentPage").textContent = num;
-//             document.getElementById("answerPrevPage").disabled = num <= 1;
-//             document.getElementById("answerNextPage").disabled = num >= pdfDoc.numPages;
-//             // console.log("Page rendered successfully");
-//         }).catch((err) => {
-//             console.error("Render failed:", err);
-//         });
-//     }).catch((err) => {
-//         console.error("Failed to load page:", err);
-//     });
-// }
-
 function renderAnswerPage(num) {
     const canvas = document.getElementById("answerPdfCanvas");
     const ctx = canvas.getContext("2d");

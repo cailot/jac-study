@@ -18,6 +18,7 @@ import hyung.jin.seo.jae.dto.StudentPracticeDTO;
 import hyung.jin.seo.jae.dto.StudentTestDTO;
 import hyung.jin.seo.jae.dto.TestAnswerDTO;
 import hyung.jin.seo.jae.dto.TestDTO;
+import hyung.jin.seo.jae.dto.TestScheduleDTO;
 import hyung.jin.seo.jae.model.Extrawork;
 import hyung.jin.seo.jae.model.ExtraworkProgress;
 import hyung.jin.seo.jae.model.Homework;
@@ -251,6 +252,9 @@ public interface ConnectedService {
 
 	// retrieve Test by Id
 	Test getTest(Long id);
+
+	// get Test by Id
+	TestDTO getTestInfo(Long id);
 	
 	// // register Test
 	// Test addTest(Test crs);
@@ -312,6 +316,13 @@ public interface ConnectedService {
 	// retrieve StudentTest brief info
 	StudentTestDTO getStudentTest(Long studentId, Long testTypeId, String grade, int volume);
 
+	// get Test by test group, grade & week
+	List<TestDTO> getTestInfoByGroup(int testGroup, String grade, int week);
+
+	// get how many answers per question
+	int getTestAnswerCountPerQuestion(Long testId);
+
+
 	/////////////////////////////////////////////////////////
 	//
 	//	PRACTICE SCHEDULE
@@ -338,5 +349,9 @@ public interface ConnectedService {
 
 	// get Practice Schedule by practiceGroup & grade & localDateTime
 	List<PracticeScheduleDTO> checkPracticeSchedule(String practiceGroup, String grade, LocalDateTime now);
+
+	// get Test Schedule by testGroup & grade & localDateTime
+	List<TestScheduleDTO> checkTestSchedule(String testGroup, String grade, LocalDateTime now);
+
 
 }

@@ -26,6 +26,7 @@ import hyung.jin.seo.jae.dto.StudentPracticeDTO;
 import hyung.jin.seo.jae.dto.StudentTestDTO;
 import hyung.jin.seo.jae.dto.TestAnswerDTO;
 import hyung.jin.seo.jae.dto.TestDTO;
+import hyung.jin.seo.jae.dto.TestScheduleDTO;
 import hyung.jin.seo.jae.model.Extrawork;
 import hyung.jin.seo.jae.model.ExtraworkProgress;
 import hyung.jin.seo.jae.model.Homework;
@@ -51,6 +52,7 @@ import hyung.jin.seo.jae.repository.StudentPracticeRepository;
 import hyung.jin.seo.jae.repository.StudentTestRepository;
 import hyung.jin.seo.jae.repository.TestAnswerRepository;
 import hyung.jin.seo.jae.repository.TestRepository;
+import hyung.jin.seo.jae.repository.TestScheduleRepository;
 import hyung.jin.seo.jae.service.ConnectedService;
 
 @Service
@@ -82,6 +84,9 @@ public class ConnectedServiceImpl implements ConnectedService {
 
 	@Autowired
 	private PracticeScheduleRepository practiceScheduleRepository;
+
+	@Autowired
+	private TestScheduleRepository testScheduleRepository;
 
 	@Autowired
 	private HomeworkScheduleRepository homeworkScheduleRepository;
@@ -204,6 +209,12 @@ public class ConnectedServiceImpl implements ConnectedService {
 		Optional<Test> work = testRepository.findById(id);
 		if(!work.isPresent()) return null;
 		return work.get();
+	}
+
+	@Override
+	public TestDTO getTestInfo(Long id) {
+		TestDTO dto = testRepository.getTestById(id);
+		return dto;
 	}
 
 	@Override
@@ -907,6 +918,17 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
+	public int getTestAnswerCountPerQuestion(Long testId) {
+		int count = 0;
+		try{
+			count = testAnswerRepository.getAnswerCountByTest(testId);
+		}catch(Exception e){
+			System.out.println("No TestAnswer found");
+		}
+		return count;
+	}
+
+	@Override
 	public boolean isStudentPracticeExist(Long studentId, Long practiceId) {
 		Optional<StudentPractice> sp = studentPracticeRepository.findByStudentIdAndPracticeId(studentId, practiceId);
 		if(sp.isPresent()){
@@ -1049,12 +1071,34 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
+	public List<TestScheduleDTO> checkTestSchedule(String testGroup, String grade, LocalDateTime now) {
+		List<TestScheduleDTO> dtos = new ArrayList<>();
+		try{
+			dtos = testScheduleRepository.getTestScheduleByGroupAndGrade(testGroup, grade, now);
+		}catch(Exception e){
+			System.out.println("No Test Schedule found");
+		}
+		return dtos;
+	}
+
+	@Override
 	public List<PracticeDTO> getPracticeInfoByGroup(int practiceGroup, String grade, int week) {
 		List<PracticeDTO> dtos = new ArrayList<>();
 		try{
 			dtos = practiceRepository.getPracticeByGroupNGradeNWeek(practiceGroup, grade, week);
 		}catch(Exception e){
 			System.out.println("No Practice found");
+		}
+		return dtos;
+	}
+
+	@Override
+	public List<TestDTO> getTestInfoByGroup(int testGroup, String grade, int week) {
+		List<TestDTO> dtos = new ArrayList<>();
+		try{
+			dtos = testRepository.getTestByGroupNGradeNWeek(testGroup, grade, week);
+		}catch(Exception e){
+			System.out.println("No Test found");
 		}
 		return dtos;
 	}

@@ -147,7 +147,7 @@ function updatePassword() {
                 <img src="${pageContext.request.contextPath}/image/logo-cc.png" title="JAC Connected Class" style="filter: brightness(0) invert(1);width:50px;" >
             </a>
         </div>
-		<div class="collapse navbar-collapse justify-content-center">
+		<div class="collapse navbar-collapse justify-content-center ml-3">
 			<ul class="navbar-nav">
 				<div class="navbar-nav">
 					<!-- Homework -->
@@ -207,15 +207,23 @@ function updatePassword() {
 						<div class="dropdown-menu" aria-labelledby="testDropdown">
 							<!-- Mega Test submenu -->
 							<c:if test="${grade == '[1]' ||grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]'}">
-								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/mega">Mega Test</a>
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/mega">Mega Test</a>
 							</c:if>
 							<!-- Revision submenu -->
 							<c:if test="${grade == '[6]' ||grade == '[7]' || grade == '[8]' || grade == '[9]'}">
-								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/revision">Revision Test</a>
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/revision">Revision Test</a>
+							</c:if>
+							<!-- Edu submenu -->
+							<c:if test="${grade == '[11]' ||grade == '[12]' || grade == '[19]'}">
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/edu">EDU Test</a>
+							</c:if>
+							<!-- Acer submenu -->
+							<c:if test="${grade == '[11]' ||grade == '[12]'}">
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/acer">ACER Test</a>
 							</c:if>
 							<!-- Test Result submenu -->
 							<c:if test="${grade == '[2]' || grade == '[4]' || grade == '[6]' || grade == '[8]'}">
-								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/practice/naplan">Result</a>
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/result">Result</a>
 							</c:if>
 						</div>
 					</div>

@@ -39,7 +39,10 @@ public class TestType implements Serializable{
     
     @Column(length = 50, nullable = true)
     private String name;
-        
+    
+	@Column
+	private int testGroup;
+
 	@CreationTimestamp
     private LocalDate registerDate;
 

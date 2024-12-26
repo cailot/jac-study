@@ -119,23 +119,23 @@ public class JaeController {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Test Menu
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// mega english
-	@GetMapping("/connected/test/megaEng")
-	public String dispayMegaEngTest() {
-		return "megaEngTestPage";
+	// mega
+	@GetMapping("/connected/test/mega")
+	public String dispayMegaTest() {
+		return "megaTestPage";
 	}
 
-	// mega math
-	@GetMapping("/connected/test/megaMath")
-	public String dispayMegaMathTest() {
-		return "megaMathTestPage";
-	}
+	// // mega math
+	// @GetMapping("/connected/test/megaMath")
+	// public String dispayMegaMathTest() {
+	// 	return "megaMathTestPage";
+	// }
 
-	// mega GA
-	@GetMapping("/connected/test/megaGA")
-	public String dispayMegaGATest() {
-		return "megaGATestPage";
-	}
+	// // mega GA
+	// @GetMapping("/connected/test/megaGA")
+	// public String dispayMegaGATest() {
+	// 	return "megaGATestPage";
+	// }
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Test Result Menu

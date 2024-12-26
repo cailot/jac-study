@@ -20,4 +20,7 @@ public interface TestAnswerRepository extends JpaRepository<TestAnswer, Long>{
 
 	@Query(value = "SELECT * FROM TestAnswer ta where ta.testId = :testId", nativeQuery = true)
 	TestAnswer findTestAnswerByTest(Long testId);
+
+	@Query(value = "SELECT ta.answerCount FROM TestAnswer ta where ta.testId = :testId", nativeQuery = true)
+	int getAnswerCountByTest(Long testId);
 }
