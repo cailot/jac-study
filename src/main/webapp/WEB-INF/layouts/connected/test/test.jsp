@@ -10,7 +10,7 @@
     }
 
     .modal-content {
-        height: 90vh; /* Ensure the content takes 90% height */
+        height: 75vh; /* Ensure the content takes 90% height */
         overflow: hidden; /* Prevent content overflow */
     }
 
@@ -635,7 +635,7 @@ function checkAnswer(testId, numQuestion) {
                 </div>
                 <strong><span class="text-primary" id="alreadyTitle">Retake Practice</span></strong>
                     Our system has detected that you have already taken this test at <strong><span id="alreadyDate"></span></strong>.
-                <br><br><p class="text-center"><strong>Good luck with your practice!</strong></p>      
+                <br><br><p class="text-center"><strong>You will be able to check your results<br> once the system is ready</strong></p>      
             </div>
             <div class="modal-footer">
                 <!-- <button type="button" class="btn btn-primary" id="agreePracticeWarning">I understand</button> -->
