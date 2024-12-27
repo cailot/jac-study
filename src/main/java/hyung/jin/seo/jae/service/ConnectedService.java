@@ -322,6 +322,9 @@ public interface ConnectedService {
 	// get how many answers per question
 	int getTestAnswerCountPerQuestion(Long testId);
 
+	// get registerDate by studentId and testId
+	String getRegDateforStudentTest(Long studentId, Long test);	
+
 
 	/////////////////////////////////////////////////////////
 	//

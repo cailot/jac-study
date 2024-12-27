@@ -876,4 +876,10 @@ public class ConnectedController {
 		}
 	}
 	
+	@GetMapping("/studentTestDate/{studentId}/{testId}")
+	@ResponseBody
+	public String getReportAddress(@PathVariable long studentId, @PathVariable long testId) {
+		String timeString = connectedService.getRegDateforStudentTest(studentId, testId);
+		return timeString;
+	}
 }

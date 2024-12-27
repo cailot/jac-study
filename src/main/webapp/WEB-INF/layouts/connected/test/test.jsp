@@ -1,61 +1,5 @@
 <script src="${pageContext.request.contextPath}/js/pdf-2.16.105.min.js"></script>
 <style>
-    /* .topic-card {
-        background-color: #d1ecf1; 
-        padding: 20px; 
-        border-radius: 10px; 
-        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); 
-    }
-    .modal-extra-large {
-        max-width: 90%;
-        max-height: 90%;
-    }
-
-    input[type="radio"]{
-        transform: scale(2);
-    }
-
-    .custom-control-label::before, .custom-control-label::after {
-        display: none;
-    }
-    .circle {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        border: 1px solid black;
-    }
-
-    .correct {
-        color: white;
-        background-color: red;
-        border-color: red;
-    }
-
-    .student {
-        color: white;
-        background-color: blue;
-        border-color: blue;
-    }
-
-    .answer {
-        color: white;
-        background-color: red;
-        border-color: red;
-    }
-    
-    .different {
-        background-color: #FDEFB2;
-    }
-
-    .custom-badge {
-        font-size: 1.0em;
-        padding: 0.5em;
-        margin-bottom: 1.0em;
-    } */
-
     /* Make the modal take 90% of the viewport height */
     .modal-dialog {
         display: flex;
@@ -133,8 +77,8 @@
         margin-bottom: 1.0em;
     }
 
-
 </style>
+
 <script>
 
 var pdfDoc = null;
@@ -150,44 +94,6 @@ window.showWarning = function(id, title) {
         $('#testWarningModal').modal('hide');
     });
 }
-
-
-// $(document).ready(function() {
-//     $('#testModal').on('shown.bs.modal', function () {
-//         var time = 30 * 60, // 30 minutes in seconds
-//             display = document.querySelector('#timerText');
-//         // Clear any existing interval
-//         if (window.timerInterval) {
-//             clearInterval(window.timerInterval);
-//         }
-//         startTimer(time, display);
-//     });
-
-//     $('#testModal').on('hidden.bs.modal', function () {
-//         var display = document.querySelector('#timerText');
-//         display.textContent = "";
-//     });
-// });
-
-// function startTimer(duration, display) {
-//     var timer = duration, minutes, seconds;
-//     display.textContent = ""; // Clear the timer display at the start of the function
-//     window.timerInterval = setInterval(function () {
-//         minutes = parseInt(timer / 60, 10);
-//         seconds = parseInt(timer % 60, 10);
-
-//         minutes = minutes < 10 ? "0" + minutes : minutes;
-//         seconds = seconds < 10 ? "0" + seconds : seconds;
-//         console.log(minutes + ":" + seconds);
-//         display.textContent = minutes + ":" + seconds;
-
-//         if (--timer < 0) {
-//             clearInterval(window.timerInterval);
-//             display.textContent = "TIME'S UP";
-//         }
-//     }, 1000);
-// }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //          Load Test PDF
@@ -241,59 +147,6 @@ function renderTestPage(num) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 			Display Material (Pdf/Answer Sheet)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-// function displayMaterial(testId, setNumber) {
-//     // set dialogSet value as setNumber
-//     document.getElementById("dialogSet").innerHTML = setNumber;  
-//     $.ajax({
-//         url : '${pageContext.request.contextPath}/connected/getTest/' + testId,
-//         method: "GET",
-//         success: function(test) {
-//             //console.log(test);
-//             document.getElementById("pdfViewer").data = test.pdfPath;
-//             // manipulate answer sheet
-//             var numQuestion = test.questionCount; // replace with the actual property name
-//             var container = $('.answerSheet');
-//             container.empty(); // remove existing question elements
-//             // header
-//             var header = '<div class="h5 bg-primary" style="position: relative; display: flex; justify-content: center; align-items: center; color: #ffffff; text-align: center; margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 5px;">'
-//             + 'Answers&nbsp;&nbsp;<span id="chosenAnswerNum" name="chosenAnswerNum" class="text-warning" title="Student Answer">0</span>&nbsp;/&nbsp;<span id="numQuestion" name="numQuestion" title="Total Question">'+ numQuestion +'</span></div>';
-//             container.append(header);
-//             for (var i = 1; i <= numQuestion; i++) {
-//                 var questionDiv = $('<div>').addClass('mt-5 mb-4');
-//                 var questionLabel = $('<div>').addClass('form-check form-check-inline h5 ml-1').text(' ' + i + '. ');
-//                 questionLabel.css('width', '20px');
-//                 questionDiv.append(questionLabel);
-//                 ['A', 'B', 'C', 'D', 'E'].forEach(function(option, index) {
-//                     var optionDiv = $('<div>').addClass('form-check form-check-inline h5 ml-1');
-//                     var input = $('<input>').addClass('form-check-input mr-3 ml-1').attr({
-//                         type: 'radio',
-//                         name: 'inlineRadioOptions' + i,
-//                         id: 'inlineRadio' + i + (index + 1), // append the question number to the id
-//                         value: index + 1
-//                     });
-//                     var label = $('<label>').addClass('form-check-label').attr('for', 'inlineRadio' + i + (index + 1)).text(option);
-//                     optionDiv.append(input, label);
-//                     questionDiv.append(optionDiv);
-//                 });
-//                 container.append(questionDiv);
-//             }
-
-//             // Add event listener to radio buttons
-//             $('.form-check-input').on('change', function() {
-//                 var chosenAnswerNum = $('input[type=radio]:checked').length;
-//                 $('#chosenAnswerNum').text(chosenAnswerNum);
-//             });
-//             var footer = '<div><button type="submit" class="btn btn-primary w-100" onclick="checkAnswer(' + testId + ', ' +  numQuestion +')">SUBMIT</button></div>';
-//             container.append(footer);
-
-//             // pop-up pdf & answer sheet
-//             $('#testModal').modal('show');
-//         },
-//         error: function(jqXHR, textStatus, errorThrown) {
-//             console.log('Error : ' + errorThrown);
-//         }
-//     });  
-// }
 function displayMaterial(testId) {
     $.ajax({
         url: '${pageContext.request.contextPath}/connected/getTest/' + testId,
@@ -419,114 +272,135 @@ function displayMaterial(testId) {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-// 			Display Answer (Video/Pdf)
+// 			Display Already Taken Dialog
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-function displayAnswer(testId, setNumber) {
-   // set dialogAnswerSet value as weekNumber
-    document.getElementById("dialogAnswerSet").innerHTML = setNumber;
-    document.getElementById("dialogAnswerPdfSet").innerHTML = setNumber;    
+function alreadyTaken(testId, title) {
+    console.log('Already taken test' + testId);
     $.ajax({
-        url : '${pageContext.request.contextPath}/connected/testAnswer/' + studentId + '/' + testId,
+        url : '${pageContext.request.contextPath}/connected/studentTestDate/' + studentId + '/' + testId,
         method: "GET",
         success: function(test) {
-            // console.log(test);
-            if(test.videoPath==null || test.videoPath==''){ // display pdf with answer sheet
-                document.getElementById("onlyPdfViewer").data = test.pdfPath;
-                // manipulate answer sheet
-                var studentAnswers = test.answers;
-                var numQuestion = studentAnswers.length; // replace with the actual property name
-                var container = $('.onlyPdfAnswerSheet');
-                container.empty(); // remove existing question elements
-                // header
-                var header = '<div class="h5 bg-primary" style="position: relative; display: flex; justify-content: center; align-items: center; color: #ffffff; text-align: center; margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 5px;">'
-                + 'Total Questions : &nbsp;&nbsp;<span id="numQuestion" name="numQuestion" title="Total Question">'+ numQuestion +'</span></div>';
-                container.append(header);
-                for (var i = 0; i < numQuestion; i++) {
-                    var questionDiv = $('<div>').addClass('mt-5 mb-4');
-                    var questionLabel = $('<div>').addClass('form-check form-check-inline h5 ml-1').text(' ' + (i+1) + '. ');
-                    // Set a consistent width for the question label container
-                    questionLabel.css('width', '50px'); // Adjust the width as needed
-                    questionDiv.append(questionLabel);
-                    ['A', 'B', 'C', 'D', 'E'].forEach(function (option, index) {
-                        var optionDiv = $('<div>').addClass('custom-control custom-control-inline h6');
-                        var label = $('<label>').addClass('custom-control-label circle').attr('for', 'customCheck' + i + (index + 1)).text(option);
-                        if (test.students[i] == index + 1 && test.answers[i].answer == index + 1) {
-                            // If student's answer and correct answer are the same, add 'correct' class
-                            label.addClass('correct');
-                        } else if (test.students[i] == index + 1) {
-                            // If only student's answer is this option, add 'student' class
-                            label.addClass('student');
-                        } else if (test.answers[i].answer == index + 1) {
-                            // If only correct answer is this option, add 'answer' class
-                            label.addClass('answer');
-                        }
-                        if (test.students[i] != test.answers[i].answer) {
-                            // If student's answer and correct answer are different, add 'different' class to the question div
-                            questionDiv.addClass('different');
-                        }
-                        optionDiv.append(label);
-                        questionDiv.append(optionDiv);
-                    });
-                    container.append(questionDiv);    
-                }
-                // pop-up pdf & answer sheet
-                $('#testAnswerPdfModal').modal('show');                
-
-            }else{ // display video/pdf with answer sheet
-                var videoPlayer = document.getElementById("answerVideoPlayer");
-                videoPlayer.src = test.videoPath;
-                document.getElementById("answerPdfViewer").data = test.pdfPath;
-                // manipulate answer sheet
-                var studentAnswers = test.students;
-                var numQuestion = studentAnswers.length;
-                var result = calculateScore(test.students, test.answers);
-                var score = result.score;
-                var countCorrect = result.numCorrect;
-                var container = $('.resultSheet');
-                container.empty(); // remove existing question elements
-                // debugger;
-                // header
-                var header = '<div class="h5 bg-primary" style="position: relative; display: flex; justify-content: center; align-items: center; color: #ffffff; text-align: center; margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 5px;">'
-                + 'My Score : ' + score + '% (<span id="correctAnswerNum" name="correctAnswerNum" style="color:blue;" title="Student Answer">' + countCorrect + '</span>/<span id="answerNumQuestion" name="answerNumQuestion" style="color:red;" title="Correct Answer">'+ (numQuestion) +'</span>)</div>';
-                container.append(header);
-                for (var i = 0; i < numQuestion; i++) {
-                    var questionDiv = $('<div>').addClass('mt-5 mb-4');
-                    var questionLabel = $('<div>').addClass('form-check form-check-inline h5 ml-1').text(' ' + (i+1) + '. ');
-                    // Set a consistent width for the question label container
-                    questionLabel.css('width', '50px'); // Adjust the width as needed
-                    questionDiv.append(questionLabel);
-                    ['A', 'B', 'C', 'D', 'E'].forEach(function (option, index) {
-                        var optionDiv = $('<div>').addClass('custom-control custom-control-inline h6');
-                        var label = $('<label>').addClass('custom-control-label circle').attr('for', 'customCheck' + i + (index+1)).text(option);
-                        if (test.students[i] == index+1 && test.answers[i].answer == index+1) {
-                            // If student's answer and correct answer are the same, add 'correct' class
-                            label.addClass('correct');
-                        } else if (test.students[i] == index+1) {
-                            // If only student's answer is this option, add 'student' class
-                            label.addClass('student');
-                        } else if (test.answers[i].answer == index+1) {
-                            // If only correct answer is this option, add 'answer' class
-                            label.addClass('answer');
-                        }
-                        if (test.students[i] != test.answers[i].answer) {
-                            // If student's answer and correct answer are different, add 'different' class to the question div
-                            questionDiv.addClass('different');
-                        }
-                        optionDiv.append(label);
-                        questionDiv.append(optionDiv);
-                    });
-                    container.append(questionDiv);    
-                }
-                
-                // pop-up pdf & answer sheet
-                $('#testAnswerModal').modal('show');
-            }    
+            document.getElementById("alreadyTitle").innerHTML = title; 
+            document.getElementById("alreadyDate").innerHTML = test; 
+            $('#takenWarningModal').modal('show');
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log('Error : ' + errorThrown);
         }
     });   
 }
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 			Display Answer (Video/Pdf)
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// function displayAnswer(testId, setNumber) {
+//    // set dialogAnswerSet value as weekNumber
+//     document.getElementById("dialogAnswerSet").innerHTML = setNumber;
+//     document.getElementById("dialogAnswerPdfSet").innerHTML = setNumber;    
+//     $.ajax({
+//         url : '${pageContext.request.contextPath}/connected/testAnswer/' + studentId + '/' + testId,
+//         method: "GET",
+//         success: function(test) {
+//             // console.log(test);
+//             if(test.videoPath==null || test.videoPath==''){ // display pdf with answer sheet
+//                 document.getElementById("onlyPdfViewer").data = test.pdfPath;
+//                 // manipulate answer sheet
+//                 var studentAnswers = test.answers;
+//                 var numQuestion = studentAnswers.length; // replace with the actual property name
+//                 var container = $('.onlyPdfAnswerSheet');
+//                 container.empty(); // remove existing question elements
+//                 // header
+//                 var header = '<div class="h5 bg-primary" style="position: relative; display: flex; justify-content: center; align-items: center; color: #ffffff; text-align: center; margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 5px;">'
+//                 + 'Total Questions : &nbsp;&nbsp;<span id="numQuestion" name="numQuestion" title="Total Question">'+ numQuestion +'</span></div>';
+//                 container.append(header);
+//                 for (var i = 0; i < numQuestion; i++) {
+//                     var questionDiv = $('<div>').addClass('mt-5 mb-4');
+//                     var questionLabel = $('<div>').addClass('form-check form-check-inline h5 ml-1').text(' ' + (i+1) + '. ');
+//                     // Set a consistent width for the question label container
+//                     questionLabel.css('width', '50px'); // Adjust the width as needed
+//                     questionDiv.append(questionLabel);
+//                     ['A', 'B', 'C', 'D', 'E'].forEach(function (option, index) {
+//                         var optionDiv = $('<div>').addClass('custom-control custom-control-inline h6');
+//                         var label = $('<label>').addClass('custom-control-label circle').attr('for', 'customCheck' + i + (index + 1)).text(option);
+//                         if (test.students[i] == index + 1 && test.answers[i].answer == index + 1) {
+//                             // If student's answer and correct answer are the same, add 'correct' class
+//                             label.addClass('correct');
+//                         } else if (test.students[i] == index + 1) {
+//                             // If only student's answer is this option, add 'student' class
+//                             label.addClass('student');
+//                         } else if (test.answers[i].answer == index + 1) {
+//                             // If only correct answer is this option, add 'answer' class
+//                             label.addClass('answer');
+//                         }
+//                         if (test.students[i] != test.answers[i].answer) {
+//                             // If student's answer and correct answer are different, add 'different' class to the question div
+//                             questionDiv.addClass('different');
+//                         }
+//                         optionDiv.append(label);
+//                         questionDiv.append(optionDiv);
+//                     });
+//                     container.append(questionDiv);    
+//                 }
+//                 // pop-up pdf & answer sheet
+//                 $('#testAnswerPdfModal').modal('show');                
+
+//             }else{ // display video/pdf with answer sheet
+//                 var videoPlayer = document.getElementById("answerVideoPlayer");
+//                 videoPlayer.src = test.videoPath;
+//                 document.getElementById("answerPdfViewer").data = test.pdfPath;
+//                 // manipulate answer sheet
+//                 var studentAnswers = test.students;
+//                 var numQuestion = studentAnswers.length;
+//                 var result = calculateScore(test.students, test.answers);
+//                 var score = result.score;
+//                 var countCorrect = result.numCorrect;
+//                 var container = $('.resultSheet');
+//                 container.empty(); // remove existing question elements
+//                 // debugger;
+//                 // header
+//                 var header = '<div class="h5 bg-primary" style="position: relative; display: flex; justify-content: center; align-items: center; color: #ffffff; text-align: center; margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 5px;">'
+//                 + 'My Score : ' + score + '% (<span id="correctAnswerNum" name="correctAnswerNum" style="color:blue;" title="Student Answer">' + countCorrect + '</span>/<span id="answerNumQuestion" name="answerNumQuestion" style="color:red;" title="Correct Answer">'+ (numQuestion) +'</span>)</div>';
+//                 container.append(header);
+//                 for (var i = 0; i < numQuestion; i++) {
+//                     var questionDiv = $('<div>').addClass('mt-5 mb-4');
+//                     var questionLabel = $('<div>').addClass('form-check form-check-inline h5 ml-1').text(' ' + (i+1) + '. ');
+//                     // Set a consistent width for the question label container
+//                     questionLabel.css('width', '50px'); // Adjust the width as needed
+//                     questionDiv.append(questionLabel);
+//                     ['A', 'B', 'C', 'D', 'E'].forEach(function (option, index) {
+//                         var optionDiv = $('<div>').addClass('custom-control custom-control-inline h6');
+//                         var label = $('<label>').addClass('custom-control-label circle').attr('for', 'customCheck' + i + (index+1)).text(option);
+//                         if (test.students[i] == index+1 && test.answers[i].answer == index+1) {
+//                             // If student's answer and correct answer are the same, add 'correct' class
+//                             label.addClass('correct');
+//                         } else if (test.students[i] == index+1) {
+//                             // If only student's answer is this option, add 'student' class
+//                             label.addClass('student');
+//                         } else if (test.answers[i].answer == index+1) {
+//                             // If only correct answer is this option, add 'answer' class
+//                             label.addClass('answer');
+//                         }
+//                         if (test.students[i] != test.answers[i].answer) {
+//                             // If student's answer and correct answer are different, add 'different' class to the question div
+//                             questionDiv.addClass('different');
+//                         }
+//                         optionDiv.append(label);
+//                         questionDiv.append(optionDiv);
+//                     });
+//                     container.append(questionDiv);    
+//                 }
+                
+//                 // pop-up pdf & answer sheet
+//                 $('#testAnswerModal').modal('show');
+//             }    
+//         },
+//         error: function(jqXHR, textStatus, errorThrown) {
+//             console.log('Error : ' + errorThrown);
+//         }
+//     });   
+// }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 			Submit Answer
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -573,28 +447,28 @@ function checkAnswer(testId, numQuestion) {
 //////////////////////////////////////////////////////////////////
 // Calculate score by comparing student answers and answer sheet
 //////////////////////////////////////////////////////////////////
-function calculateScore(studentAnswers, answerSheet) {
-    // Check if both arrays have the same length
-    if (!studentAnswers || !answerSheet || studentAnswers.length !== answerSheet.length) {
-        return 0;
-    }
-    var totalQuestions = answerSheet.length 
-    // Iterate through the arrays and compare corresponding elements
-    var correctAnswers = 0;
-    for (var i = 0; i < totalQuestions; i++) {
-        var studentAnswer = studentAnswers[i];
-        var correctAnswer = answerSheet[i].answer;
+// function calculateScore(studentAnswers, answerSheet) {
+//     // Check if both arrays have the same length
+//     if (!studentAnswers || !answerSheet || studentAnswers.length !== answerSheet.length) {
+//         return 0;
+//     }
+//     var totalQuestions = answerSheet.length 
+//     // Iterate through the arrays and compare corresponding elements
+//     var correctAnswers = 0;
+//     for (var i = 0; i < totalQuestions; i++) {
+//         var studentAnswer = studentAnswers[i];
+//         var correctAnswer = answerSheet[i].answer;
 
-        if (studentAnswer === correctAnswer) {
-            correctAnswers++;
-        }
-    }
-    // Calculate the final score as a percentage
-    var score = (correctAnswers / totalQuestions) * 100;
-    //var rounded = Math.round(score * 100) / 100;
-    var rounded = Math.round(score);
-    return {numCorrect: correctAnswers, score : rounded};
-}
+//         if (studentAnswer === correctAnswer) {
+//             correctAnswers++;
+//         }
+//     }
+//     // Calculate the final score as a percentage
+//     var score = (correctAnswers / totalQuestions) * 100;
+//     //var rounded = Math.round(score * 100) / 100;
+//     var rounded = Math.round(score);
+//     return {numCorrect: correctAnswers, score : rounded};
+// }
 
 </script>
 
@@ -627,9 +501,7 @@ function calculateScore(studentAnswers, answerSheet) {
                         <div style="display: flex; flex-direction: column; height: 100%;">
                             <!-- TIMER -->
                             <div id="timer" class="text-center" style="font-size: 20px; font-weight: bold;">
-                                <i class="bi bi-stopwatch"></i>&nbsp;&nbsp;
-                                <!-- <div id="timerText" class="h3 text-center"></div> -->
-                                <span id="timerText"></span>
+                                <i class="bi bi-stopwatch"></i>&nbsp;&nbsp;<span id="timerText"></span>
                             </div>
                             <!-- ANSWER SHEET -->
                             <div class="answerSheet" style="overflow-y: auto; flex-grow: 1;"></div>
@@ -645,7 +517,7 @@ function calculateScore(studentAnswers, answerSheet) {
 </div>
 
 <!-- Pop up Answer modal for Pdf only-->
-<div class="modal fade" id="testAnswerPdfModal" tabindex="-1" role="dialog" aria-labelledby="testAnswerPdfModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="testAnswerPdfModal" tabindex="-1" role="dialog" aria-labelledby="testAnswerPdfModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-extra-large" role="document">
         <div class="modal-content" style="height: 90vh;">
             <div class="modal-header bg-primary text-white text-center">
@@ -663,7 +535,6 @@ function calculateScore(studentAnswers, answerSheet) {
                     </div>
                     <div class="col-md-3 bg-white p-3 border" style="height: 85vh;">
                         <div style="display: flex; flex-direction: column; height: 100%;">
-                            <!-- ANSWER SHEET -->
                             <div class="onlyPdfAnswerSheet" style="overflow-y: auto; flex-grow: 1;"></div>
                         </div>
                     </div>
@@ -674,10 +545,10 @@ function calculateScore(studentAnswers, answerSheet) {
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Pop up Answer modal for Video/Pdf-->
-<div class="modal fade" id="testAnswerModal" tabindex="-1" role="dialog" aria-labelledby="testAnswerModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="testAnswerModal" tabindex="-1" role="dialog" aria-labelledby="testAnswerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-extra-large" role="document">
         <div class="modal-content" style="height: 90vh;">
             <div class="modal-header bg-primary text-white text-center">
@@ -710,7 +581,7 @@ function calculateScore(studentAnswers, answerSheet) {
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!--Test Warning Modal -->
 <div class="modal fade" id="testWarningModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -745,6 +616,29 @@ function calculateScore(studentAnswers, answerSheet) {
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="agreeTestWarning">I understand</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Already Taken Warning Modal -->
+<div class="modal fade" id="takenWarningModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border: 2px solid #ffc107; border-radius: 10px; height: 50vh;">
+            <div class="modal-header bg-warning" style="display: block;">
+                <p style="text-align: center; margin-bottom: 0;"><span style="font-size:18px"><strong>You have already taken this test !</strong></span></p>
+            </div>
+            <div class="modal-body" style="background-color: #f8f9fa; border-radius: 5px; padding: 20px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="${pageContext.request.contextPath}/image/test-done.png" style="width: 150px; height: 150px; border-radius: 5%;">
+                </div>
+                <strong><span class="text-primary" id="alreadyTitle">Retake Practice</span></strong>
+                    Our system has detected that you have already taken this test at <strong><span id="alreadyDate"></span></strong>.
+                <br><br><p class="text-center"><strong>Good luck with your practice!</strong></p>      
+            </div>
+            <div class="modal-footer">
+                <!-- <button type="button" class="btn btn-primary" id="agreePracticeWarning">I understand</button> -->
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

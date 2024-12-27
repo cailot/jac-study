@@ -1010,6 +1010,18 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
+	public String getRegDateforStudentTest(Long studentId, Long test) {
+		String regString = "";
+		try{
+			LocalDate regDate = studentTestRepository.getRegisterDateByStudentIdAndTest(studentId, test);
+			regString = regDate.toString();
+		}catch(Exception e){
+			System.out.println("No StudentTest found");
+		}
+		return regString;
+	}
+
+	@Override
 	public HomeworkScheduleDTO getHomeworkScheduleBySubjectAndGrade(String subject, String grade, LocalDateTime now) {
 		List<HomeworkScheduleDTO> result = homeworkScheduleRepository.getHomeworkScheduleBySubjectAndGrade(subject, grade, now, PageRequest.of(0, 1));
         return result.isEmpty() ? null : result.get(0);

@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <script>
 
-const TEST_GROUP = 1; // 1 is MEGA
+const TEST_GROUP = 5; // 5 is Mock
 const DONE= 'DONE';
 $(function() {
     $.ajax({
@@ -14,29 +14,12 @@ $(function() {
                 var id = basket.id;
                 var week = basket.week;
                 var setName = week;
-                switch (week) {
-                    case 1:
-                        setName = ' Vol.1';
-                        break;
-                    case 2:
-                        setName = ' Vol.2';
-                        break;
-                    case 3:
-                        setName = ' Vol.3';
-                        break;
-                    case 4:
-                        setName = ' Vol.4';
-                        break;
-                    case 5:
-                        setName = ' Vol.5';
-                        break;
-                }
                 var icon = '<i class="bi bi-send h5 text-primary" data-toggle="tooltip" title="Not Submitted Yet"></i>';
                 var cardBody = '<div class="card-body mx-auto text-center" style="cursor: pointer; max-width: 75%; min-width: 235px;" onclick="showWarning(' + id + ', \'' + title + '\');">'
                 if (title.endsWith('DONE')) {
                     // title ends with 'DONE'
                     title = title.slice(0, -4);
-                    icon = '<i class="bi bi-send-fill h5 text-primary" data-toggle="tooltip" title="You have already taken test"></i>';
+                    icon = '<i class="bi bi-send-fill h5 text-primary" data-toggle="tooltip" title="You have already take test"></i>';
                     cardBody = '<div class="card-body mx-auto text-center" style="cursor: pointer; max-width: 75%; min-width: 235px;" onclick="alreadyTaken(' + id + ', \'' + title + '\');">'
                 }
                 var columnClass = data.length === 2 ? 'mr-5' : ''; // padding in case of 2 cards
@@ -60,7 +43,7 @@ $(function() {
 
 <div class="col-md-12 pt-3">
     <div class="card-body text-center">
-        <h2 style="color: #6c757d; font-weight: bold; text-transform: uppercase; text-shadow: 2px 2px 4px rgba(168, 179, 247, 1);">Mega Test</h2>
+        <h2 style="color: #6c757d; font-weight: bold; text-transform: uppercase; text-shadow: 2px 2px 4px rgba(168, 179, 247, 1);">Mock Test</h2>
     </div>
 </div>
 

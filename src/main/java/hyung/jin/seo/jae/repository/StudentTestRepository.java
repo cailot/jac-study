@@ -1,5 +1,6 @@
 package hyung.jin.seo.jae.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,4 +52,8 @@ public interface StudentTestRepository extends JpaRepository<StudentTest, Long> 
                 @Param("testTypeId") Long testTypeId, 
                 @Param("gradeCode") String gradeCode, 
                 @Param("volume") int volume);	// // bring latest EnrolmentDTO by student id, called from retrieveEnrolment() in
+
+        // get registerDate by studentId and testId
+        @Query("SELECT st.registerDate FROM StudentTest st WHERE st.student.id = :studentId AND st.test.id = :testId")
+        LocalDate getRegisterDateByStudentIdAndTest(@Param("studentId") Long studentId, @Param("testId") Long testId);
 }
