@@ -16,10 +16,6 @@
 	</parent>
     <properties>
         <java.version>11</java.version>
-		<azure.identity.version>1.10.1</azure.identity.version>
-        <microsoft.graph.version>5.65.0</microsoft.graph.version>
-		<reactor-core.version>3.4.33</reactor-core.version>
-    	<reactor-netty.version>1.0.34</reactor-netty.version>
     </properties>
 	<dependencies>
 		<dependency>
@@ -80,6 +76,11 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		<!-- JSTL for JSP -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
@@ -94,7 +95,7 @@
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-api</artifactId>
-			<version>3.0.7</version>
+			<version>3.0.8</version>
 		</dependency>
 		<!-- Tiles Core -->
 		<!-- http://mvnrepository.com/artifact/org.apache.tiles/tiles-core -->
@@ -152,48 +153,8 @@
 			<groupId>org.jfree</groupId>
 			<artifactId>jcommon</artifactId>
 			<version>1.0.24</version>
-		</dependency>
-
-		  <!-- Azure Identity for OAuth2 -->
-		 <!-- Update Azure Identity for OAuth2 -->
-        <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-identity</artifactId>
-            <version>${azure.identity.version}</version>
-        </dependency>
-
-        <!-- Update Microsoft Graph -->
-        <dependency>
-            <groupId>com.microsoft.graph</groupId>
-            <artifactId>microsoft-graph</artifactId>
-            <version>${microsoft.graph.version}</version>
-        </dependency>
-		
+		</dependency>		
 	</dependencies>
-
-
-	 <!-- Add dependency management for Netty -->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-bom</artifactId>
-                <version>4.1.94.Final</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-		<dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-core</artifactId>
-            <version>${reactor-core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.projectreactor.netty</groupId>
-            <artifactId>reactor-netty</artifactId>
-            <version>${reactor-netty.version}</version>
-        </dependency>
-        </dependencies>
-    </dependencyManagement>
 
 	<build>
         <finalName>ROOT</finalName>

@@ -558,6 +558,7 @@ function calculateScore(studentAnswers, answerSheet) {
         </div>
     </div>
 </div>
+
 <!-- Pop up Answer modal -->
 <div class="modal fade" id="answerModal" tabindex="-1" role="dialog" aria-labelledby="practiceAnswerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-extra-large" role="document">

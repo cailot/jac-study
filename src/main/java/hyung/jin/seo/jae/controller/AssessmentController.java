@@ -277,6 +277,8 @@ public class AssessmentController {
 		ingredients.put(JaeConstants.CORRECT_ANSWER, aas);
 		// 5. create PDF
 		byte[] pdfData = pdfService.generateAssessmentPdf(ingredients);
+		// byte[] pdfData = pdfService.dummyPdf();
+		
 		// 6. send email
 		String emailRecipient = "jamesanvic@outlook.com";
 		StringBuilder emailBodyBuilder = new StringBuilder();

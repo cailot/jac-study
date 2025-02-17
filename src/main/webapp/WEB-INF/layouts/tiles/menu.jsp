@@ -224,7 +224,11 @@ function updatePassword() {
 							<!-- Test Result submenu -->
 							<c:if test="${grade == '[2]' || grade == '[4]' || grade == '[6]' || grade == '[8]'}">
 								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/result">Result</a>
-							</c:if>
+							</c:if>							
+							
+							<!-- OMR Result -->
+							<a class="dropdown-item" href="${pageContext.request.contextPath}/result/download-pdf" download="TestResult.pdf">Online Result</a>
+
 						</div>
 					</div>
 					<!-- Link to Jac-eLearning -->

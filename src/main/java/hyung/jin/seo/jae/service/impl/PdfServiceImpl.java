@@ -56,6 +56,63 @@ public class PdfServiceImpl implements PdfService {
 	private ResourceLoader resourceLoader;
 
 	@Override
+	public byte[] dummyPdf() {
+		try {
+			// // Set the content type and attachment header.
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			PdfWriter pdfWriter = new PdfWriter(baos);
+			PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+			pdfDocument.setDefaultPageSize(PageSize.A4);
+			Document document = new Document(pdfDocument);
+			Paragraph onespace = new Paragraph("\n");
+			Paragraph halfspace = new Paragraph(" ").setFixedLeading(5).setVerticalAlignment(VerticalAlignment.MIDDLE).setMargin(0);
+			float wholeWidth = pdfDocument.getDefaultPageSize().getWidth(); // whole width
+			float wholeHeight = pdfDocument.getDefaultPageSize().getHeight(); // whole height
+			
+			// prepare ingredients
+			GuestStudent student = new GuestStudent();
+			student.setFirstName("John");
+			student.setLastName("Doe");
+			student.setGrade("7");
+			student.setRegisterDate(java.time.LocalDate.now());
+			student.setBranch("13");
+			student.setContactNo("0412345678");
+			student.setEmail("abc@gmail.com");
+			student.setState("1");
+			student.setId(12345L);
+			
+			// 1. button section
+			Image header = imageLogo();
+			float x = wholeWidth/2 - 250;
+			float y = wholeHeight/2 + 330;
+
+			header.setFixedPosition(x, y);
+			document.add(header);
+			document.add(onespace);
+			// document.add(onespace);
+			document.add(onespace);
+
+			// Date
+			Cell dateCell = new Cell().add("Test Date : " + JaeUtils.convertToddMMyyyyFormat(student.getRegisterDate()+"")).setFontSize(10f).setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.RIGHT).setMarginRight(100);
+			document.add(dateCell);
+			
+		
+			// 4. branch note section
+			Table note = getBranchNoteTable(wholeWidth, student);
+			document.add(note);
+			document.close();
+
+
+			byte[] pdfData = baos.toByteArray();
+			return pdfData;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
 	public byte[] generateAssessmentPdf(Map<String, Object> data) {
 		try {
 			// // Set the content type and attachment header.

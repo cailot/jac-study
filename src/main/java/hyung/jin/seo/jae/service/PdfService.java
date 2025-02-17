@@ -7,6 +7,8 @@ public interface PdfService {
 	// generate invoice pdf file
 	// void generateInvoicePdf(String name, Map<String, Object> data);
 
+	byte[] dummyPdf();
+
 	byte[] generateAssessmentPdf(Map<String, Object> data);
 
 	void generateTestPdf(Map<String, Object> data);

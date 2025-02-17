@@ -117,6 +117,10 @@
 		<put-attribute name="title" value="James An College Connected Class Page" />
 		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/megaGA.jsp" />
 	</definition>
+	<definition name="omrResultPage" extends="tile.definition">
+		<put-attribute name="title" value="James An College Connected Class Page" />
+		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/omr.jsp" />
+	</definition>
 
 
 	<!-- TEST RESULTS MENU -->
