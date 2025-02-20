@@ -81,25 +81,38 @@ public class PdfServiceImpl implements PdfService {
 			student.setState("1");
 			student.setId(12345L);
 			
-			// 1. button section
-			Image header = imageLogo();
-			float x = wholeWidth/2 - 250;
-			float y = wholeHeight/2 + 330;
-
-			header.setFixedPosition(x, y);
+			// 1. student section
+			Table header = getStudentTable(wholeWidth, "Scholarship Trial Test", student);
 			document.add(header);
 			document.add(onespace);
-			// document.add(onespace);
+
+			// 2. title section
+			Table totalScore = getTitleTable(wholeWidth, "You have scored 19 out of 40 (48%) ");
+			document.add(totalScore);
+
+			// 3. answer section
+			Table detailScore = getDetailAnswer(wholeWidth);
+			document.add(detailScore);
 			document.add(onespace);
 
-			// Date
-			Cell dateCell = new Cell().add("Test Date : " + JaeUtils.convertToddMMyyyyFormat(student.getRegisterDate()+"")).setFontSize(10f).setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.RIGHT).setMarginRight(100);
-			document.add(dateCell);
+			// 4. statistics title section
+			Table statsTitle = getTitleTable(wholeWidth, "Scholarship Trial Test - Y6 Humanities Test 19 (Acer) Result");
+			document.add(statsTitle);
+
+			// 5. statistics section
+			Table statsSection = getStatisticsTable(wholeWidth);
+			document.add(statsSection);
+
+			// 6. Branch section
+			Table branchNote = getTitleTable(wholeWidth, "Glen Waverley (8521 3786)");
+			document.add(branchNote);
 			
-		
-			// 4. branch note section
-			Table note = getBranchNoteTable(wholeWidth, student);
-			document.add(note);
+			
+			
+			
+			
+			
+			
 			document.close();
 
 
@@ -111,6 +124,209 @@ public class PdfServiceImpl implements PdfService {
 			return null;
 		}
 	}
+
+	// 1. student section
+	private Table getStudentTable(float width, String title, GuestStudent student){ 
+		Table note = new Table(new float[]{width});
+		note.addCell(detailCell(title).setItalic().setFontSize(10f).setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.RIGHT));
+		note.addCell(detailCell("Dear " + student.getFirstName() + " " + student.getLastName() + " (" + student.getId()+ ")").setFontSize(8f).setBold().setBorder(Border.NO_BORDER));
+		note.addCell(detailCell("Thank you for participating in the JAC " + title).setFontSize(8f).setBold().setBorder(Border.NO_BORDER));
+		note.addCell(detailCell(student.getGrade() + " Humanities Test 19 (Acer)").setFontSize(8f).setBold().setBorder(Border.NO_BORDER));
+		return note;
+	}
+
+	// 2. title section
+	private Table getTitleTable(float width, String message){ 
+		Table note = new Table(new float[]{width});
+		note.addCell(detailCell(message).setFontSize(8f).setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+		return note;
+	}
+
+	// 3. answer section
+	private Table getDetailAnswer(float width){
+		Table body = new Table(new float[]{(width/2), (width/2)});
+		Table left = getLeftDetailScore(width);
+		Table right = getRightDetailScore(width);
+		body.addCell(new Cell().add(left).setBorder(Border.NO_BORDER));
+		body.addCell(new Cell().add(right).setBorder(Border.NO_BORDER));
+		return body;
+	}
+
+	// 5. stats section
+	private Table getStatisticsTable(float width){
+		Table body = new Table(new float[]{(width/2), (width/2)});
+		Image left = getBarChart(width);
+		Image right = getBarChart(width);
+		body.addCell(new Cell().add(left).setBorder(Border.NO_BORDER));
+		body.addCell(new Cell().add(right).setBorder(Border.NO_BORDER));
+		return body;
+	}
+
+	private Image getBarChart(float width) {
+		// Create a chart and add it to the PDF
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+		dataset.addValue(15, "", "Your Mark");
+		dataset.addValue(52, "", "Average");
+		dataset.addValue(83, "", "Highest");
+		dataset.addValue(30, "", "Lowest");
+		
+		JFreeChart barChart = ChartFactory.createBarChart(
+				"",
+				null,
+				null,
+				dataset,
+				PlotOrientation.VERTICAL,
+				true, true, false);
+
+		barChart.setBackgroundPaint(Color.WHITE);
+		barChart.getTitle().setPaint(Color.BLACK);
+
+		// Enable anti-aliasing
+		barChart.setAntiAlias(true);
+		barChart.setTextAntiAlias(true);
+		barChart.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
+	 
+		// Customize the plot
+		CategoryPlot plot = (CategoryPlot) barChart.getPlot();
+		plot.setBackgroundPaint(Color.WHITE); // Set plot background color
+		plot.setDomainGridlinePaint(Color.BLACK);
+		plot.setRangeGridlinePaint(Color.BLACK);
+
+		// Set the range axis (Y axis) to display up to 100%
+		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+		rangeAxis.setRange(0.0, 100.0);
+		rangeAxis.setTickUnit(new NumberTickUnit(25));
+
+		// Set the font size for the range axis (Y axis)
+		rangeAxis.setTickLabelFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 8));
+		rangeAxis.setLabelFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 8));
+		
+		// Set the font size for the domain axis (X axis)
+		plot.getDomainAxis().setTickLabelFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 8));
+		plot.getDomainAxis().setLabelFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 8));
+
+		BarRenderer renderer = (BarRenderer) plot.getRenderer();
+		renderer.setDefaultItemLabelsVisible(true);
+		renderer.setDefaultItemLabelGenerator(new org.jfree.chart.labels.StandardCategoryItemLabelGenerator());
+		renderer.setBarPainter(new StandardBarPainter());
+
+		// Customize the color of the bars for series 0 and series 1
+		renderer.setSeriesPaint(0, Color.decode("#033781")); // Assuming series 0 is for "Your Mark"
+		renderer.setSeriesPaint(1, Color.white); // Assuming series 1 is for "Average Mark"
+
+		// Set the outline paint and stroke for the border of series 1
+		renderer.setSeriesOutlinePaint(1, Color.black); // Set the border color
+		renderer.setSeriesOutlineStroke(1, new BasicStroke(1.0f)); // Set the border thickness
+		renderer.setDrawBarOutline(true); // Enable drawing the outline
+
+		// Set the outline paint and stroke for the border of series 0 (if needed)
+		renderer.setSeriesOutlinePaint(0, Color.black); // Set the border color for series 0
+		renderer.setSeriesOutlineStroke(0, new BasicStroke(1.0f)); // Set the border thickness for series 0
+		renderer.setDrawBarOutline(true); // Enable drawing the outline
+
+		// Set the font size for the legend
+		barChart.removeLegend();
+		ByteArrayOutputStream chartOutputStream = new ByteArrayOutputStream();
+		try {
+			// Adjust the width and height proportionally
+			int chartWidth = (int) (width / 2.25);
+			int chartHeight = (int) (chartWidth * 0.7); // Adjust height to maintain aspect ratio
+			ChartUtils.writeChartAsPNG(chartOutputStream, barChart, chartWidth, chartHeight);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		ImageData imageData = ImageDataFactory.create(chartOutputStream.toByteArray());
+		Image chartImage = new Image(imageData);
+		// Center horizontally
+		chartImage.setHorizontalAlignment(com.itextpdf.layout.property.HorizontalAlignment.CENTER);
+		return chartImage;
+	}
+
+	// left answer score section
+	private Table getLeftDetailScore(float width){ 
+		Table subject = new Table(new float[]{(width/2)});
+		Table details = new Table(new float[]{(width/2)/10, ((width/2)/10)*2, (width/2)/10, ((width/2)/10)*2, ((width/2)/10)*4});
+		details.addCell(detailCell("Q.No").setBold().setBorder(Border.NO_BORDER)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("Resp").setBold().setBorder(Border.NO_BORDER)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("Ans").setBold().setBorder(Border.NO_BORDER)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("Percent").setBold().setBorder(Border.NO_BORDER)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("Topic").setBold().setBorder(Border.NO_BORDER));
+		int count1 = 30;
+		for(int i=0; i< count1; i++){
+			// background color
+			com.itextpdf.kernel.color.Color backgroundColor = (i % 2 == 0) ? com.itextpdf.kernel.color.Color.LIGHT_GRAY : com.itextpdf.kernel.color.Color.WHITE;
+			Cell cell1 = detailCell((i + 1) + "").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setBold().setTextAlignment(TextAlignment.CENTER);
+			details.addCell(cell1);			
+			Cell cell2 = detailCell("C - O").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
+			details.addCell(cell2);			
+			Cell cell3 = detailCell("C").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
+			details.addCell(cell3);			
+			Cell cell4 = detailCell("57").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER); // percent
+			details.addCell(cell4);			
+			Cell cell5 = detailCell("Comprehension").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.LEFT); // topics
+			details.addCell(cell5);
+		}
+		subject.addCell(details.setMarginTop(1));
+		return subject;
+	}
+
+	private Table getRightDetailScore(float width){ 
+		Table subject = new Table(new float[]{(width/2)});
+		Table details = new Table(new float[]{(width/2)/10, ((width/2)/10)*2, (width/2)/10, ((width/2)/10)*2, ((width/2)/10)*4});
+		
+		details.addCell(detailCell("Q.No").setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+		details.addCell(detailCell("Resp").setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+		details.addCell(detailCell("Ans").setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+		details.addCell(detailCell("Percent").setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+		details.addCell(detailCell("Topic").setBold().setBorder(Border.NO_BORDER));
+		
+		int count2 = 50;
+		for(int i=30; i< count2; i++){
+			// background color
+			com.itextpdf.kernel.color.Color backgroundColor = (i % 2 == 0) ? com.itextpdf.kernel.color.Color.LIGHT_GRAY : com.itextpdf.kernel.color.Color.WHITE;
+			Cell cell1 = detailCell((i + 1) + "").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setBold().setTextAlignment(TextAlignment.CENTER);
+			details.addCell(cell1);            
+			Cell cell2 = detailCell("B - X").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
+			details.addCell(cell2);            
+			Cell cell3 = detailCell("A").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
+			details.addCell(cell3);            
+			Cell cell4 = detailCell("31").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER); // percent
+			details.addCell(cell4);            
+			Cell cell5 = detailCell("Spelling").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.LEFT); // topics
+			details.addCell(cell5);
+		}
+		
+		subject.addCell(details.setMarginTop(1).setBorder(Border.NO_BORDER));
+		subject.setBorder(Border.NO_BORDER);
+		return subject;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	@Override
 	public byte[] generateAssessmentPdf(Map<String, Object> data) {
