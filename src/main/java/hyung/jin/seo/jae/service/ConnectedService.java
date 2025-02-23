@@ -3,12 +3,8 @@ package hyung.jin.seo.jae.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
-
 import hyung.jin.seo.jae.dto.ExtraworkDTO;
 import hyung.jin.seo.jae.dto.HomeworkDTO;
-import hyung.jin.seo.jae.dto.HomeworkProgressDTO;
 import hyung.jin.seo.jae.dto.HomeworkScheduleDTO;
 import hyung.jin.seo.jae.dto.PracticeAnswerDTO;
 import hyung.jin.seo.jae.dto.PracticeDTO;
@@ -299,7 +295,7 @@ public interface ConnectedService {
 	StudentTest getStudentTest(Long id);
 
 	// retrieve TestAnswer by Test
-	StudentTestDTO findStudentTestByStudentNTest(Long studentId, Long testId);
+	StudentTestDTO findStudentTestByStudentNTest(Long studentId, Long testId, String from, String to);
 
 	// register TestAnswer
 	StudentTest addStudentTest(StudentTest crs);
@@ -314,7 +310,7 @@ public interface ConnectedService {
 	// void deleteStudentTest(Long studentId, Long testId); 
 	
 	// retrieve StudentTest brief info
-	StudentTestDTO getStudentTest(Long studentId, Long testTypeId, String grade, int volume);
+	StudentTestDTO getStudentTest(Long studentId, Long testTypeId, String grade, int volume, String from, String to);
 
 	// get Test by test group, grade & week
 	List<TestDTO> getTestInfoByGroup(int testGroup, String grade, int week);
@@ -323,7 +319,7 @@ public interface ConnectedService {
 	int getTestAnswerCountPerQuestion(Long testId);
 
 	// get registerDate by studentId and testId
-	String getRegDateforStudentTest(Long studentId, Long test);	
+	String getRegDateforStudentTest(Long studentId, Long test, String from, String to);	
 
 
 	/////////////////////////////////////////////////////////

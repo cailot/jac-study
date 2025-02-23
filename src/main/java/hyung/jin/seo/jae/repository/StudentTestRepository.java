@@ -28,8 +28,9 @@ public interface StudentTestRepository extends JpaRepository<StudentTest, Long> 
                 "st.test.id, " +
                 "st.answers) " +
                 "FROM StudentTest st " +
-                "WHERE st.student.id = :studentId AND st.test.id = :testId")
-        StudentTestDTO findStudentTest(@Param("studentId") Long studentId, @Param("testId") Long testId);	// // bring latest EnrolmentDTO by student id, called from retrieveEnrolment() in
+                "WHERE st.student.id = :studentId AND st.test.id = :testId " +
+                "AND st.registerDate BETWEEN :fromTime AND :toTime")
+        StudentTestDTO findStudentTest(@Param("studentId") Long studentId, @Param("testId") Long testId, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);	// // bring latest EnrolmentDTO by student id, called from retrieveEnrolment() in
 	// // courseInfo.jsp
 	// check whether there is a record in StudentTest table by studentId and testId
 	Optional<StudentTest> findByStudentIdAndTestId(Long studentId, Long testId);
@@ -46,14 +47,19 @@ public interface StudentTestRepository extends JpaRepository<StudentTest, Long> 
                 "st.test.testType.id, " +
                 "st.test.testType.name) " +
                 "FROM StudentTest st " +
-                "WHERE st.student.id = :studentId AND st.test.testType.id = :testTypeId AND st.test.grade.code = :gradeCode AND st.test.volume = :volume")
-        StudentTestDTO findStudentTestResult(
+                "WHERE st.student.id = :studentId " +
+                "AND st.test.testType.id = :testTypeId " +
+                "AND st.test.grade.code = :gradeCode " +
+                "AND st.test.volume = :volume " +
+                "AND st.registerDate BETWEEN :fromTime AND :toTime")
+        StudentTestDTO findStudentTestResult( 
                 @Param("studentId") Long studentId, 
                 @Param("testTypeId") Long testTypeId, 
                 @Param("gradeCode") String gradeCode, 
-                @Param("volume") int volume);	// // bring latest EnrolmentDTO by student id, called from retrieveEnrolment() in
+                @Param("volume") int volume,
+                @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);	// // bring latest EnrolmentDTO by student id, called from retrieveEnrolment() in
 
         // get registerDate by studentId and testId
-        @Query("SELECT st.registerDate FROM StudentTest st WHERE st.student.id = :studentId AND st.test.id = :testId")
-        LocalDate getRegisterDateByStudentIdAndTest(@Param("studentId") Long studentId, @Param("testId") Long testId);
+        @Query("SELECT st.registerDate FROM StudentTest st WHERE st.student.id = :studentId AND st.test.id = :testId AND st.registerDate BETWEEN :fromTime AND :toTime")
+        LocalDate getRegisterDateByStudentIdAndTest(@Param("studentId") Long studentId, @Param("testId") Long testId, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);
 }

@@ -2,6 +2,7 @@ package hyung.jin.seo.jae.service.impl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -96,6 +97,8 @@ public class ConnectedServiceImpl implements ConnectedService {
 
 	@Autowired
 	private ExtraworkProgressRepository extraworkProgressRepository;
+
+	public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	
 	@Override
 	public List<Homework> allHomeworks() {
@@ -988,10 +991,13 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
-	public StudentTestDTO findStudentTestByStudentNTest(Long studentId, Long testId) {
+	public StudentTestDTO findStudentTestByStudentNTest(Long studentId, Long testId, String from, String to) {
 		StudentTestDTO dto = null;
+		// convert String to LocalDate
+		LocalDate fromDate = LocalDate.parse(from, DATE_FORMATTER);
+		LocalDate toDate = LocalDate.parse(to, DATE_FORMATTER);			
 		try{
-			dto =  studentTestRepository.findStudentTest(studentId, testId);
+			dto =  studentTestRepository.findStudentTest(studentId, testId, fromDate, toDate);
 		}catch(Exception e){
 			System.out.println("No StudentTest found");
 		}
@@ -999,10 +1005,13 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
-	public StudentTestDTO getStudentTest(Long studentId, Long testTypeId, String grade, int volume) {
+	public StudentTestDTO getStudentTest(Long studentId, Long testTypeId, String grade, int volume, String from, String to) {
 		StudentTestDTO dto = null;
+		// convert String to LocalDate
+		LocalDate fromDate = LocalDate.parse(from, DATE_FORMATTER);
+		LocalDate toDate = LocalDate.parse(to, DATE_FORMATTER);			
 		try{
-			dto =  studentTestRepository.findStudentTestResult(studentId, testTypeId, grade, volume);
+			dto =  studentTestRepository.findStudentTestResult(studentId, testTypeId, grade, volume, fromDate, toDate);
 		}catch(Exception e){
 			System.out.println("No StudentTest found");
 		}
@@ -1010,10 +1019,13 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
-	public String getRegDateforStudentTest(Long studentId, Long test) {
+	public String getRegDateforStudentTest(Long studentId, Long test, String from, String to) {
 		String regString = "";
+		// convert String to LocalDate
+		LocalDate fromDate = LocalDate.parse(from, DATE_FORMATTER);
+		LocalDate toDate = LocalDate.parse(to, DATE_FORMATTER);
 		try{
-			LocalDate regDate = studentTestRepository.getRegisterDateByStudentIdAndTest(studentId, test);
+			LocalDate regDate = studentTestRepository.getRegisterDateByStudentIdAndTest(studentId, test, fromDate, toDate);
 			regString = regDate.toString();
 		}catch(Exception e){
 			System.out.println("No StudentTest found");

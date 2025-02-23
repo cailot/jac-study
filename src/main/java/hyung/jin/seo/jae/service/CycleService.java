@@ -60,7 +60,7 @@ public interface CycleService {
 	Cycle addCycle(Cycle cycle);
 
 	// list all cycles by year
-	List<CycleDTO> listCycles(int year);
+	CycleDTO listCycles(int year);
 
 	// delete cycle
 	void deleteCycle(Long id);

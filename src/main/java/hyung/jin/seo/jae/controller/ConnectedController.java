@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import hyung.jin.seo.jae.dto.CycleDTO;
 import hyung.jin.seo.jae.dto.ExtraworkDTO;
 import hyung.jin.seo.jae.dto.ExtraworkProgressDTO;
 import hyung.jin.seo.jae.dto.ExtraworkSummaryDTO;
@@ -76,68 +77,6 @@ public class ConnectedController {
 	@Autowired
 	private CycleService cycleService;
 	
-	// // register homework
-	// @PostMapping("/addHomework")
-	// @ResponseBody
-	// public HomeworkDTO registerHomework(@RequestBody HomeworkDTO formData) {
-	// 	// 1. create barebone
-	// 	Homework work = formData.convertToHomework();
-	// 	// 2. set active to true as default
-	// 	work.setActive(true);
-	// 	// 3. set Subject
-	// 	Subject subject = codeService.getSubject(Long.parseLong(formData.getSubject()));
-	// 	// 4. set Grade
-	// 	Grade grade = codeService.getGrade(Long.parseLong(formData.getGrade()));
-	// 	// 5. associate Subject & Grade
-	// 	work.setSubject(subject);
-	// 	work.setGrade(grade);
-	// 	// 6. register Homework
-	// 	Homework added = connectedService.addHomework(work);
-	// 	// 7. return dto
-	// 	HomeworkDTO dto = new HomeworkDTO(added);
-	// 	return dto;
-	// }
-
-	// // register extrawork
-	// @PostMapping("/addExtrawork")
-	// @ResponseBody
-	// public ExtraworkDTO registerExtrawork(@RequestBody ExtraworkDTO formData) {
-	// 	// 1. create barebone
-	// 	Extrawork work = formData.convertToExtrawork();
-	// 	// 2. set active to true as default
-	// 	work.setActive(true);
-	// 	// 3. set Grade
-	// 	Grade grade = codeService.getGrade(Long.parseLong(formData.getGrade()));
-	// 	// 4. associate Grade
-	// 	work.setGrade(grade);
-	// 	// 5. register Extrawork
-	// 	Extrawork added = connectedService.addExtrawork(work);
-	// 	// 6. return dto
-	// 	ExtraworkDTO dto = new ExtraworkDTO(added);
-	// 	return dto;
-	// }
-
-	// // register practice
-	// @PostMapping("/addPractice")
-	// @ResponseBody
-	// public PracticeDTO registerPractice(@RequestBody PracticeDTO formData) {
-	// 	// 1. create barebone
-	// 	Practice work = formData.convertToPractice();
-	// 	// 2. set active to true as default
-	// 	work.setActive(true);
-	// 	// 3. set Grade & PracticeType
-	// 	Grade grade = codeService.getGrade(Long.parseLong(formData.getGrade()));
-	// 	PracticeType type = codeService.getPracticeType(formData.getPracticeType());
-	// 	// 4. associate Grade & PracticeType
-	// 	work.setGrade(grade);
-	// 	work.setPracticeType(type);
-	// 	// 5. register Practice
-	// 	Practice added = connectedService.addPractice(work);
-	// 	// 6. return dto
-	// 	PracticeDTO dto = new PracticeDTO(added);
-	// 	return dto;
-	// }
-
 	@PostMapping(value = "/addStudentPractice")
 	@ResponseBody
     public ResponseEntity<String> registerStudentPractice(@RequestBody Map<String, Object> payload) {
@@ -208,57 +147,6 @@ public class ConnectedController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
 		}
 	}
-
-	// // update existing homework
-	// @PutMapping("/updateHomework")
-	// @ResponseBody
-	// public ResponseEntity<String> updateHomework(@RequestBody HomeworkDTO formData) {
-	// 	try{
-	// 		// 1. create barebone Homework
-	// 		Homework work = formData.convertToHomework();
-	// 		// 2. update Homework
-	// 		work = connectedService.updateHomework(work, Long.parseLong(formData.getId()));
-	// 		// 3.return flag
-	// 		return ResponseEntity.ok("\"Homework updated\"");
-	// 	}catch(Exception e){
-	// 		String message = "Error updating Homework : " + e.getMessage();
-	// 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
-	// 	}
-	// }
-
-	// // update existing extrawork
-	// @PutMapping("/updateExtrawork")
-	// @ResponseBody
-	// public ResponseEntity<String> updateExtrawork(@RequestBody ExtraworkDTO formData) {
-	// 	try{
-	// 		// 1. create barebone Homework
-	// 		Extrawork work = formData.convertToExtrawork();
-	// 		// 2. update Homework
-	// 		work = connectedService.updateExtrawork(work, Long.parseLong(formData.getId()));
-	// 		// 3.return flag
-	// 		return ResponseEntity.ok("\"Extrawork updated\"");
-	// 	}catch(Exception e){
-	// 		String message = "Error updating Extrawork : " + e.getMessage();
-	// 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
-	// 	}
-	// }
-
-	// // update existing practice
-	// @PutMapping("/updatePractice")
-	// @ResponseBody
-	// public ResponseEntity<String> updatePractice(@RequestBody PracticeDTO formData) {
-	// 	try{
-	// 		// 1. create barebone Homework
-	// 		Practice work = formData.convertToPractice();
-	// 		// 2. update Homework
-	// 		work = connectedService.updatePractice(work, Long.parseLong(formData.getId()));
-	// 		// 3.return flag
-	// 		return ResponseEntity.ok("\"Practice updated\"");
-	// 	}catch(Exception e){
-	// 		String message = "Error updating Practice : " + e.getMessage();
-	// 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
-	// 	}
-	// }
 	
 	// get homework
 	@GetMapping("/getHomework/{id}")
@@ -517,10 +405,13 @@ public class ConnectedController {
 		String filteredGrade = StringUtils.defaultString(grade, "0");
 		String filteredVolume = StringUtils.defaultString(volume, "0");
 		String[] types = StringUtils.split(StringUtils.defaultString(testType),",");
-		// Loop through each test type in the array
+		// 1. get current year 
+		int currentYear = cycleService.academicYear();
+		CycleDTO cycle = cycleService.listCycles(currentYear);
+		// 2. loop through each test type in the array
 		for (String type : types) {
 			// can I simply use SimpleBasketDTO for testId & testTypeName ??...
-			StudentTestDTO dto = connectedService.getStudentTest(Long.parseLong(filteredStudentId), Long.parseLong(type), filteredGrade, Integer.parseInt(filteredVolume));
+			StudentTestDTO dto = connectedService.getStudentTest(Long.parseLong(filteredStudentId), Long.parseLong(type), filteredGrade, Integer.parseInt(filteredVolume), cycle.getStartDate(), cycle.getEndDate());
 			if(dto!=null) dtos.add(dto);
 		}		
 		return dtos;
@@ -557,31 +448,6 @@ public class ConnectedController {
 		 } 
         return ResponseEntity.ok("\"Success\"");
     }
-
-
-	// get practice schedule
-	// @GetMapping("/getPracticeSchedule/{year}/{week}/{grade}")
-	// @ResponseBody
-	// public List<PracticeDTO> getPracticeSchedule(@PathVariable int year, @PathVariable int week, @PathVariable int grade) {
-	// 	List<PracticeDTO> dtos = new ArrayList<>();
-	// 	// 1. get PracticeScheduleDTO by year & week
-	// 	List<PracticeScheduleDTO> schedules = connectedService.listPracticeSchedule(year, week);
-	// 	// 2. get PracticeDTO from PracticeScheduleDTO
-	// 	for(PracticeScheduleDTO schedule : schedules){
-	// 		// 3. get PracticeDTO
-	// 		List<PracticeDTO> practices = schedule.getPractices();
-	// 		for(PracticeDTO practice : practices){
-	// 			// 4. get and compare grade
-	// 			int practiceGrade = Integer.parseInt(StringUtils.defaultString(practice.getGrade(), "0"));
-	// 			if(grade == practiceGrade){
-	// 				// 5. add to list
-	// 				dtos.add(practice);
-	// 			}
-	// 		}
-	// 	}
-	// 	// 6. return dtos
-	// 	return dtos;
-	// }
 
 	// helper method converting practice answers Map to List
 	private List<Integer> convertPracticeAnswers(List<Map<String, Object>> answers) {
@@ -879,7 +745,11 @@ public class ConnectedController {
 	@GetMapping("/studentTestDate/{studentId}/{testId}")
 	@ResponseBody
 	public String getReportAddress(@PathVariable long studentId, @PathVariable long testId) {
-		String timeString = connectedService.getRegDateforStudentTest(studentId, testId);
+		// 1. get current year 
+		int currentYear = cycleService.academicYear();
+		CycleDTO cycle = cycleService.listCycles(currentYear);
+		// 2. get test date
+		String timeString = connectedService.getRegDateforStudentTest(studentId, testId, cycle.getStartDate(), cycle.getEndDate());
 		return timeString;
 	}
 }

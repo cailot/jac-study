@@ -8,17 +8,20 @@ import java.util.List;
 import java.util.Map;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.RenderingHints;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -30,6 +33,7 @@ import org.springframework.stereotype.Service;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.io.source.ByteArrayOutputStream;
+import com.itextpdf.kernel.color.DeviceRgb;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -44,6 +48,7 @@ import com.itextpdf.layout.property.VerticalAlignment;
 
 import hyung.jin.seo.jae.dto.AssessmentAnswerDTO;
 import hyung.jin.seo.jae.dto.GuestStudentAssessmentDTO;
+import hyung.jin.seo.jae.dto.StudentDTO;
 import hyung.jin.seo.jae.model.GuestStudent;
 import hyung.jin.seo.jae.service.PdfService;
 import hyung.jin.seo.jae.utils.JaeConstants;
@@ -56,7 +61,7 @@ public class PdfServiceImpl implements PdfService {
 	private ResourceLoader resourceLoader;
 
 	@Override
-	public byte[] dummyPdf() {
+	public byte[] dummyPdf(StudentDTO student) {
 		try {
 			// // Set the content type and attachment header.
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -65,29 +70,16 @@ public class PdfServiceImpl implements PdfService {
 			pdfDocument.setDefaultPageSize(PageSize.A4);
 			Document document = new Document(pdfDocument);
 			Paragraph onespace = new Paragraph("\n");
-			Paragraph halfspace = new Paragraph(" ").setFixedLeading(5).setVerticalAlignment(VerticalAlignment.MIDDLE).setMargin(0);
 			float wholeWidth = pdfDocument.getDefaultPageSize().getWidth(); // whole width
-			float wholeHeight = pdfDocument.getDefaultPageSize().getHeight(); // whole height
-			
-			// prepare ingredients
-			GuestStudent student = new GuestStudent();
-			student.setFirstName("John");
-			student.setLastName("Doe");
-			student.setGrade("7");
-			student.setRegisterDate(java.time.LocalDate.now());
-			student.setBranch("13");
-			student.setContactNo("0412345678");
-			student.setEmail("abc@gmail.com");
-			student.setState("1");
-			student.setId(12345L);
-			
+
 			// 1. student section
 			Table header = getStudentTable(wholeWidth, "Scholarship Trial Test", student);
 			document.add(header);
 			document.add(onespace);
 
 			// 2. title section
-			Table totalScore = getTitleTable(wholeWidth, "You have scored 19 out of 40 (48%) ");
+			Table totalScore = new Table(new float[]{wholeWidth});
+			totalScore.addCell(detailCell("You have scored 19 out of 40 (48%)").setFontSize(8f).setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
 			document.add(totalScore);
 
 			// 3. answer section
@@ -96,25 +88,37 @@ public class PdfServiceImpl implements PdfService {
 			document.add(onespace);
 
 			// 4. statistics title section
-			Table statsTitle = getTitleTable(wholeWidth, "Scholarship Trial Test - Y6 Humanities Test 19 (Acer) Result");
+			Table statsTitle = new Table(new float[]{wholeWidth});
+			statsTitle.addCell(detailCell("Scholarship Trial Test - Y6 Humanities Test 19 (Acer) Result").setFontSize(8f).setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
 			document.add(statsTitle);
 
 			// 5. statistics section
 			Table statsSection = getStatisticsTable(wholeWidth);
 			document.add(statsSection);
 
-			// 6. Branch section
-			Table branchNote = getTitleTable(wholeWidth, "Glen Waverley (8521 3786)");
+			// 6. branch section
+			Table branchNote = new Table(new float[]{wholeWidth});
+			branchNote.addCell(detailCell("Glen Waverley (8521 3786)").setFontSize(8f).setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
 			document.add(branchNote);
 			
+			// 7. history title section
+			Table historyTitle = new Table(new float[]{wholeWidth});
+			historyTitle.addCell(detailCell("ENGLISH Past Average & Your Scores").setFontSize(8f).setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+			document.add(historyTitle);
 			
+			// 8. history section
+			Table historySection1 = getHistoryTable(wholeWidth);
+			document.add(historySection1);
+			Table historySection2 = getHistoryTable(wholeWidth);
+			historySection2.setMarginTop(1);
+			document.add(historySection2);
+			document.add(onespace);
 			
-			
-			
-			
+			// 9. history graph section
+			Table historyGraph = getHistoryGraphTable(wholeWidth);
+			document.add(historyGraph);
 			
 			document.close();
-
 
 			byte[] pdfData = baos.toByteArray();
 			return pdfData;
@@ -126,19 +130,12 @@ public class PdfServiceImpl implements PdfService {
 	}
 
 	// 1. student section
-	private Table getStudentTable(float width, String title, GuestStudent student){ 
+	private Table getStudentTable(float width, String title, StudentDTO student){ 
 		Table note = new Table(new float[]{width});
 		note.addCell(detailCell(title).setItalic().setFontSize(10f).setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.RIGHT));
 		note.addCell(detailCell("Dear " + student.getFirstName() + " " + student.getLastName() + " (" + student.getId()+ ")").setFontSize(8f).setBold().setBorder(Border.NO_BORDER));
 		note.addCell(detailCell("Thank you for participating in the JAC " + title).setFontSize(8f).setBold().setBorder(Border.NO_BORDER));
 		note.addCell(detailCell(student.getGrade() + " Humanities Test 19 (Acer)").setFontSize(8f).setBold().setBorder(Border.NO_BORDER));
-		return note;
-	}
-
-	// 2. title section
-	private Table getTitleTable(float width, String message){ 
-		Table note = new Table(new float[]{width});
-		note.addCell(detailCell(message).setFontSize(8f).setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
 		return note;
 	}
 
@@ -159,6 +156,132 @@ public class PdfServiceImpl implements PdfService {
 		Image right = getBarChart(width);
 		body.addCell(new Cell().add(left).setBorder(Border.NO_BORDER));
 		body.addCell(new Cell().add(right).setBorder(Border.NO_BORDER));
+		return body;
+	}
+
+	// 8. history section
+	private Table getHistoryTable(float width){
+		Table details = new Table(new float[]{((width)/15*2), (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15,});
+		// Define header background color
+    	DeviceRgb headerBgColor = new DeviceRgb(200, 200, 200); // Light gray
+		details.addCell(detailCell("Test No").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("1").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("2").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("3").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("4").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("5").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("6").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("7").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("8").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("9").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("10").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("11").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("12").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("13").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		details.addCell(detailCell("14").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		// first row
+		Cell cell1_1 = detailCell("Your Score").setBold().setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_1);			
+		Cell cell1_2 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_2);
+		Cell cell1_3 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_3);
+		Cell cell1_4 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_4);
+		Cell cell1_5 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_5);
+		Cell cell1_6 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_6);
+		Cell cell1_7 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_7);
+		Cell cell1_8 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_8);
+		Cell cell1_9 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_9);
+		Cell cell1_10 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_10);
+		Cell cell1_11 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_11);
+		Cell cell1_12 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_12);
+		Cell cell1_13 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_13);
+		Cell cell1_14 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell1_14);
+		Cell cell15 = detailCell("15").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell15);
+		// second row
+		Cell cell2_1 = detailCell("Average").setBold().setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_1);
+		Cell cell2_2 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_2);
+		Cell cell2_3 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_3);
+		Cell cell2_4 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_4);
+		Cell cell2_5 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_5);
+		Cell cell2_6 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_6);
+		Cell cell2_7 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_7);
+		Cell cell2_8 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_8);
+		Cell cell2_9 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_9);
+		Cell cell2_10 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_10);
+		Cell cell2_11 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_11);
+		Cell cell2_12 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_12);
+		Cell cell2_13 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_13);
+		Cell cell2_14 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_14);
+		Cell cell2_15 = detailCell("20").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell2_15);
+		// third row
+		Cell cell3_1 = detailCell("No. Question").setBold().setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_1);
+		Cell cell3_2 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_2);
+		Cell cell3_3 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_3);
+		Cell cell3_4 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_4);
+		Cell cell3_5 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_5);
+		Cell cell3_6 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_6);
+		Cell cell3_7 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_7);
+		Cell cell3_8 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_8);
+		Cell cell3_9 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_9);
+		Cell cell3_10 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_10);
+		Cell cell3_11 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_11);
+		Cell cell3_12 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_12);
+		Cell cell3_13 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_13);
+		Cell cell3_14 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_14);
+		Cell cell3_15 = detailCell("40").setTextAlignment(TextAlignment.CENTER);
+		details.addCell(cell3_15);
+		
+		return details;
+		
+	}
+
+	// 9. history graph section
+	private Table getHistoryGraphTable(float width){
+		Table body = new Table(new float[]{(width)});
+		Image line = getLineChart(width);
+		body.addCell(new Cell().add(line).setBorder(Border.NO_BORDER));
 		return body;
 	}
 
@@ -243,6 +366,90 @@ public class PdfServiceImpl implements PdfService {
 		return chartImage;
 	}
 
+	private Image getLineChart(float width) {
+		 // Create dataset
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+		// Sample data for "Your Score" (red line)
+		dataset.addValue(80, "Your Score", "1");
+		dataset.addValue(57, "Your Score", "2");
+		dataset.addValue(20, "Your Score", "3");
+		dataset.addValue(60, "Your Score", "4");
+		dataset.addValue(58, "Your Score", "5");
+		dataset.addValue(50, "Your Score", "6");
+		dataset.addValue(62, "Your Score", "7");
+		dataset.addValue(48, "Your Score", "8");
+
+		// Sample data for "Average" (green dashed line)
+		dataset.addValue(50, "Average", "1");
+		dataset.addValue(50, "Average", "2");
+		dataset.addValue(70, "Average", "3");
+		dataset.addValue(50, "Average", "4");
+		dataset.addValue(55, "Average", "5");
+		dataset.addValue(60, "Average", "6");
+		dataset.addValue(58, "Average", "7");
+		dataset.addValue(52, "Average", "8");
+
+		// Create Line Chart
+		JFreeChart lineChart = ChartFactory.createLineChart(
+				"", // Chart title
+				"", // X-Axis Label
+				"Score", // Y-Axis Label
+				dataset,
+				PlotOrientation.VERTICAL,
+				true, true, false);
+
+		// Set chart background
+		lineChart.setBackgroundPaint(Color.WHITE);
+
+		// Customize the plot
+		CategoryPlot plot = (CategoryPlot) lineChart.getPlot();
+		plot.setBackgroundPaint(Color.WHITE);
+		plot.setDomainGridlinePaint(Color.LIGHT_GRAY);
+		plot.setRangeGridlinePaint(Color.LIGHT_GRAY);
+
+		// Customize axis
+		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+		rangeAxis.setRange(0.0, 100.0);
+		rangeAxis.setTickUnit(new NumberTickUnit(10));
+		rangeAxis.setTickLabelFont(new Font("SansSerif", Font.PLAIN, 10));
+		rangeAxis.setLabelFont(new Font("SansSerif", Font.BOLD, 12));
+		rangeAxis.setLabel("");
+
+		CategoryAxis domainAxis = plot.getDomainAxis();
+		domainAxis.setTickLabelFont(new Font("SansSerif", Font.PLAIN, 10));
+		domainAxis.setLabelFont(new Font("SansSerif", Font.BOLD, 12));
+
+		// Customize renderer
+		LineAndShapeRenderer renderer = new LineAndShapeRenderer();
+		renderer.setSeriesPaint(0, Color.RED); // Your Score
+		renderer.setSeriesStroke(0, new BasicStroke(2.0f));
+		renderer.setSeriesShapesVisible(0, true);
+		renderer.setSeriesItemLabelFont(0, new Font("SansSerif", Font.BOLD, 12));
+		
+		renderer.setSeriesPaint(1, Color.GREEN.darker()); // Average
+		renderer.setSeriesStroke(1, new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5, 5}, 0)); // Dashed line
+		renderer.setSeriesShapesVisible(1, true);
+		
+		plot.setRenderer(renderer);
+
+		// Convert chart to image
+		ByteArrayOutputStream chartOutputStream = new ByteArrayOutputStream();
+		try {
+			int chartWidth = (int) (width / 1.15);
+			int chartHeight = (int) (chartWidth * 0.5);
+			ChartUtils.writeChartAsPNG(chartOutputStream, lineChart, chartWidth, chartHeight);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		ImageData imageData = ImageDataFactory.create(chartOutputStream.toByteArray());
+		Image chartImage = new Image(imageData);
+		chartImage.setHorizontalAlignment(com.itextpdf.layout.property.HorizontalAlignment.CENTER);
+		
+		return chartImage;
+	}
+
 	// left answer score section
 	private Table getLeftDetailScore(float width){ 
 		Table subject = new Table(new float[]{(width/2)});
@@ -301,6 +508,62 @@ public class PdfServiceImpl implements PdfService {
 		subject.setBorder(Border.NO_BORDER);
 		return subject;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
