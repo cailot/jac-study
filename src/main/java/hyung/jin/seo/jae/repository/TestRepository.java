@@ -1,10 +1,12 @@
 package hyung.jin.seo.jae.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import hyung.jin.seo.jae.dto.TestDTO;
 import hyung.jin.seo.jae.model.Test;
@@ -36,5 +38,9 @@ public interface TestRepository extends JpaRepository<Test, Long>{
 	// bring TestDTO by id
 	@Query("SELECT new hyung.jin.seo.jae.dto.TestDTO(t.id, t.pdfPath, t.volume, t.active, t.info, t.grade.code, t.testType.id, t.registerDate, t.testType.name) FROM Test t WHERE (t.id = ?1) AND (t.active = true)")
 	TestDTO getTestById(Long id);
+
+	// bring all TestDTO of which 'testTypeId' is same
+	@Query("SELECT new hyung.jin.seo.jae.dto.TestDTO(t.id, t.volume, t.average, t.testType.id) FROM Test t WHERE (t.testType.id = (SELECT t2.testType.id FROM Test t2 WHERE t2.id = :id)) AND (t.registerDate BETWEEN :fromTime AND :toTime)")
+	List<TestDTO> getTestByType( @Param("id") long id, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);
 
 }

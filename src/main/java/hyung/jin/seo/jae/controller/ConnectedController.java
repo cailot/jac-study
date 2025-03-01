@@ -230,7 +230,9 @@ public class ConnectedController {
 		String filteredTestId = StringUtils.defaultString(testId, "0");
 		TestAnswerDTO dto = connectedService.findTestAnswerByTest(Long.parseLong(filteredTestId));
 		// get student's answer....
-		List<Integer> answers = connectedService.getStudentTestAnswer(Long.parseLong(filteredStudentId), Long.parseLong(filteredTestId));
+		int currentYear = cycleService.academicYear();
+		CycleDTO cycle = cycleService.listCycles(currentYear);
+		List<Integer> answers = connectedService.getStudentTestAnswer(Long.parseLong(filteredStudentId), Long.parseLong(filteredTestId), cycle.getStartDate(), cycle.getEndDate());
 		dto.setStudents(answers);
 		return dto;
 	}
@@ -380,8 +382,10 @@ public class ConnectedController {
 						// add to list
 						TestSummaryDTO dto = new TestSummaryDTO();
 						long testId = Long.parseLong(test.getId());
-						String title = test.getTitle();
-						boolean done = connectedService.isStudentTestExist(studentId, testId);
+						String title = test.getName();
+						int currentYear = cycleService.academicYear();
+						CycleDTO cycle = cycleService.listCycles(currentYear);
+						boolean done = connectedService.isStudentTestExist(studentId, testId, cycle.getStartDate(), cycle.getEndDate());
 						if(done){
 							title = title + JaeConstants.PRACTICE_COMPLETE;
 						}

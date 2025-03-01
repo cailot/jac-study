@@ -262,38 +262,6 @@ public class ConnectedServiceImpl implements ConnectedService {
 		return test.get();
 	}
 
-	// @SuppressWarnings("null")
-	// @Override
-	// @Transactional
-	// public Homework addHomework(Homework work) {
-	// 	Homework home = homeworkRepository.save(work);
-	// 	return home;
-	// }
-
-	// @SuppressWarnings("null")
-	// @Override
-	// @Transactional
-	// public Extrawork addExtrawork(Extrawork work) {
-	// 	Extrawork extra = extraworkRepository.save(work);
-	// 	return extra;
-	// }
-
-	// @SuppressWarnings("null")
-	// @Override
-	// @Transactional
-	// public Practice addPractice(Practice practice) {
-	// 	Practice prac = practiceRepository.save(practice);
-	// 	return prac;
-	// }
-
-	// @SuppressWarnings("null")
-	// @Override
-	// @Transactional
-	// public PracticeAnswer addPracticeAnswer(PracticeAnswer ans) {
-	// 	PracticeAnswer answer = practiceAnswerRepository.save(ans);
-	// 	return answer;
-	// }
-
 	@SuppressAjWarnings("null")
 	@Override
 	@Transactional
@@ -302,22 +270,6 @@ public class ConnectedServiceImpl implements ConnectedService {
 		return sp;
 	}
 
-	// @SuppressAjWarnings("null")
-	// @Override
-	// @Transactional
-	// public Test addTest(Test crs) {
-	// 	Test test = testRepository.save(crs);
-	// 	return test;
-	// }
-
-	// @SuppressAjWarnings("null")
-	// @Override
-	// @Transactional
-	// public TestAnswer addTestAnswer(TestAnswer crs) {
-	// 	TestAnswer answer = testAnswerRepository.save(crs);
-	// 	return answer;
-	// }
-
 	@SuppressAjWarnings("null")
 	@Override
 	@Transactional
@@ -325,14 +277,6 @@ public class ConnectedServiceImpl implements ConnectedService {
 		StudentTest test = studentTestRepository.save(crs);
 		return test;
 	}
-
-	// @SuppressAjWarnings("null")
-	// @Override
-	// @Transactional
-	// public HomeworkSchedule addHomeworkSchedule(HomeworkSchedule schedule) {
-	// 	HomeworkSchedule home = homeworkScheduleRepository.save(schedule);
-	// 	return home;
-	// }
 
 	@SuppressAjWarnings("null")
 	@Override
@@ -349,205 +293,6 @@ public class ConnectedServiceImpl implements ConnectedService {
 		ExtraworkProgress extra = extraworkProgressRepository.save(progress);
 		return extra;
 	}
-
-	// @SuppressAjWarnings("null")
-	// @Override
-	// @Transactional
-	// public PracticeSchedule addPracticeSchedule(PracticeSchedule ps) {
-	// 	PracticeSchedule schedule = practiceScheduleRepository.save(ps);
-	// 	return schedule;
-	// }
-
-	// @Override
-	// @Transactional
-	// public Homework updateHomework(Homework newWork, Long id) {
-	// 	// search by getId
-	// 	Homework existing = homeworkRepository.findById(id).get();
-    //     // Update info
-    //     String newVideoPath = StringUtils.defaultString(newWork.getVideoPath());
-    //     // if(StringUtils.isNotBlank(newVideoPath)){
-    //     	existing.setVideoPath(newVideoPath);
-    //     // }
-	// 	String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
-    //     // if(StringUtils.isNotBlank(newPdfPath)){
-    //     	existing.setPdfPath(newPdfPath);
-    //     // }
-    //     String newInfo = StringUtils.defaultString(newWork.getInfo());
-    //     // if(StringUtils.isNotBlank(newInfo)){
-    //     	existing.setInfo(newInfo);
-    //     // }
-	// 	int newWeek = newWork.getWeek();
-	// 	existing.setWeek(newWeek);
-	// 	// int newYear = newWork.getYear();
-	// 	// existing.setYear(newYear);
-	// 	boolean newActive = newWork.isActive();
-	// 	existing.setActive(newActive);
-    //     // update the existing record
-    //     Homework updated = homeworkRepository.save(existing);
-    //     return updated;
-	// }
-
-	// @Override
-	// @Transactional
-	// public Extrawork updateExtrawork(Extrawork newWork, Long id) {
-	// 	// search by getId
-	// 	Extrawork existing = extraworkRepository.findById(id).get();
-    //     // Update info
-    //     String newVideoPath = StringUtils.defaultString(newWork.getVideoPath());
-    //     // if(StringUtils.isNotBlank(newVideoPath)){
-    //     	existing.setVideoPath(newVideoPath);
-    //     // }
-	// 	String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
-    //     // if(StringUtils.isNotBlank(newPdfPath)){
-    //     	existing.setPdfPath(newPdfPath);
-    //     // }
-    //     String newName = StringUtils.defaultString(newWork.getName());
-    //     // if(StringUtils.isNotBlank(newName)){
-    //     	existing.setName(newName);
-    //     // }
-	// 	boolean newActive = newWork.isActive();
-	// 	existing.setActive(newActive);
-    //     // update the existing record
-    //     Extrawork updated = extraworkRepository.save(existing);
-    //     return updated;
-	// }
-
-	// @Override
-	// @Transactional
-	// public Practice updatePractice(Practice newWork, Long id) {
-	// 	// search by getId
-	// 	Practice existing = practiceRepository.findById(id).get();
-    //     // Update info
-    //     String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
-    //     // if(StringUtils.isNotBlank(newPdfPath)){
-    //     	existing.setPdfPath(newPdfPath);
-    //     // }
-	// 	String newInfo = StringUtils.defaultString(newWork.getInfo());
-    //     // if(StringUtils.isNotBlank(newInfo)){
-    //     	existing.setInfo(newInfo);
-    //     // }
-	// 	int newVolume = newWork.getVolume();
-	// 	existing.setVolume(newVolume);
-	// 	// int newCount = newWork.getQuestionCount();
-	// 	// existing.setQuestionCount(newCount);
-	// 	boolean newActive = newWork.isActive();
-	// 	existing.setActive(newActive);
-    //     // update the existing record
-    //     Practice updated = practiceRepository.save(existing);
-	// 	return updated;
-	// }
-
-	// @Override
-	// @Transactional
-	// public PracticeAnswer updatePracticeAnswer(PracticeAnswer newWork, Long id) {
-	// 	// search by getId
-	// 	PracticeAnswer existing = practiceAnswerRepository.findById(id).get();
-	// 	// update info
-	// 	String newVideoPath = StringUtils.defaultString(newWork.getVideoPath());
-    //     // if(StringUtils.isNotBlank(newVideoPath)){
-    //     	existing.setVideoPath(newVideoPath);
-    //     // }
-	// 	String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
-    //     // if(StringUtils.isNotBlank(newPdfPath)){
-    //     	existing.setPdfPath(newPdfPath);
-    //     // }
-	// 	List newAns = newWork.getAnswers();
-	// 	existing.setAnswers(newAns);
-	// 	// update the existing record
-	// 	PracticeAnswer updated = practiceAnswerRepository.save(existing);
-	// 	return updated;	
-	// }
-
-	// @Override
-	// @Transactional
-	// public StudentPractice updateStudentPractice(StudentPractice newWork, Long id) {
-	// 	// search by getId
-	// 	StudentPractice existing = studentPracticeRepository.findById(id).get();
-	// 	// update info
-	// 	double newScore = newWork.getScore();
-	// 	existing.setScore(newScore);
-	// 	List newAnswers = newWork.getAnswers();
-	// 	existing.setAnswers(newAnswers);
-	// 	// update the existing record
-	// 	StudentPractice updated = studentPracticeRepository.save(existing);
-	// 	return updated;
-	// }
-
-	// @Override
-	// @Transactional
-	// public Test updateTest(Test newWork, Long id) {
-	// 	// search by getId
-	// 	Test existing = testRepository.findById(id).get();
-    //     // Update info
-    //     String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
-    //     existing.setPdfPath(newPdfPath);
-    //     String newInfo = StringUtils.defaultString(newWork.getInfo());
-    //     existing.setInfo(newInfo);
-    //     int newVolume = newWork.getVolume();
-	// 	existing.setVolume(newVolume);
-	// 	boolean newActive = newWork.isActive();
-	// 	existing.setActive(newActive);
-    //     Test updated = testRepository.save(existing);
-	// 	return updated;
-	// }
-
-	// @Override
-	// @Transactional
-	// public TestAnswer updateTestAnswer(TestAnswer newWork, Long id) {
-	// 	// search by getId
-	// 	TestAnswer existing = testAnswerRepository.findById(id).get();
-	// 	// update info
-	// 	String newVideoPath = StringUtils.defaultString(newWork.getVideoPath());
-    //     existing.setVideoPath(newVideoPath);
-    //     String newPdfPath = StringUtils.defaultString(newWork.getPdfPath());
-    //     existing.setPdfPath(newPdfPath);
-    //     List newAns = newWork.getAnswers();
-	// 	existing.setAnswers(newAns);
-	// 	// update the existing record
-	// 	TestAnswer updated = testAnswerRepository.save(existing);
-	// 	return updated;	
-	// }
-
-	// @Override
-	// @Transactional
-	// public StudentTest updateStudentTest(StudentTest newWork, Long id) {
-	// 	// search by getId
-	// 	StudentTest existing = studentTestRepository.findById(id).get();
-	// 	// update info
-	// 	double newScore = newWork.getScore();
-	// 	existing.setScore(newScore);
-	// 	List newAnswers = newWork.getAnswers();
-	// 	existing.setAnswers(newAnswers);
-	// 	// update the existing record
-	// 	StudentTest updated = studentTestRepository.save(existing);
-	// 	return updated;
-	// }
-
-	// @Override
-	// @Transactional
-	// public HomeworkSchedule updateHomeworkSchedule(HomeworkSchedule schedule, Long id) {
-	// 	HomeworkSchedule existing = homeworkScheduleRepository.findById(id).get();
-	// 	// update info
-	// 	LocalDateTime newFrom = schedule.getFromDatetime();
-	// 	existing.setFromDatetime(newFrom);
-	// 	LocalDateTime newTo = schedule.getToDatetime();
-	// 	existing.setToDatetime(newTo);
-	// 	boolean newActive = schedule.isActive();
-	// 	existing.setActive(newActive);
-	// 	String newInfo = schedule.getInfo();
-	// 	existing.setInfo(newInfo);
-	// 	int newSubjectDisplay = schedule.getSubjectDisplay();
-	// 	existing.setSubjectDisplay(newSubjectDisplay);
-	// 	int newAnswerDisplay = schedule.getAnswerDisplay();
-	// 	existing.setAnswerDisplay(newAnswerDisplay);
-	// 	String newGrade = schedule.getGrade();
-	// 	existing.setGrade(newGrade);
-	// 	String newSubject = schedule.getSubject();
-	// 	existing.setSubject(newSubject);
-	// 	// update the existing record
-	// 	HomeworkSchedule updated = homeworkScheduleRepository.save(existing);
-	// 	return updated;
-	// }
 
 	@Override
 	@Transactional
@@ -575,57 +320,6 @@ public class ConnectedServiceImpl implements ConnectedService {
 		return updated;
 	}
 
-	// @Override
-	// @Transactional
-	// public PracticeSchedule updatePracticeSchedule(PracticeSchedule newWork, Long id) {
-	// 	// search by getId
-	// 	PracticeSchedule existing = practiceScheduleRepository.findById(id).get();
-	// 	// update info
-	// 	int newYear = newWork.getYear();
-	// 	existing.setYear(newYear);
-	// 	int newWeek = newWork.getWeek();
-	// 	existing.setWeek(newWeek);
-	// 	boolean newActive = newWork.isActive();
-	// 	existing.setActive(newActive);
-	// 	String newInfo = newWork.getInfo();
-	// 	existing.setInfo(newInfo);
-	// 	Set<Practice> newPracs = newWork.getPractices();
-	// 	existing.setPractices(newPracs);
-	// 	// update the existing record
-	// 	PracticeSchedule updated = practiceScheduleRepository.save(existing);
-	// 	return updated;	
-	// }
-
-	// @Override
-	// @Transactional
-	// public void deleteHomework(Long id) {
-	// 	try{
-	// 	    homeworkRepository.deleteById(id);
-    //     }catch(org.springframework.dao.EmptyResultDataAccessException e){
-    //         System.out.println("Nothing to delete");
-    //     }
-	// }
-
-	// @Override
-	// @Transactional
-	// public void deletePractice(Long id) {
-	// 	try{
-	// 	    practiceRepository.deleteById(id);
-    //     }catch(org.springframework.dao.EmptyResultDataAccessException e){
-    //         System.out.println("Nothing to delete");
-    //     }
-	// }
-
-	// @Override
-	// @Transactional
-	// public void deleteExtrawork(Long id) {
-	// 	try{
-	// 	    extraworkRepository.deleteById(id);
-    //     }catch(org.springframework.dao.EmptyResultDataAccessException e){
-    //         System.out.println("Nothing to delete");
-    //     }
-	// }
-
 	@Override
 	@Transactional
 	public void deleteStudentPractice(Long studentId, Long practiceId) {
@@ -635,54 +329,6 @@ public class ConnectedServiceImpl implements ConnectedService {
 			System.out.println("No StudentPractice found");
 		}
 	}
-
-	// @Override
-	// @Transactional
-	// public void deleteTest(Long id) {
-	// 	try{
-	// 		testRepository.deleteById(id);
-	// 	}catch(Exception e){
-	// 		System.out.println("Nothing to delete");
-	// 	}
-	// }
-
-	// @Override
-	// @Transactional
-	// public void deleteStudentTest(Long studentId, Long testId) {
-	// 	try{
-	// 		studentTestRepository.deleteById(testId);
-	// 	}catch(Exception e){
-	// 		System.out.println("Nothing to delete");
-	// 	}
-	// }
-
-	// @Override
-	// @Transactional
-	// public void deleteHomeworkSchedule(Long id) {
-	// 	try{
-	// 		homeworkScheduleRepository.deleteById(id);
-	// 	}catch(Exception e){
-	// 		System.out.println("Nothing to delete");
-	// 	}
-	// }
-
-	// @Override
-	// @Transactional
-	// public void deletePracticeSchedule(Long id) {
-	// 	PracticeSchedule practiceSchedule = practiceScheduleRepository.findById(id).orElse(null);
-	// 	if (practiceSchedule != null) {
-	// 		// Retrieve the associated practices
-	// 		Set<Practice> practices = practiceSchedule.getPractices();		
-	// 		// Remove the associations between PracticeSchedule and Practice entities
-	// 		practiceSchedule.setPractices(new LinkedHashSet<>());
-	// 		practiceScheduleRepository.save(practiceSchedule); // Update to remove associations
-	// 		// Now you can safely delete the PracticeSchedule record
-	// 		practiceScheduleRepository.delete(practiceSchedule);
-	// 	} else {
-	// 		// Handle the case where the PracticeSchedule record doesn't exist
-	// 	}
-
-	// }
 
 	@Override
 	public HomeworkDTO getHomeworkInfo(long subject, int week) {
@@ -880,8 +526,10 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
-	public List<Integer> getStudentTestAnswer(Long studentId, Long testId) {
-		Optional<StudentTest> answer = studentTestRepository.findByStudentIdAndTestId(studentId, testId);
+	public List<Integer> getStudentTestAnswer(Long studentId, Long testId, String from, String to) {
+		LocalDate fromDate = LocalDate.parse(from, DATE_FORMATTER);
+		LocalDate toDate = LocalDate.parse(to, DATE_FORMATTER);				
+		Optional<StudentTest> answer = studentTestRepository.findByStudentIdAndTestIdWithYear(studentId, testId, fromDate, toDate);
 		if(answer.isPresent()){
 			return answer.get().getAnswers();
 		}else{
@@ -942,8 +590,11 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
-	public boolean isStudentTestExist(Long studentId, Long testId) {
-		Optional<StudentTest> st = studentTestRepository.findByStudentIdAndTestId(studentId, testId);
+	public boolean isStudentTestExist(Long studentId, Long testId, String from, String to) {
+		// convert String to LocalDate
+		LocalDate fromDate = LocalDate.parse(from, DATE_FORMATTER);
+		LocalDate toDate = LocalDate.parse(to, DATE_FORMATTER);				
+		Optional<StudentTest> st = studentTestRepository.findByStudentIdAndTestIdWithYear(studentId, testId, fromDate, toDate);
 		if(st.isPresent()){
 			return true;
 		}else{
@@ -1025,7 +676,7 @@ public class ConnectedServiceImpl implements ConnectedService {
 		LocalDate fromDate = LocalDate.parse(from, DATE_FORMATTER);
 		LocalDate toDate = LocalDate.parse(to, DATE_FORMATTER);
 		try{
-			LocalDate regDate = studentTestRepository.getRegisterDateByStudentIdAndTest(studentId, test, fromDate, toDate);
+			LocalDate regDate = studentTestRepository.getRegisterDateByStudentIdAndTestId(studentId, test, fromDate, toDate);
 			regString = regDate.toString();
 		}catch(Exception e){
 			System.out.println("No StudentTest found");
@@ -1121,6 +772,104 @@ public class ConnectedServiceImpl implements ConnectedService {
 		List<TestDTO> dtos = new ArrayList<>();
 		try{
 			dtos = testRepository.getTestByGroupNGradeNWeek(testGroup, grade, week);
+		}catch(Exception e){
+			System.out.println("No Test found");
+		}
+		return dtos;
+	}
+
+	@Override
+	public double getAverageScoreByTest(Long testId, String from, String to) {
+		double value = 0;
+		// convert String to LocalDate
+		LocalDate fromDate = LocalDate.parse(from, DATE_FORMATTER);
+		LocalDate toDate = LocalDate.parse(to, DATE_FORMATTER);
+		try{
+			value = studentTestRepository.getAverageScoreByTestId(testId, fromDate, toDate);
+		}catch(Exception e){
+			System.out.println("No StudentTest found");
+		}
+		return value;
+	}
+
+	@Override
+	public double getHighestScoreByTest(Long testId, String from, String to) {
+		double value = 0;
+		// convert String to LocalDate
+		LocalDate fromDate = LocalDate.parse(from, DATE_FORMATTER);
+		LocalDate toDate = LocalDate.parse(to, DATE_FORMATTER);
+		try{
+			value = studentTestRepository.getHighestScoreByTestId(testId, fromDate, toDate);
+		}catch(Exception e){
+			System.out.println("No StudentTest found");
+		}
+		return value;
+	}
+
+	@Override
+	public double getLowestScoreByTest(Long testId, String from, String to) {
+		double value = 0;
+		// convert String to LocalDate
+		LocalDate fromDate = LocalDate.parse(from, DATE_FORMATTER);
+		LocalDate toDate = LocalDate.parse(to, DATE_FORMATTER);
+		try{
+			value = studentTestRepository.getLowestScoreByTestId(testId, fromDate, toDate);
+		}catch(Exception e){
+			System.out.println("No StudentTest found");
+		}
+		return value;
+	}
+
+	@Override
+	public String getScoreCategory(double studentScore, Long testId, String from, String to) {
+		List<Double> scores = new ArrayList<>();
+		// convert String to LocalDate
+		LocalDate fromDate = LocalDate.parse(from, DATE_FORMATTER);
+		LocalDate toDate = LocalDate.parse(to, DATE_FORMATTER);
+		try{
+			scores = studentTestRepository.getAllScoreByTestId(testId, fromDate, toDate);	
+		}catch(Exception e){
+			System.out.println("No StudentTest found");
+		}
+		if (scores.isEmpty()) {
+			return "No";
+		}
+		int totalStudents = scores.size();
+		
+		int top10Index = (int) Math.ceil(totalStudents * 0.10) - 1;
+		int top21Index = (int) Math.ceil(totalStudents * 0.21) - 1;
+		int top39Index = (int) Math.ceil(totalStudents * 0.39) - 1;
+		int top60Index = (int) Math.ceil(totalStudents * 0.60) - 1;
+		int top79Index = (int) Math.ceil(totalStudents * 0.79) - 1;
+	
+		double top10Score = scores.get(top10Index);
+		double top21Score = scores.get(top21Index);
+		double top39Score = scores.get(top39Index);
+		double top60Score = scores.get(top60Index);
+		double top79Score = scores.get(top79Index);
+	
+		if (studentScore >= top10Score) {
+			return "Top";
+		} else if (studentScore >= top21Score) {
+			return "Above";
+		} else if (studentScore >= top39Score) {
+			return "Higher";
+		} else if (studentScore >= top60Score) {
+			return "Middle";
+		} else if (studentScore >= top79Score) {
+			return "Lower";
+		} else {
+			return "Lowest";
+		}
+	}
+
+	@Override
+	public List<TestDTO> getTestInfoByType(Long testId, String from, String to) {
+		List<TestDTO> dtos = new ArrayList<>();
+		LocalDate fromDate = LocalDate.parse(from, DATE_FORMATTER);
+		LocalDate toDate = LocalDate.parse(to, DATE_FORMATTER);
+		try{
+			dtos = testRepository.getTestByType(testId, fromDate, toDate);
 		}catch(Exception e){
 			System.out.println("No Test found");
 		}

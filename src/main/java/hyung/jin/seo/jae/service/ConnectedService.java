@@ -286,7 +286,7 @@ public interface ConnectedService {
 	List<TestAnswerItem> getAnswersByTest(Long testId);
 
 	// get Student's answer by Student & Test
-	List<Integer> getStudentTestAnswer(Long studentId, Long  testId);
+	List<Integer> getStudentTestAnswer(Long studentId, Long  testId, String from, String to);	
 
 	// get how many question answer sheet has
 	int getTestAnswerCount(Long testId);
@@ -304,7 +304,7 @@ public interface ConnectedService {
 	// StudentTest updateStudentTest(StudentTest newWork, Long id);
 
 	// check if student has done the test
-	boolean isStudentTestExist(Long studentId, Long testId);
+	boolean isStudentTestExist(Long studentId, Long testId, String from, String to);
 
 	// // delete existing record to take test again
 	// void deleteStudentTest(Long studentId, Long testId); 
@@ -319,8 +319,18 @@ public interface ConnectedService {
 	int getTestAnswerCountPerQuestion(Long testId);
 
 	// get registerDate by studentId and testId
-	String getRegDateforStudentTest(Long studentId, Long test, String from, String to);	
+	String getRegDateforStudentTest(Long studentId, Long test, String from, String to);
+	
+	double getAverageScoreByTest(Long testId, String from, String to);
 
+	double getHighestScoreByTest(Long testId, String from, String to);
+
+	double getLowestScoreByTest(Long testId, String from, String to);
+
+	String getScoreCategory(double studentScore, Long testId, String from, String to);
+
+	// get Test by testType
+	List<TestDTO> getTestInfoByType(Long testId, String from, String to);
 
 	/////////////////////////////////////////////////////////
 	//

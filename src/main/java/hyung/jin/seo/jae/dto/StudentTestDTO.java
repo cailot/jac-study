@@ -27,7 +27,7 @@ public class StudentTestDTO{
 
 	private Long testId;
 
-	private List<Integer> answers;
+	private List<Integer> answers = new ArrayList<>();
 
 	// additional info
 	private int volume;
@@ -46,6 +46,14 @@ public class StudentTestDTO{
 		this.gradeCode = gradeCode;
 		this.testTypeId = testTypeId;
 		this.testTypeName = testTypeName;
+    }
+
+	public StudentTestDTO(Long id, LocalDate registerDate, double score, Long studentId, Long testId) {
+        this.id = id;
+		this.registerDate = registerDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        this.score = score;
+        this.studentId = studentId;
+        this.testId = testId;
     }
 
 	public StudentTestDTO(Long id, LocalDate registerDate, double score, Long studentId, Long testId, Collection<Integer> answers) {

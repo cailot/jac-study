@@ -14,7 +14,7 @@ import hyung.jin.seo.jae.model.StudentTest;
 public interface StudentTestRepository extends JpaRepository<StudentTest, Long> {
 
 
-	@SuppressWarnings("null")
+        @SuppressWarnings("null")
 	List<StudentTest> findAll();
 	
 	@SuppressWarnings("null")
@@ -25,15 +25,17 @@ public interface StudentTestRepository extends JpaRepository<StudentTest, Long> 
                 "st.registerDate, " +
                 "st.score, " +
                 "st.student.id, " +
-                "st.test.id, " +
-                "st.answers) " +
+                "st.test.id) " +                
+                // "st.test.id, " +
+                // "st.answers) " +
                 "FROM StudentTest st " +
                 "WHERE st.student.id = :studentId AND st.test.id = :testId " +
                 "AND st.registerDate BETWEEN :fromTime AND :toTime")
         StudentTestDTO findStudentTest(@Param("studentId") Long studentId, @Param("testId") Long testId, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);	// // bring latest EnrolmentDTO by student id, called from retrieveEnrolment() in
 	// // courseInfo.jsp
 	// check whether there is a record in StudentTest table by studentId and testId
-	Optional<StudentTest> findByStudentIdAndTestId(Long studentId, Long testId);
+        @Query("SELECT st FROM StudentTest st WHERE st.student.id = :studentId AND st.test.id = :testId AND st.registerDate BETWEEN :fromTime AND :toTime")
+	Optional<StudentTest> findByStudentIdAndTestIdWithYear(@Param("studentId") Long studentId, @Param("testId") Long testId, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);
 	
 	// delete existing record in StudentTest table by studentId and testId
 	void deleteByStudentIdAndTestId(Long studentId, Long testId);
@@ -61,5 +63,21 @@ public interface StudentTestRepository extends JpaRepository<StudentTest, Long> 
 
         // get registerDate by studentId and testId
         @Query("SELECT st.registerDate FROM StudentTest st WHERE st.student.id = :studentId AND st.test.id = :testId AND st.registerDate BETWEEN :fromTime AND :toTime")
-        LocalDate getRegisterDateByStudentIdAndTest(@Param("studentId") Long studentId, @Param("testId") Long testId, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);
+        LocalDate getRegisterDateByStudentIdAndTestId(@Param("studentId") Long studentId, @Param("testId") Long testId, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);
+
+         // Get average score by testId and date range (fromTime, toTime)
+        @Query("SELECT AVG(st.score) FROM StudentTest st WHERE st.test.id = :testId AND st.registerDate BETWEEN :fromTime AND :toTime")
+        Double getAverageScoreByTestId(@Param("testId") Long testId, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);
+
+        // Get highest score by testId and date range (fromTime, toTime)
+        @Query("SELECT MAX(st.score) FROM StudentTest st WHERE st.test.id = :testId AND st.registerDate BETWEEN :fromTime AND :toTime")
+        Double getHighestScoreByTestId(@Param("testId") Long testId, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);
+
+        // Get lowest score by testId and date range (fromTime, toTime)
+        @Query("SELECT MIN(st.score) FROM StudentTest st WHERE st.test.id = :testId AND st.registerDate BETWEEN :fromTime AND :toTime")
+        Double getLowestScoreByTestId(@Param("testId") Long testId, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);
+
+        // Get all score by testId and date range (fromTime, toTime)
+        @Query("SELECT st.score FROM StudentTest st WHERE st.test.id = :testId AND st.registerDate BETWEEN :fromTime AND :toTime ORDER BY st.score DESC")
+        List<Double> getAllScoreByTestId(@Param("testId") Long testId, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);
 }
