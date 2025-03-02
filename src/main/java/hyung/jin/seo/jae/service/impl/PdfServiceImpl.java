@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.text.FieldPosition;
 import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,12 +24,15 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,7 +127,7 @@ public class PdfServiceImpl implements PdfService {
 			document.add(onespace);
 			
 			// 9. history graph section
-			Table historyGraph = getHistoryGraphTable(wholeWidth);
+			Table historyGraph = getHistoryGraphTable(wholeWidth, dummy);
 			document.add(historyGraph);
 			
 			document.close();
@@ -190,36 +195,34 @@ public class PdfServiceImpl implements PdfService {
 		Cell cell1_1 = detailCell("Your Score").setBold().setTextAlignment(TextAlignment.CENTER);
 		details.addCell(cell1_1);
 		// loop through the history if testID from 1 to 14
-		for(int i=1; i<15; i++){
-			// int testNo = i;
+		for (int i = 1; i < 15; i++) {
 			String studentScore = "";
-			for(TestResultHistoryDTO history : histories){
-				if(history.getTestNo() == i){
-					studentScore = String.valueOf(history.getStudentScore());
+			for (TestResultHistoryDTO history : histories) {
+				if (history.getTestNo() == i) {
+					studentScore = history.getStudentScore() > 0 ? String.valueOf(history.getStudentScore()) : "";
 					break;
 				}
 			}
 			Cell cell = detailCell(studentScore).setTextAlignment(TextAlignment.CENTER);
 			details.addCell(cell);
-			// System.out.println(testNo + " " + studentScore);
 		}
+		
 		// second row
 		Cell cell2_1 = detailCell("Average").setBold().setTextAlignment(TextAlignment.CENTER);
 		details.addCell(cell2_1);
+		
 		// loop through the history if testID from 1 to 14
-		for(int i=1; i<15; i++){
-			int testNo = i;
+		for (int i = 1; i < 15; i++) {
 			String average = "";
-			for(TestResultHistoryDTO history : histories){
-				if(history.getTestNo() == i){
-					average = String.valueOf(history.getAverage());
+			for (TestResultHistoryDTO history : histories) {
+				if (history.getTestNo() == i) {
+					average = history.getAverage() > 0 ? String.valueOf(history.getAverage()) : "";
 					break;
 				}
 			}
 			Cell cell = detailCell(average).setTextAlignment(TextAlignment.CENTER);
 			details.addCell(cell);
-			System.out.println(testNo + " " + average);
-		}		
+		}	
 		return details;		
 	}
 
@@ -252,7 +255,7 @@ public class PdfServiceImpl implements PdfService {
 			String studentScore = "";
 			for(TestResultHistoryDTO history : histories){
 				if(history.getTestNo() == i){
-					studentScore = String.valueOf(history.getStudentScore());
+					studentScore = history.getStudentScore() > 0 ? String.valueOf(history.getStudentScore()) : "";
 					break;
 				}
 			}
@@ -269,7 +272,8 @@ public class PdfServiceImpl implements PdfService {
 			String average = "";
 			for(TestResultHistoryDTO history : histories){
 				if(history.getTestNo() == i){
-					average = String.valueOf(history.getAverage());
+					// average = String.valueOf(history.getAverage());
+					average = history.getAverage() > 0 ? String.valueOf(history.getAverage()) : "";
 					break;
 				}
 			}
@@ -282,9 +286,9 @@ public class PdfServiceImpl implements PdfService {
 	}
 
 	// 9. history graph section
-	private Table getHistoryGraphTable(float width){
+	private Table getHistoryGraphTable(float width, List<TestResultHistoryDTO> histories){
 		Table body = new Table(new float[]{(width)});
-		Image line = getLineChart(width);
+		Image line = getLineChart(width, histories);
 		body.addCell(new Cell().add(line).setBorder(Border.NO_BORDER));
 		return body;
 	}
@@ -499,30 +503,28 @@ public class PdfServiceImpl implements PdfService {
 		return chartImage;
 	}
 
-	private Image getLineChart(float width) {
-		 // Create dataset
+	// draw line chart
+	private Image getLineChart(float width, List<TestResultHistoryDTO> histories) {
+		// Create dataset
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-		// Sample data for "Your Score" (red line)
-		dataset.addValue(80, "Your Score", "1");
-		dataset.addValue(57, "Your Score", "2");
-		dataset.addValue(20, "Your Score", "3");
-		dataset.addValue(60, "Your Score", "4");
-		dataset.addValue(58, "Your Score", "5");
-		dataset.addValue(50, "Your Score", "6");
-		dataset.addValue(62, "Your Score", "7");
-		dataset.addValue(48, "Your Score", "8");
-
-		// Sample data for "Average" (green dashed line)
-		dataset.addValue(50, "Average", "1");
-		dataset.addValue(50, "Average", "2");
-		dataset.addValue(70, "Average", "3");
-		dataset.addValue(50, "Average", "4");
-		dataset.addValue(55, "Average", "5");
-		dataset.addValue(60, "Average", "6");
-		dataset.addValue(58, "Average", "7");
-		dataset.addValue(52, "Average", "8");
-
+		for (int i = 1; i < 29; i++) {
+			String testNo = String.valueOf(i);
+			int studentScore = 0;
+			int average = 0;
+			for (TestResultHistoryDTO history : histories) {
+				if (history.getTestNo() == i) {
+					studentScore = history.getStudentScore();
+					average = history.getAverage();
+					break;
+				}
+			}
+			if (studentScore > 0) {
+				dataset.addValue(studentScore, "Your Score", testNo);
+			}
+			if (average > 0) {
+				dataset.addValue(average, "Average", testNo);
+			}
+		}
 		// Create Line Chart
 		JFreeChart lineChart = ChartFactory.createLineChart(
 				"", // Chart title
@@ -531,41 +533,68 @@ public class PdfServiceImpl implements PdfService {
 				dataset,
 				PlotOrientation.VERTICAL,
 				true, true, false);
-
+	
 		// Set chart background
 		lineChart.setBackgroundPaint(Color.WHITE);
-
 		// Customize the plot
 		CategoryPlot plot = (CategoryPlot) lineChart.getPlot();
 		plot.setBackgroundPaint(Color.WHITE);
 		plot.setDomainGridlinePaint(Color.LIGHT_GRAY);
 		plot.setRangeGridlinePaint(Color.LIGHT_GRAY);
-
 		// Customize axis
 		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-		rangeAxis.setRange(0.0, 100.0);
-		rangeAxis.setTickUnit(new NumberTickUnit(10));
+		rangeAxis.setRange(0.0, 100.0); // Keep the range between 0 to 100
+		rangeAxis.setTickUnit(new NumberTickUnit(10)); // Show every 10%
+		rangeAxis.setNumberFormatOverride(new NumberFormat() {
+			@Override
+			public StringBuffer format(double number, StringBuffer toAppendTo, FieldPosition pos) {
+				return toAppendTo.append((int) number).append("%"); // Append '%' correctly
+			}
+
+			@Override
+			public Number parse(String source, ParsePosition parsePosition) {
+				return null;
+			}
+
+			@Override
+			public StringBuffer format(long number, StringBuffer toAppendTo, FieldPosition pos) {
+				// TODO Auto-generated method stub
+				throw new UnsupportedOperationException("Unimplemented method 'format'");
+			}
+		});
 		rangeAxis.setTickLabelFont(new Font("SansSerif", Font.PLAIN, 10));
 		rangeAxis.setLabelFont(new Font("SansSerif", Font.BOLD, 12));
 		rangeAxis.setLabel("");
-
 		CategoryAxis domainAxis = plot.getDomainAxis();
 		domainAxis.setTickLabelFont(new Font("SansSerif", Font.PLAIN, 10));
 		domainAxis.setLabelFont(new Font("SansSerif", Font.BOLD, 12));
-
 		// Customize renderer
 		LineAndShapeRenderer renderer = new LineAndShapeRenderer();
-		renderer.setSeriesPaint(0, Color.RED); // Your Score
-		renderer.setSeriesStroke(0, new BasicStroke(2.0f));
+		renderer.setSeriesPaint(0, Color.decode("#ADD8E6")); // Average
+		renderer.setSeriesStroke(0, new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5, 5}, 0)); // Dashed line
 		renderer.setSeriesShapesVisible(0, true);
-		renderer.setSeriesItemLabelFont(0, new Font("SansSerif", Font.BOLD, 12));
-		
-		renderer.setSeriesPaint(1, Color.GREEN.darker()); // Average
-		renderer.setSeriesStroke(1, new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5, 5}, 0)); // Dashed line
+		renderer.setSeriesPaint(1, Color.decode("#033781")); // Your Score 
+		renderer.setSeriesStroke(1, new BasicStroke(2.0f));
 		renderer.setSeriesShapesVisible(1, true);
-		
-		plot.setRenderer(renderer);
+		renderer.setSeriesItemLabelFont(1, new Font("SansSerif", Font.BOLD, 10));
 
+		// Add item labels to show scores only for "Your Score"
+		// Custom Label Generator to Append '%' to "Your Score"
+		renderer.setSeriesItemLabelGenerator(1, new StandardCategoryItemLabelGenerator() {
+			@Override
+			public String generateLabel(CategoryDataset dataset, int row, int column) {
+				Number value = dataset.getValue(row, column);
+				if (value != null) {
+					return value.intValue() + "%"; // Append '%' to each value
+				}
+				return "";
+			}
+		});
+		renderer.setSeriesItemLabelsVisible(1, true);
+		renderer.setSeriesItemLabelFont(1, new Font("SansSerif", Font.PLAIN, 10));
+		renderer.setSeriesPositiveItemLabelPosition(1, new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12, TextAnchor.BOTTOM_CENTER));
+	
+		plot.setRenderer(renderer);
 		// Convert chart to image
 		ByteArrayOutputStream chartOutputStream = new ByteArrayOutputStream();
 		try {
@@ -575,13 +604,20 @@ public class PdfServiceImpl implements PdfService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		ImageData imageData = ImageDataFactory.create(chartOutputStream.toByteArray());
 		Image chartImage = new Image(imageData);
 		chartImage.setHorizontalAlignment(com.itextpdf.layout.property.HorizontalAlignment.CENTER);
-		
 		return chartImage;
 	}
+
+
+
+
+
+
+
+
+
 
 	// left answer score section
 	private Table getLeftDetailScore(float width){ 
@@ -646,6 +682,13 @@ public class PdfServiceImpl implements PdfService {
 
 	private List<TestResultHistoryDTO> getDummyHistory(){
 		List<TestResultHistoryDTO> list = new ArrayList<>();
+		for(int i=5; i<10; i++){
+			TestResultHistoryDTO dto = new TestResultHistoryDTO();
+			dto.setTestNo(i);
+			// random number from 20~99
+			dto.setAverage(new Random().nextInt(80) + 20);
+			list.add(dto);
+		}
 		for(int i=10; i<=20; i++){
 			TestResultHistoryDTO dto = new TestResultHistoryDTO();
 			dto.setTestNo(i);
@@ -654,17 +697,6 @@ public class PdfServiceImpl implements PdfService {
 			dto.setStudentScore(new Random().nextInt(80) + 20);
 			list.add(dto);
 		}
-		list.get(0).setAverage(50);
-		list.get(1).setAverage(53);
-		list.get(2).setAverage(55);
-		list.get(3).setAverage(57);
-		list.get(4).setAverage(60);
-		list.get(5).setAverage(62);
-		list.get(6).setAverage(65);
-		list.get(7).setAverage(68);
-		list.get(8).setAverage(70);
-		list.get(9).setAverage(72);	
-					
 		return list;
 	}
 
