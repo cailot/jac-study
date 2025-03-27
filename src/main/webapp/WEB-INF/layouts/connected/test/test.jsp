@@ -262,7 +262,7 @@ function displayMaterial(testId) {
                 }
             } 
             // Open the modal
-            document.getElementById("testModalLabel").innerHTML = test.title + ' Test - Set <span class="text-warning">' + setName + "</span>";
+            document.getElementById("testModalLabel").innerHTML = test.name + ' Test - Set <span class="text-warning">' + setName + "</span>";
             $('#testModal').modal('show');
         },
         error: function (jqXHR, textStatus, errorThrown) {

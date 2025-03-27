@@ -611,14 +611,6 @@ public class PdfServiceImpl implements PdfService {
 	}
 
 
-
-
-
-
-
-
-
-
 	// left answer score section
 	private Table getLeftDetailScore(float width){ 
 		Table subject = new Table(new float[]{(width/2)});
