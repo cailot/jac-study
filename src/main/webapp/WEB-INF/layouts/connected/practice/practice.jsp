@@ -79,6 +79,19 @@
         margin-bottom: 1.0em;
     }
 
+    .pdfViewerContainer {
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+canvas.pdfCanvas {
+  display: block;
+  width: 100%; /* Stretchs to container width */
+  height: auto;
+}
 
 </style>
 
@@ -158,20 +171,27 @@ function renderAnswerPage(num) {
     const canvas = document.getElementById("answerPdfCanvas");
     const ctx = canvas.getContext("2d");
 
-    // Clear the canvas to ensure previous rendering does not overlap
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     pdfDoc.getPage(num).then((page) => {
-        const viewport = page.getViewport({ scale: scale });
-        canvas.height = viewport.height;
+        const container = canvas.parentElement;
+        const unscaledViewport = page.getViewport({ scale: 1 });
+        const containerWidth = container.clientWidth;
+
+        // Base scale to fit width, multiplied by user zoom level
+        const baseScale = containerWidth / unscaledViewport.width;
+        const finalScale = baseScale * scale;
+
+        const viewport = page.getViewport({ scale: finalScale });
+
         canvas.width = viewport.width;
+        canvas.height = viewport.height;
 
         const renderContext = {
             canvasContext: ctx,
             viewport: viewport,
         };
 
-        // Render the page
         page.render(renderContext).promise.then(() => {
             document.getElementById("answerCurrentPage").textContent = num;
             document.getElementById("answerPrevPage").disabled = num <= 1;
@@ -183,7 +203,6 @@ function renderAnswerPage(num) {
         console.log("Error loading page:", err);
     });
 }
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 			Display Material (Pdf/Answer Sheet)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -521,7 +540,7 @@ function calculateScore(studentAnswers, answerSheet) {
 </script>
 
 <!-- Pop up Practice modal -->
-<div class="modal fade" id="practiceModal" tabindex="-1" role="dialog" aria-labelledby="practiceModalLabel" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
+<div class="modal fade" id="practiceModal" tabindex="-1" role="dialog" aria-labelledby="practiceModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-extra-large" role="document">
         <div class="modal-content" style="height: 90vh;">
             <div class="modal-header bg-primary text-white text-center">
@@ -529,29 +548,36 @@ function calculateScore(studentAnswers, answerSheet) {
                 <button type="button" class="close position-absolute" style="right: 1rem;" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-            </div>            
-            <div class="modal-body bg-light">
-                <div class="row">
-                    <div class="col-md-9 bg-white p-1 border">
-                        <div class="pdf-toolbar">
+            </div>
+
+            <div class="modal-body bg-light p-0" style="height: 100%;">
+                <div class="row m-0" style="height: 100%;">
+                    
+                    <!-- LEFT PANEL -->
+                    <div class="col-md-9 bg-white border d-flex flex-column p-2" style="height: 100%;">
+                        <!-- Toolbar -->
+                        <div class="pdf-toolbar mb-2" style="flex-shrink: 0;">
                             <button id="practicePrevPage">Previous</button>
-                                <span>Page: <span id="practiceCurrentPage">1</span> / <span id="practiceTotalPages">1</span></span>
+                            <span>Page: <span id="practiceCurrentPage">1</span> / <span id="practiceTotalPages">1</span></span>
                             <button id="practiceNextPage">Next</button>
                             <button id="practiceZoomOut">-</button>
                             <button id="practiceZoomIn">+</button>
                         </div>
-                        <div class="pdfViewerContainer">
-                            <canvas id="practicePdfCanvas" class="pdfCanvas"></canvas>
+                        <!-- PDF Viewer -->
+                        <div class="pdfViewerContainer flex-grow-1 overflow-auto">
+                            <canvas id="practicePdfCanvas" class="pdfCanvas" style="width: 100%; height: auto;"></canvas>
                         </div>
                     </div>
-                    <div class="col-md-3 bg-white p-1 border" style="height: 85vh;">
-                        <div style="display: flex; flex-direction: column; height: 100%;">
-                            <!-- ANSWER SHEET -->
-                            <div class="answerSheet" style="overflow-y: auto; flex-grow: 1;"></div>
-                        </div>
+
+                    <!-- RIGHT PANEL -->
+                    <div class="col-md-3 bg-white border d-flex flex-column p-3" style="height: 100%;">
+                        <!-- Answer Sheet -->
+                        <div class="answerSheet flex-grow-1 overflow-auto" style="min-height: 0;"></div>
                     </div>
+
                 </div>
             </div>
+
             <div class="modal-footer bg-dark text-white">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
@@ -587,7 +613,7 @@ function calculateScore(studentAnswers, answerSheet) {
                                 <span>Page: <span id="answerCurrentPage">1</span> / <span id="answerTotalPages">1</span></span>
                             <button id="answerNextPage">Next</button>
                             <button id="answerZoomOut">-</button>
-                            <button id="answerZoomIn">+</button>
+                            <button id="answerZoomIn">+</button>                    
                         </div>
                         <div class="pdfViewerContainer">
                             <canvas id="answerPdfCanvas" class="pdfCanvas"></canvas>
