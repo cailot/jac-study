@@ -109,14 +109,14 @@
 		<put-attribute name="title" value="James An College Connected Class Page" />
 		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/mega.jsp" />
 	</definition>
-	<definition name="megaMathTestPage" extends="tile.definition">
+	<definition name="megaExplanationPage" extends="tile.definition">
 		<put-attribute name="title" value="James An College Connected Class Page" />
-		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/megaMath.jsp" />
+		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/megaExplanation.jsp" />
 	</definition>
-	<definition name="megaGATestPage" extends="tile.definition">
+	<!-- <definition name="megaGATestPage" extends="tile.definition">
 		<put-attribute name="title" value="James An College Connected Class Page" />
 		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/megaGA.jsp" />
-	</definition>
+	</definition> -->
 	<definition name="omrResultPage" extends="tile.definition">
 		<put-attribute name="title" value="James An College Connected Class Page" />
 		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/omr.jsp" />

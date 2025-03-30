@@ -125,11 +125,11 @@ public class JaeController {
 		return "megaTestPage";
 	}
 
-	// // mega math
-	// @GetMapping("/connected/test/megaMath")
-	// public String dispayMegaMathTest() {
-	// 	return "megaMathTestPage";
-	// }
+	// mega explanation
+	@GetMapping("/connected/test/megaExplanation")
+	public String dispayMegaExplanation() {
+		return "megaExplanationPage";
+	}
 
 	// // mega GA
 	// @GetMapping("/connected/test/megaGA")

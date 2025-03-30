@@ -757,6 +757,17 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
+	public List<TestScheduleDTO> checkTestSchedule4Explanation(String testGroup, String grade, LocalDateTime now) {
+		List<TestScheduleDTO> dtos = new ArrayList<>();
+		try{
+			dtos = testScheduleRepository.getTestSchedule4Explanation(testGroup, grade, now);
+		}catch(Exception e){
+			System.out.println("No Test Schedule found");
+		}
+		return dtos;
+	}
+
+	@Override
 	public List<PracticeDTO> getPracticeInfoByGroup(int practiceGroup, String grade, int week) {
 		List<PracticeDTO> dtos = new ArrayList<>();
 		try{

@@ -209,22 +209,28 @@ function updatePassword() {
 							<c:if test="${grade == '[1]' ||grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]'}">
 								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/mega">Mega Test</a>
 							</c:if>
+							<c:if test="${grade == '[1]' ||grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]'}">
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/megaExplanation">Mega Test Explanation</a>
+							</c:if>
 							<!-- Revision submenu -->
 							<c:if test="${grade == '[6]' ||grade == '[7]' || grade == '[8]' || grade == '[9]'}">
 								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/revision">Revision Test</a>
 							</c:if>
-							<!-- Edu submenu -->
-							<c:if test="${grade == '[11]' ||grade == '[12]' || grade == '[19]'}">
+							<c:if test="${grade == '[6]' ||grade == '[7]' || grade == '[8]' || grade == '[9]'}">
+								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/revisionExplanation">Revision Test Explanation</a>
+							</c:if>
+							<!-- Edu submenu : TT6, JMSS -->
+							<c:if test="${grade == '[11]' || grade == '[19]'}">
 								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/edu">EDU Test</a>
 							</c:if>
-							<!-- Acer submenu -->
+							<!-- Acer submenu : TT6, TT8 -->
 							<c:if test="${grade == '[11]' ||grade == '[12]'}">
 								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/acer">ACER Test</a>
 							</c:if>
 							<!-- Test Result submenu -->
-							<c:if test="${grade == '[2]' || grade == '[4]' || grade == '[6]' || grade == '[8]'}">
+							<!-- <c:if test="${grade == '[2]' || grade == '[4]' || grade == '[6]' || grade == '[8]'}">
 								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/result">Result</a>
-							</c:if>							
+							</c:if>							 -->
 							
 							<!-- OMR Result -->
 							<a class="dropdown-item" href="${pageContext.request.contextPath}/result/download-pdf" download="TestResult.pdf">Online Result</a>

@@ -359,8 +359,16 @@ public interface ConnectedService {
 	// get Practice Schedule by practiceGroup & grade & localDateTime
 	List<PracticeScheduleDTO> checkPracticeSchedule(String practiceGroup, String grade, LocalDateTime now);
 
+	/////////////////////////////////////////////////////////
+	//
+	//	TEST SCHEDULE
+	//
+	/////////////////////////////////////////////////////////
+
 	// get Test Schedule by testGroup & grade & localDateTime
 	List<TestScheduleDTO> checkTestSchedule(String testGroup, String grade, LocalDateTime now);
 
+	// get Test Schedule for explanation by testGroup & grade & localDateTime
+	List<TestScheduleDTO> checkTestSchedule4Explanation(String testGroup, String grade, LocalDateTime now);
 
 }

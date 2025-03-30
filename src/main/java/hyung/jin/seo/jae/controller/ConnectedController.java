@@ -198,6 +198,16 @@ public class ConnectedController {
 		return dto;
 	}
 
+	// get test answer by test id
+	@GetMapping("/getTestAnswer/{id}")
+	@ResponseBody
+	public TestAnswerDTO getTestAnswer(@PathVariable Long id) {
+		// 1. get TestDTO
+		TestAnswerDTO dto = connectedService.findTestAnswerByTest(id);
+		// 4. return dto
+		return dto;
+	}
+
 	// search homework by id
 	@GetMapping("/homework/{homeworkId}")
 	@ResponseBody
@@ -360,7 +370,7 @@ public class ConnectedController {
 	public List<TestSummaryDTO> summaryTests(@PathVariable int testGroup, @PathVariable long studentId, @PathVariable String grade) {
 		// 1. get current LocalDateTime & current week
 		LocalDateTime now = LocalDateTime.now();
-		// 2. get PracticeScheduleDTO by current time, practiceType & grade
+		// 2. get TestScheduleDTO by current time, testGroup & grade
 		List<TestScheduleDTO> schedules = connectedService.checkTestSchedule(testGroup+"", grade, now);
 		// 3. check if schedule is empty
 		if(schedules.isEmpty()){
@@ -389,6 +399,45 @@ public class ConnectedController {
 						if(done){
 							title = title + JaeConstants.PRACTICE_COMPLETE;
 						}
+						dto.setId(testId);
+						dto.setTitle(title);
+						dto.setWeek(week);
+						dtos.add(dto);
+					}
+				}
+			}
+			return dtos;
+		}
+	}
+
+	@GetMapping("/summaryTest4Explanation/{testGroup}/{studentId}/{grade}")
+	@ResponseBody
+	public List<TestSummaryDTO> summaryTest4Explanation(@PathVariable int testGroup, @PathVariable long studentId, @PathVariable String grade) {
+		// 1. get current LocalDateTime & current week
+		LocalDateTime now = LocalDateTime.now();
+		// 2. get TestScheduleDTO by current time, testGroup & grade
+		List<TestScheduleDTO> schedules = connectedService.checkTestSchedule4Explanation(testGroup+"", grade, now);
+		// 3. check if schedule is empty
+		if(schedules.isEmpty()){
+			// 3-1. if empty, return empty list
+			return new ArrayList<>();
+		}else{
+			// 3-2. if not empty, get practice list
+			List<TestSummaryDTO> dtos = new ArrayList<>();
+			outter:for(TestScheduleDTO schedule : schedules){				
+				String[] groups = schedule.getTestGroup();
+				String[] weeks = schedule.getWeek();
+				inner:for(int i=0; i<groups.length; i++){
+					System.out.println(groups[i] + " : " + weeks[i]);
+					int group = Integer.parseInt(groups[i]);
+					if(group != testGroup) continue inner;
+					int week = Integer.parseInt(weeks[i]);
+					List<TestDTO> tests = connectedService.getTestInfoByGroup(testGroup, grade, week);
+					for(TestDTO test : tests){
+						// add to list
+						TestSummaryDTO dto = new TestSummaryDTO();
+						long testId = Long.parseLong(test.getId());
+						String title = test.getName();
 						dto.setId(testId);
 						dto.setTitle(title);
 						dto.setWeek(week);
@@ -756,4 +805,6 @@ public class ConnectedController {
 		String timeString = connectedService.getRegDateforStudentTest(studentId, testId, cycle.getStartDate(), cycle.getEndDate());
 		return timeString;
 	}
+
+
 }
