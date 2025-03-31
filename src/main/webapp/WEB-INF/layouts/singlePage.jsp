@@ -22,7 +22,7 @@
 </head>
 <body>
 	<div class="container-fluid d-flex h-100 flex-column">
-		<div class="row justify-content-center align-items-center">
+		<div class="row justify-content-center align-items-center" >
 			<tiles:insertAttribute name="body" />
 		</div>
 	</div>

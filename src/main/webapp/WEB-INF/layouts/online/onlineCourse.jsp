@@ -1,6 +1,8 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <sec:authorize access="isAuthenticated()">
 <sec:authentication var="role" property='principal.authorities'/>
@@ -425,32 +427,73 @@ function accessConnectedClass() {
 
 <style>
 
-	span#studentName:hover {
-        cursor: pointer;
-    }
-	
-	.custom-icon {
-    font-size: 2rem; /* Adjust the size as needed */
-	}
+span#studentName:hover {
+	cursor: pointer;
+}
 
-	/* Style for an additional container element */
-	.iframe-container {
-		margin: 5px; /* Adjust the margin as needed */
-	}
+.custom-icon {
+font-size: 2rem; /* Adjust the size as needed */
+}
 
-	/* Style for the iframe */
-	#lessonVideo {
-		width: 1000px;
-		height: 550px;
-		border: none;
-		background: url('${pageContext.request.contextPath}/image/lecture.jpg') center center no-repeat;
-		background-size: 60%;
-	}
+/* Style for an additional container element */
+.iframe-container {
+	margin: 5px; /* Adjust the margin as needed */
+}
+
+/* Style for the iframe */
+#lessonVideo {
+	width: 1000px;
+	height: 450px;
+	border: none;
+	background: url('${pageContext.request.contextPath}/image/lecture.jpg') center center no-repeat;
+	background-size: 60%;
+}
+
+/* Elevated Card / Box Look */
+.card, .alert, .modal-content {
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); /* deeper, smoother shadow */
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+/* Subtle lift on hover */
+.card:hover, .alert:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.onlineLesson:hover, .recordLesson:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-connected-class {
+  background: linear-gradient(to right, #3d5afe, #536dfe);
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 12px 28px;
+  font-size: 1rem;
+  border-radius: 50px;
+  box-shadow: 0 6px 15px rgba(61, 90, 254, 0.3);
+  transition: all 0.3s ease;
+}
+
+
+.btn-connected-class:hover {
+  background: linear-gradient(to right, #ffeb3b, #fff176); /* yellow gradient */
+  color: #2c3e50;
+  box-shadow: 0 8px 20px rgba(255, 235, 59, 0.4);
+  transform: translateY(-2px);
+}
 
 </style>
-<div class="container-fluid pl-0 pr-0">
+
+<div class="container-fluid pl-0 pr-0" style="background-image: url('${pageContext.request.contextPath}/image/online-background.jpg'); background-size: cover;">
 	<sec:authorize access="isAuthenticated()">
-		<div class="card-body jae-background-color" style="display: flex; align-items: center; justify-content: space-between; padding-top: 0px;">
+		<div class="card-body jae-background-color" style="display: flex; align-items: center; justify-content: space-between; padding: 0.2rem;">
 			<div class="content-container">
 				<span class="card-text text-warning font-weight-bold font-italic h5" style="margin-left: 25px;" id="studentName" onclick="clearPassword();retrieveStudentInfo()">${firstName} ${lastName}</span>
 				<span style="color: white;">&nbsp;&nbsp;(</span>
@@ -458,22 +501,46 @@ function accessConnectedClass() {
 				<span style="color: white;">)  </span>
 				<script>document.getElementById("studentGrade").textContent = displayGrade();</script>
 			</div>
-			<div class="card-body jae-background-color text-center">
-				<img src="${pageContext.request.contextPath}/image/logo.png" style="filter: brightness(0) invert(1);width:75px;" >
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-light align-middle h1">Jac-eLearning Student Lecture</span>           
+			<div class="card-body jae-background-color text-center" style="padding: 1rem;">
+				<img src="${pageContext.request.contextPath}/image/logo.png" style="filter: brightness(0) invert(1);width:65px;" >
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-light align-middle h2">Jac-eLearning Student Lecture</span>           
 			</div>
 			<div>
-				<form:form action="${pageContext.request.contextPath}/online/logout" method="POST" id="logout">
-					<button class="btn" style="margin-right: 20px;"><i class="bi bi-box-arrow-right custom-icon text-warning" title="Log Out"></i></button>
-				</form:form>
+				<div style="display: flex; align-items: center; margin-top: 5px;">
+					<table>
+						<tr>
+							<td>
+								<span class="text-white">
+									<c:set var="now" value="<%= new java.util.Date() %>" />
+									Logged at <fmt:formatDate value="${now}" pattern="dd/MM/yyyy HH:mm" />
+								</span>
+							</td>
+							<td>
+								<form:form action="${pageContext.request.contextPath}/online/logout" method="POST" id="logout" style="margin-bottom: 0px;">
+									<button class="btn mr-1"><i class="bi bi-power custom-icon text-warning" title="Log Out"></i></button>
+								</form:form>				
+							</td>
+						</tr>
+					</table>
+				</div>
 			</div>
 		</div>
 	</sec:authorize>
 	
-	<!-- HTML with additional container -->
-	<div class="iframe-container" style="display: flex; justify-content: center; align-items: center;">
-		<iframe id="lessonVideo" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-	</div>
+	<div class="container py-2">
+        <div class="card shadow-sm rounded-4">
+            <div class="card-body text-center" style="padding-bottom: 0px;">
+                <h3 class="card-title text-primary mt-2">Welcome to Jac-eLearning!</h3>
+                <p class="text-muted">Your personal hub for live and recorded online lessons at James An College.</p>
+                <div class="my-1">
+                    <!-- <img src="${pageContext.request.contextPath}/image/live.png" alt="Online Class" style="width: 200px;"> -->
+					<div class="iframe-container" style="display: flex; justify-content: center; align-items: center;">
+						<iframe id="lessonVideo" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 	<div class="parent-container" style="display: flex; justify-content: center;">
 		<div class="card-body" style="max-width: 80%; margin: auto;">
@@ -482,8 +549,9 @@ function accessConnectedClass() {
 			<div id="recordBlocks">
 			</div>
 			<div class="text-right">
-				<!-- <a href="${pageContext.request.contextPath}/connected/lesson" class="btn btn-primary" target="_blank">Access To Connected Class</a> -->
-				<button class="btn btn-primary" onclick="accessConnectedClass()">Access To Connected Class</button>
+ 				<button class="btn btn-connected-class" onclick="accessConnectedClass()">
+					<i class="bi bi-box-arrow-in-right me-2"></i>&nbsp;&nbsp;&nbsp;Access To Connected Class
+				</button>
 			</div>
 		</div>
 	</div>	
