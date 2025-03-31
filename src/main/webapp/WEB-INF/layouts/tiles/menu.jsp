@@ -258,7 +258,7 @@ function updatePassword() {
 						&nbsp;&nbsp;
 					</div>
 					<form:form action="${pageContext.request.contextPath}/connected/logout" method="POST" id="logout" style="margin-bottom: 0px;">
-						<button class="btn" style="margin-right: 20px;"><i class="bi bi-box-arrow-right custom-icon text-warning" title="Log Out"></i></button>
+						<button class="btn" style="margin-right: 20px;"><i class="bi bi-power custom-icon text-warning" title="Log Out"></i></button>
 					</form:form>
 				</div>
 			</sec:authorize> 

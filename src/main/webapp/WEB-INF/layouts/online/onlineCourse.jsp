@@ -499,10 +499,9 @@ body {
 
 </style>
 
-<div class="container-fluid pl-0 pr-0"> <!-- style="background-image: url('${pageContext.request.contextPath}/image/online-background.jpg'); background-size: cover;"> -->
+<div class="container-fluid pl-0 pr-0">
 	<sec:authorize access="isAuthenticated()">
-		<!-- <div class="card-body jae-background-color" style="display: flex; align-items: center; justify-content: space-between; padding: 0.2rem;"> -->
-			<div class="card-body jae-background-color w-100 d-flex align-items-center justify-content-between" style="margin: 0; padding: 0.2rem;">	
+		<div class="card-body jae-background-color w-100 d-flex align-items-center justify-content-between" style="margin: 0; padding: 0.2rem;">	
 			<div class="content-container">
 				<span class="card-text text-warning font-weight-bold font-italic h5" style="margin-left: 25px;" id="studentName" onclick="clearPassword();retrieveStudentInfo()">${firstName} ${lastName}</span>
 				<span style="color: white;">&nbsp;&nbsp;(</span>
@@ -526,7 +525,7 @@ body {
 							</td>
 							<td>
 								<form:form action="${pageContext.request.contextPath}/online/logout" method="POST" id="logout" style="margin-bottom: 0px;">
-									<button class="btn mr-1"><i class="bi bi-power custom-icon text-warning" title="Log Out"></i></button>
+									<button class="btn mr-1"><i class="bi bi-power custom-icon text-warning" style="font-size: 1.75rem;" title="Log Out"></i></button>
 								</form:form>				
 							</td>
 						</tr>
