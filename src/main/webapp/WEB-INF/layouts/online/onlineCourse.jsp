@@ -159,7 +159,7 @@ function getOnlineLive(studentId, year, week) {
 			    // console.log(live);
 				var url = live.address;
 				// Create a new session element
-				var sessionElement = $('<div id="onlineLesson'+index+'" class="onlineLesson alert alert-info"></div>');
+				var sessionElement = $('<div id="onlineLesson'+index+'" class="onlineLesson alert alert-info jae-border-warning"></div>');
                 sessionElement.attr('data-video-url', url);
                 sessionElement.append('<p id="liveBlock'+index+'" class="m-1">Online Live Weekly Lesson<strong> Set</strong> <span id="academicWeek'+index+'">'+ (week-1) +'</span> - <i>' + live.title+ '</i> (' +
                     '<span id="onlineLessonDayTitle'+index+'" name="onlineLessonDayTitle'+index+'">' + dayName(live.day) + '</span>, ' +
@@ -197,7 +197,7 @@ function getRecordedSession(studentId, year, week, set, day, before) {
 					// console.log(record);
 					var url = record.address;
 					// Create a new session element
-					var sessionElement = $('<div id="recordLesson'+index+'"class="recordLesson alert alert-primary" style="pointer-events: auto; cursor: pointer;"></div>');
+					var sessionElement = $('<div id="recordLesson'+index+'"class="recordLesson alert alert-primary jae-border-warning" style="pointer-events: auto; cursor: pointer;"></div>');
 					sessionElement.attr('data-video-url', url);
 					sessionElement.append('<p id="recordBlock' + index + '" class="m-1">Recorded Weekly Lesson <strong>Set</strong> <span id="recordWeek' + index + '"></span> - <i>' + record.title +'</i> (' +
 						'<span id="recordLessonDayTitle' + index + '" name="recordLessonDayTitle' + index + '"></span>) ' +
