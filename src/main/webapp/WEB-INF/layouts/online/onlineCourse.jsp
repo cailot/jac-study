@@ -489,11 +489,20 @@ font-size: 2rem; /* Adjust the size as needed */
   transform: translateY(-2px);
 }
 
+body {
+  background: url('${pageContext.request.contextPath}/image/online-background.jpg') no-repeat center center fixed;
+  background-size: cover;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
 </style>
 
-<div class="container-fluid pl-0 pr-0" style="background-image: url('${pageContext.request.contextPath}/image/online-background.jpg'); background-size: cover;">
+<div class="container-fluid pl-0 pr-0"> <!-- style="background-image: url('${pageContext.request.contextPath}/image/online-background.jpg'); background-size: cover;"> -->
 	<sec:authorize access="isAuthenticated()">
-		<div class="card-body jae-background-color" style="display: flex; align-items: center; justify-content: space-between; padding: 0.2rem;">
+		<!-- <div class="card-body jae-background-color" style="display: flex; align-items: center; justify-content: space-between; padding: 0.2rem;"> -->
+			<div class="card-body jae-background-color w-100 d-flex align-items-center justify-content-between" style="margin: 0; padding: 0.2rem;">	
 			<div class="content-container">
 				<span class="card-text text-warning font-weight-bold font-italic h5" style="margin-left: 25px;" id="studentName" onclick="clearPassword();retrieveStudentInfo()">${firstName} ${lastName}</span>
 				<span style="color: white;">&nbsp;&nbsp;(</span>
@@ -528,7 +537,7 @@ font-size: 2rem; /* Adjust the size as needed */
 	</sec:authorize>
 	
 	<div class="container py-2">
-        <div class="card shadow-sm rounded-4">
+        <div class="card shadow-sm rounded-4 mt-2">
             <div class="card-body text-center" style="padding-bottom: 0px;">
                 <h3 class="card-title text-primary mt-2">Welcome to Jac-eLearning!</h3>
                 <p class="text-muted">Your personal hub for live and recorded online lessons at James An College.</p>
@@ -554,7 +563,14 @@ font-size: 2rem; /* Adjust the size as needed */
 				</button>
 			</div>
 		</div>
-	</div>	
+	</div>
+	
+	<h6 class="text-center" style="position: fixed; bottom: 0; width: 100%;">
+		2015 - <%=new java.util.Date().getYear() + 1900%>&copy;&nbsp; All rights reserved.&nbsp;&nbsp;
+		<div class="copyright-font-color">James An College</div>
+	</h6>
+		
+
 </div>
 
 <!-- Realtime Video Warning Modal -->
@@ -631,10 +647,6 @@ font-size: 2rem; /* Adjust the size as needed */
         </div>
     </div>
 </div>
-<h6 class="text-center" style="position: fixed; bottom: 0; width: 100%;">
-	2015 - <%=new java.util.Date().getYear() + 1900%>&copy;&nbsp; All rights reserved.&nbsp;&nbsp;
-	<div class="copyright-font-color">James An College</div>
-</h6>
 
  <!-- Edit Form Dialogue -->
  <div class="modal fade" id="editStudentModal" tabindex="-1" role="dialog" aria-labelledby="modalEditLabel" aria-hidden="true">	
