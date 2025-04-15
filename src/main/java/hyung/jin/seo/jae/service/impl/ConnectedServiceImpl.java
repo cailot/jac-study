@@ -221,6 +221,50 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
+	public String getTestTypeName(Long id) {
+		String name = "";
+		try{
+			name = testRepository.getTestTypeName(id);
+		}catch(Exception e){
+			System.out.println("No Test found");
+		}
+		return name;	
+	}
+
+	@Override
+	public int getTestGroup(Long id) {
+		int testGroup = 0;
+		try{
+			testGroup = testRepository.getTestGroup(id);
+		}catch(Exception e){
+			System.out.println("No Test found");
+		}
+		return testGroup;	
+	}
+
+	@Override
+	public int getTestVolume(Long id) {
+		int testVolume = 0;
+		try{
+			testVolume = testRepository.getTestVolume(id);
+		}catch(Exception e){
+			System.out.println("No Test found");
+		}
+		return testVolume;	
+	}
+
+	@Override
+	public String getTestGrade(Long id) {
+		String testGrade = "";
+		try{
+			testGrade = testRepository.getTestGrade(id);
+		}catch(Exception e){
+			System.out.println("No Test found");
+		}
+		return testGrade;	
+	}
+
+	@Override
 	public TestAnswer getTestAnswer(Long id) {
 		Optional<TestAnswer> test = testAnswerRepository.findById(id);
 		if(!test.isPresent()) return null;
@@ -768,6 +812,17 @@ public class ConnectedServiceImpl implements ConnectedService {
 	}
 
 	@Override
+	public TestScheduleDTO getMostRecentTestSchedule(String testGroup, String grade, String week) {
+		TestScheduleDTO dto = new TestScheduleDTO();
+		try{
+			dto = testScheduleRepository.getTestScheduleByGroupNGradeNWeekTop1(testGroup, grade, week);
+		}catch(Exception e){
+			System.out.println("No Test Schedule found");
+		}
+		return dto;
+	}
+
+	@Override
 	public List<PracticeDTO> getPracticeInfoByGroup(int practiceGroup, String grade, int week) {
 		List<PracticeDTO> dtos = new ArrayList<>();
 		try{
@@ -883,6 +938,17 @@ public class ConnectedServiceImpl implements ConnectedService {
 			dtos = testRepository.getTestByType(testId, fromDate, toDate);
 		}catch(Exception e){
 			System.out.println("No Test found");
+		}
+		return dtos;
+	}
+
+	@Override
+	public List<StudentTestDTO> getLatestStudentTest(Long studentId) {
+		List<StudentTestDTO> dtos = new ArrayList<>();
+		try{
+			dtos = studentTestRepository.getStudentTestsByStudentIdWithMostRecentRegisterDate(studentId);
+		}catch(Exception e){
+			System.out.println("No StudentTest found");
 		}
 		return dtos;
 	}

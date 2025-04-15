@@ -228,13 +228,16 @@ function updatePassword() {
 								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/acer">ACER Test</a>
 							</c:if>
 							<!-- Test Result submenu -->
-							<!-- <c:if test="${grade == '[2]' || grade == '[4]' || grade == '[6]' || grade == '[8]'}">
-								<a class="dropdown-item" href="${pageContext.request.contextPath}/connected/test/result">Result</a>
-							</c:if>							 -->
-							
 							<!-- OMR Result -->
-							<a class="dropdown-item" href="${pageContext.request.contextPath}/result/download-pdf" download="TestResult.pdf">Online Result</a>
-
+							<a id="recentResultLink" class="dropdown-item" href="${pageContext.request.contextPath}/result/download-pdf/" download="TestResult.pdf">Recent Result</a>
+							<script>
+								document.addEventListener("DOMContentLoaded", function () {
+									// Update the href attribute of the link
+									var recentResultLink = document.getElementById("recentResultLink");
+									recentResultLink.href += studentId;
+									console.log(recentResultLink.href);
+								});
+							</script>
 						</div>
 					</div>
 					<!-- Link to Jac-eLearning -->

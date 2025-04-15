@@ -43,4 +43,19 @@ public interface TestRepository extends JpaRepository<Test, Long>{
 	@Query("SELECT new hyung.jin.seo.jae.dto.TestDTO(t.id, t.volume, t.average, t.testType.id) FROM Test t WHERE (t.testType.id = (SELECT t2.testType.id FROM Test t2 WHERE t2.id = :id)) AND (t.registerDate BETWEEN :fromTime AND :toTime)")
 	List<TestDTO> getTestByType( @Param("id") long id, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);
 
+	// get Test name by id
+	@Query("SELECT t.testType.name FROM Test t WHERE t.id = ?1")
+	String getTestTypeName(Long id);
+
+	// get test group by id
+	@Query("SELECT t.testType.testGroup FROM Test t WHERE t.id = ?1")
+	int getTestGroup(Long id);
+
+	// get test volume by id
+	@Query("SELECT t.volume FROM Test t WHERE t.id = ?1")
+	int getTestVolume(Long id);
+
+	// get test grade by id
+	@Query("SELECT t.grade.code FROM Test t WHERE t.id = ?1")
+	String getTestGrade(Long id);
 }

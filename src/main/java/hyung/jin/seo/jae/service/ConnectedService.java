@@ -252,15 +252,6 @@ public interface ConnectedService {
 	// get Test by Id
 	TestDTO getTestInfo(Long id);
 	
-	// // register Test
-	// Test addTest(Test crs);
-	
-	// // update Test info by Id
-	// Test updateTest(Test newWork, Long id);
-	
-	// // delete Test
-	// void deleteTest(Long id);
-
 	// get Test by type, grade & volume
 	TestDTO getTestInfo(int type, String grade, int volume);
 
@@ -275,12 +266,6 @@ public interface ConnectedService {
 
 	// retrieve TestAnswer by Test
 	TestAnswerDTO findTestAnswerByTest(Long id);
-
-	// // register TestAnswer
-	// TestAnswer addTestAnswer(TestAnswer crs);
-	
-	// // update TestAnswer info by Id
-	// TestAnswer updateTestAnswer(TestAnswer newWork, Long id);
 
 	// get Answer sheet by Test
 	List<TestAnswerItem> getAnswersByTest(Long testId);
@@ -300,17 +285,14 @@ public interface ConnectedService {
 	// register TestAnswer
 	StudentTest addStudentTest(StudentTest crs);
 	
-	// // update TestAnswer info by Id
-	// StudentTest updateStudentTest(StudentTest newWork, Long id);
-
 	// check if student has done the test
 	boolean isStudentTestExist(Long studentId, Long testId, String from, String to);
 
-	// // delete existing record to take test again
-	// void deleteStudentTest(Long studentId, Long testId); 
-	
 	// retrieve StudentTest brief info
 	StudentTestDTO getStudentTest(Long studentId, Long testTypeId, String grade, int volume, String from, String to);
+
+	// get latest StudentTest by studentId
+	List<StudentTestDTO> getLatestStudentTest(Long studentId);
 
 	// get Test by test group, grade & week
 	List<TestDTO> getTestInfoByGroup(int testGroup, String grade, int week);
@@ -331,6 +313,18 @@ public interface ConnectedService {
 
 	// get Test by testType
 	List<TestDTO> getTestInfoByType(Long testId, String from, String to);
+
+	// get test type name by id
+	String getTestTypeName(Long id);
+
+	// get test group by id
+	int getTestGroup(Long id);
+
+	// get test grade by id
+	String getTestGrade(Long id);
+
+	// get test volume by id
+	int getTestVolume(Long id);
 
 	/////////////////////////////////////////////////////////
 	//
@@ -370,5 +364,9 @@ public interface ConnectedService {
 
 	// get Test Schedule for explanation by testGroup & grade & localDateTime
 	List<TestScheduleDTO> checkTestSchedule4Explanation(String testGroup, String grade, LocalDateTime now);
+
+	// get most recent Test Schedule by testGroup & grade & week
+	TestScheduleDTO getMostRecentTestSchedule(String testGroup, String grade, String week);
+	
 
 }

@@ -428,10 +428,15 @@ public class ConnectedController {
 				String[] groups = schedule.getTestGroup();
 				String[] weeks = schedule.getWeek();
 				inner:for(int i=0; i<groups.length; i++){
-					System.out.println(groups[i] + " : " + weeks[i]);
+					//System.out.println(groups[i] + " : " + weeks[i]);
 					int group = Integer.parseInt(groups[i]);
 					if(group != testGroup) continue inner;
 					int week = Integer.parseInt(weeks[i]);
+					// if week = vol 5, then it should show previous year's vol 5; for example P3 vol 5, then return P2's vol 5
+					//System.out.println("WEEK :::::: " + week);
+					if(week == 5){
+						grade = (Integer.parseInt(grade) -1) + "";
+					}
 					List<TestDTO> tests = connectedService.getTestInfoByGroup(testGroup, grade, week);
 					for(TestDTO test : tests){
 						// add to list

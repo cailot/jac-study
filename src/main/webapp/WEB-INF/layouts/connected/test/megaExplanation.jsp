@@ -9,7 +9,7 @@ $(function() {
         method: "GET",
         success: function(data) {
             $.each(data, function(index, basket) {                
-               //console.log(basket);
+               console.log(basket);
                 var title = basket.title;
                 var id = basket.id;
                 var week = basket.week;

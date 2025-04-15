@@ -2,7 +2,6 @@ package hyung.jin.seo.jae.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,5 +33,24 @@ public interface TestScheduleRepository extends JpaRepository<TestSchedule, Long
 	"AND (t.grade = '0' OR t.grade LIKE CONCAT('%,', :grade, ',%') OR t.grade LIKE CONCAT(:grade, ',%') OR t.grade LIKE CONCAT('%,', :grade) OR t.grade = :grade) " +
 	"AND (:now BETWEEN t.explanationFromDatetime AND t.explanationToDatetime) AND (t.active = true)")
 	List<TestScheduleDTO> getTestSchedule4Explanation(@Param("testGroup") String testGroup, @Param("grade") String grade, @Param("now") LocalDateTime now);
+
+	// bring TestScheduleDTO by grade, week & testGroup - recent top 1 only 
+	@Query("SELECT new hyung.jin.seo.jae.dto.TestScheduleDTO(t.id, t.fromDatetime, t.toDatetime, t.grade, t.testGroup, t.week, t.info, t.active, t.registerDate, t.explanationFromDatetime, t.explanationToDatetime) " +
+	"FROM TestSchedule t WHERE " +
+	"(t.testGroup = '0' OR t.testGroup LIKE CONCAT('%,', :testGroup, ',%') OR t.testGroup LIKE CONCAT(:testGroup, ',%') OR t.testGroup LIKE CONCAT('%,', :testGroup) OR t.testGroup = :testGroup) " +
+	"AND (t.grade = '0' OR t.grade LIKE CONCAT('%,', :grade, ',%') OR t.grade LIKE CONCAT(:grade, ',%') OR t.grade LIKE CONCAT('%,', :grade) OR t.grade = :grade) " +
+	"AND (t.week = '0' OR t.week LIKE CONCAT('%,', :week, ',%') OR t.week LIKE CONCAT(:week, ',%') OR t.week LIKE CONCAT('%,', :week) OR t.week = :week) " +
+	"AND (t.active = true)")
+	List<TestScheduleDTO> getTestScheduleByGroupNGradeNWeek(@Param("testGroup") String testGroup, @Param("grade") String grade, @Param("week") String week);
+
+	// Bring TestScheduleDTO by grade, week & testGroup - recent top 1 only
+	@Query("SELECT new hyung.jin.seo.jae.dto.TestScheduleDTO(t.id, t.fromDatetime, t.toDatetime, t.grade, t.testGroup, t.week, t.info, t.active, t.registerDate, t.explanationFromDatetime, t.explanationToDatetime) " +
+	"FROM TestSchedule t WHERE (t.testGroup = '0' OR t.testGroup LIKE CONCAT('%,', :testGroup, ',%') OR t.testGroup LIKE CONCAT(:testGroup, ',%') OR t.testGroup LIKE CONCAT('%,', :testGroup) OR t.testGroup = :testGroup) " +
+	"AND (t.grade = :grade) " +
+	"AND (t.week = '0' OR t.week LIKE CONCAT('%,', :week, ',%') OR t.week LIKE CONCAT(:week, ',%') OR t.week LIKE CONCAT('%,', :week) OR t.week = :week) " +
+	"AND (t.active = true) " +
+	"ORDER BY t.registerDate DESC")
+	TestScheduleDTO getTestScheduleByGroupNGradeNWeekTop1(@Param("testGroup") String testGroup, @Param("grade") String grade, @Param("week") String week);
+
 }
 

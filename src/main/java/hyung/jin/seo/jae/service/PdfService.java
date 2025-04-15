@@ -6,8 +6,13 @@ import hyung.jin.seo.jae.dto.StudentDTO;
 
 public interface PdfService {
 
-	// generate invoice pdf file
-	// void generateInvoicePdf(String name, Map<String, Object> data);
+	// generate empty test result pdf file
+	byte[] generateEmptyTestResult(Long studentId);
+
+	// generate test result pdf file
+	byte[] generateTestResult(Map<String, Object> data);
+
+
 
 	byte[] dummyPdf(StudentDTO student);
 
@@ -15,5 +20,4 @@ public interface PdfService {
 
 	void generateTestPdf(Map<String, Object> data);
 
-	// byte[] generateReceiptPdf(Map<String, Object> data);
 }

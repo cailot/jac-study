@@ -175,7 +175,7 @@ function displayMaterial(testId, title) {
         url: '${pageContext.request.contextPath}/connected/getTestAnswer/' + testId,
         method: "GET",
         success: function (test) {
-            //console.log(test);
+            console.log(test);
             const pdfPath = test.pdfPath;
             $('#explanationModal').off('shown.bs.modal'); // Remove previous modal event
             $('#explanationModal').on('shown.bs.modal', function () {            

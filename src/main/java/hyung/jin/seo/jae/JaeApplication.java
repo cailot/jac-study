@@ -12,8 +12,6 @@ import hyung.jin.seo.jae.service.EmailService;
 import hyung.jin.seo.jae.utils.JaeConstants;
 import java.util.List;
 
-import javax.validation.constraints.Email;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 

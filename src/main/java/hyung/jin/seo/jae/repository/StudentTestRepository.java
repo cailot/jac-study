@@ -80,4 +80,20 @@ public interface StudentTestRepository extends JpaRepository<StudentTest, Long> 
         // Get all score by testId and date range (fromTime, toTime)
         @Query("SELECT st.score FROM StudentTest st WHERE st.test.id = :testId AND st.registerDate BETWEEN :fromTime AND :toTime ORDER BY st.score DESC")
         List<Double> getAllScoreByTestId(@Param("testId") Long testId, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);
+
+        // Get latest test result by studentId
+        @Query("SELECT new hyung.jin.seo.jae.dto.StudentTestDTO(" +
+                "st.id, " +
+                "st.registerDate, " +
+                "st.score, " +
+                "st.student.id, " +
+                "st.test.id) " +
+                "FROM StudentTest st " +
+                "WHERE st.student.id = :studentId " +
+                "AND st.registerDate = (" +
+                "    SELECT MAX(st2.registerDate) " +
+                "    FROM StudentTest st2 " +
+                "    WHERE st2.student.id = :studentId" +
+                ")")
+        List<StudentTestDTO> getStudentTestsByStudentIdWithMostRecentRegisterDate(@Param("studentId") Long studentId);
 }
