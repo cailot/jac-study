@@ -176,8 +176,7 @@ public class PdfServiceImpl implements PdfService {
 				isMegaOrRevision = true;
 			}
 			if(isMegaOrRevision){
-				List<TestResultHistoryDTO> dummy = getDummyMegaHistory();
-				Table historySection1 = getHistoryTopTable(wholeWidth, dummy, 6);
+				Table historySection1 = getHistoryTopTable(wholeWidth, histories.get(0), 6);
 				document.add(historySection1);
 				document.add(onespace);
 			}else{
@@ -191,9 +190,9 @@ public class PdfServiceImpl implements PdfService {
 			}
 
 			
-			// // 9. history graph section
-			// Table historyGraph = getHistoryGraphTable(wholeWidth, dummy);
-			// document.add(historyGraph);
+			// 9. history graph section
+			Table historyGraph = getHistoryGraphTable(wholeWidth, histories.get(0));
+			document.add(historyGraph);
 			
 			document.close();
 
@@ -738,7 +737,7 @@ public class PdfServiceImpl implements PdfService {
 
 		// Add item labels to show scores only for "Your Score"
 		// Custom Label Generator to Append '%' to "Your Score"
-		renderer.setSeriesItemLabelGenerator(1, new StandardCategoryItemLabelGenerator() {
+		renderer.setSeriesItemLabelGenerator(0, new StandardCategoryItemLabelGenerator() {
 			@Override
 			public String generateLabel(CategoryDataset dataset, int row, int column) {
 				Number value = dataset.getValue(row, column);
@@ -748,9 +747,9 @@ public class PdfServiceImpl implements PdfService {
 				return "";
 			}
 		});
-		renderer.setSeriesItemLabelsVisible(1, true);
-		renderer.setSeriesItemLabelFont(1, new Font("SansSerif", Font.PLAIN, 10));
-		renderer.setSeriesPositiveItemLabelPosition(1, new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12, TextAnchor.BOTTOM_CENTER));
+		renderer.setSeriesItemLabelsVisible(0, true);
+		renderer.setSeriesItemLabelFont(0, new Font("SansSerif", Font.PLAIN, 10));
+		renderer.setSeriesPositiveItemLabelPosition(0, new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12, TextAnchor.BOTTOM_CENTER));
 	
 		plot.setRenderer(renderer);
 		// Convert chart to image
@@ -767,7 +766,6 @@ public class PdfServiceImpl implements PdfService {
 		chartImage.setHorizontalAlignment(com.itextpdf.layout.property.HorizontalAlignment.CENTER);
 		return chartImage;
 	}
-
 
 	// left answer from 1 ~ 30
 	private Table getLeftDetailScore(float width, List<Integer> studentAnswers, List<TestAnswerItem> testAnswers){ 
@@ -849,52 +847,6 @@ public class PdfServiceImpl implements PdfService {
 		}
 		return list;
 	}
-
-	private List<TestResultHistoryDTO> getDummyMegaHistory(){
-		List<TestResultHistoryDTO> list = new ArrayList<>();
-		for(int i=1; i<6; i++){
-			TestResultHistoryDTO dto = new TestResultHistoryDTO();
-			dto.setTestNo(i);
-			// random number from 20~99
-			dto.setAverage(new Random().nextInt(80) + 20);
-			dto.setStudentScore(new Random().nextInt(80) + 20);		
-			list.add(dto);
-		}
-		return list;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

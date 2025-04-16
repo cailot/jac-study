@@ -1,6 +1,7 @@
 package hyung.jin.seo.jae.controller.rest;
 
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -174,11 +175,8 @@ public class TestResultController {
 			highestScores.add(highestScore);
 			lowestScores.add(lowestScore);
 
-
-
 			// get test result history
 			List<TestResultHistoryDTO> history = new ArrayList<>();
-			
 			int weekCount = 0;	
 			if(testGroup == 1 || testGroup == 2 || testGroup == 5) { // Mega, Revision or Mock
 				weekCount = 5;
@@ -201,7 +199,6 @@ public class TestResultController {
 					from = "2100-01-01";
 					e.printStackTrace();
 				} // ex> 2025-04-01
-
 				String to = testSchedule.getTo();
 				String dateOnlyTo = to.substring(0, 10);
 				try {
@@ -210,7 +207,11 @@ public class TestResultController {
 					to = "2100-01-01";
 					e.printStackTrace();
 				}
-				// add more buffer before and after....
+				// Subtract 3 days from the 'from' date as buffer for Onsite date while no need for to (same as the last day of Online)
+				LocalDate fromDate = LocalDate.parse(from);
+				fromDate = fromDate.minusDays(3);
+				from = fromDate.toString(); // Convert back to String
+
 				double average = connectedService.getAverageScoreByTest(studentTest.getTestId(), from, to);
 				TestResultHistoryDTO testHistory = new TestResultHistoryDTO();
 				testHistory.setTestNo(i);
