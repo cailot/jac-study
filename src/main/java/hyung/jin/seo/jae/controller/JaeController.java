@@ -131,17 +131,31 @@ public class JaeController {
 		return "megaExplanationPage";
 	}
 
-	// // mega GA
-	// @GetMapping("/connected/test/megaGA")
-	// public String dispayMegaGATest() {
-	// 	return "megaGATestPage";
-	// }
+	@GetMapping("/connected/test/revision")
+	public String dispayRevisionTest() {
+		return "revisionTestPage";
+	}
 
-	// mega
-	// @GetMapping("/connected/test/omr")
-	// public String dispayOmrResult() {
-	// 	return "omrResultPage";
-	// }
+	// revision explanation
+	@GetMapping("/connected/test/revisionExplanation")
+	public String dispayRevisionExplanation() {
+		return "revisionExplanationPage";
+	}
+
+	@GetMapping("/connected/test/acer")
+	public String dispayAcerTest() {
+		return "acerTestPage";
+	}
+
+	@GetMapping("/connected/test/edu")
+	public String dispayEduTest() {
+		return "eduTestPage";
+	}
+
+	@GetMapping("/connected/test/mock")
+	public String dispayMockTest() {
+		return "mockTestPage";
+	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Test Result Menu

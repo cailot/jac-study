@@ -22,14 +22,10 @@ import hyung.jin.seo.jae.dto.BranchDTO;
 import hyung.jin.seo.jae.dto.CycleDTO;
 import hyung.jin.seo.jae.dto.StudentDTO;
 import hyung.jin.seo.jae.dto.StudentTestDTO;
-import hyung.jin.seo.jae.dto.TestDTO;
 import hyung.jin.seo.jae.dto.TestResultHistoryDTO;
 import hyung.jin.seo.jae.dto.TestScheduleDTO;
-import hyung.jin.seo.jae.model.Branch;
 import hyung.jin.seo.jae.model.Student;
-import hyung.jin.seo.jae.model.Test;
 import hyung.jin.seo.jae.model.TestAnswerItem;
-import hyung.jin.seo.jae.model.TestSchedule;
 import hyung.jin.seo.jae.service.CodeService;
 import hyung.jin.seo.jae.service.ConnectedService;
 import hyung.jin.seo.jae.service.CycleService;
@@ -178,7 +174,7 @@ public class TestResultController {
 			// get test result history
 			List<TestResultHistoryDTO> history = new ArrayList<>();
 			int weekCount = 0;	
-			if(testGroup == 1 || testGroup == 2 || testGroup == 5) { // Mega, Revision or Mock
+			if(testGroup == 1 || testGroup == 2) { // Mega, Revision
 				weekCount = 5;
 			}else if(testGroup == 3){ // Edu - max 24
 				weekCount = 24;
@@ -222,11 +218,6 @@ public class TestResultController {
 				history.add(testHistory);
 			}
 			histories.add(history);
-				
-			// get branch info
-
-			
-
 		}
 		// add test title info
 		data.put(JaeConstants.TEST_TITLE_INFO, testTitles);
@@ -250,66 +241,6 @@ public class TestResultController {
 		data.put(JaeConstants.TEST_RESULT_HISTORY, histories);
 
 
-		/*
-		// assume we have the following data
-		Long studentId = 11301580L;
-		Long testId = 6L;
-		// 1. student object
-		StudentDTO student = new StudentDTO();
-		student.setFirstName("John");
-		student.setLastName("Doe");
-		student.setId(studentId.toString());
-		student.setGrade("2");
-		student.setBranch("13");
-		// 2 StudentTestDTO
-		int currentYear = cycleService.academicYear();
-		CycleDTO cycle = cycleService.listCycles(currentYear);
-		StudentTestDTO test = connectedService.findStudentTestByStudentNTest(studentId, testId, cycle.getStartDate(), cycle.getEndDate());
-		// 3. student test answer
-		List<Integer> answers = connectedService.getStudentTestAnswer(studentId, 6L, cycle.getStartDate(), cycle.getEndDate());	
-		test.setAnswers(answers);
-		// 4. test answer collection using testanswer id
-		List<TestAnswerItem> testAnswerItems = connectedService.getAnswersByTest(testId);
-		// 5. get average, hightest, lowest score
-		double studentScore = test.getScore();
-		double averageScore = connectedService.getAverageScoreByTest(testId, cycle.getStartDate(), cycle.getEndDate());
-		double highestScore = connectedService.getHighestScoreByTest(testId, cycle.getStartDate(), cycle.getEndDate());
-		double lowestScore = connectedService.getLowestScoreByTest(testId, cycle.getStartDate(), cycle.getEndDate());
-		// 6. get branch info
-		String branchCode = student.getBranch();
-		BranchDTO branch = codeService.getBranch(branchCode);
-		String branchName = branch.getName();
-		String branchPhone = branch.getPhone();
-		// 7. get histogram data - for example : Higher
-		String histogramData = connectedService.getScoreCategory(studentScore, testId, cycle.getStartDate(), cycle.getEndDate());
-		// 8. get test result history
-		List<TestResultHistoryDTO> histories = new ArrayList<>();
-		List<TestDTO> tests = connectedService.getTestInfoByType(testId, cycle.getStartDate(), cycle.getEndDate());
-		for (TestDTO t : tests) {
-			TestResultHistoryDTO history = new TestResultHistoryDTO();
-			history.setTestNo(Integer.parseInt(t.getId()));
-			StudentTestDTO studentTest = connectedService.findStudentTestByStudentNTest(studentId, Long.parseLong(t.getId()), cycle.getStartDate(), cycle.getEndDate());
-			if(studentTest != null) {
-				history.setStudentScore((int)(studentTest.getScore()));
-			}			
-			history.setAverage((int)(t.getAverage()));
-			histories.add(history);
-		}
-		*/
-
-
-
-
-
-
-		// Student student = studentService.getStudent(id);
-		// if (student == null) {
-		// 	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		// }
-
-
-		// byte[] pdfData = pdfService.dummyPdf(new StudentDTO(student));
-
 		byte[] pdfData = pdfService.generateTestResult(data);
 		// Log the PDF size (important for debugging)
 		System.out.println("Generated PDF size: " + (pdfData != null ? pdfData.length : "null"));
@@ -318,9 +249,7 @@ public class TestResultController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(pdfData);
+        return ResponseEntity.ok().headers(headers).body(pdfData);
 	}
 
 }

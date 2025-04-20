@@ -113,13 +113,25 @@
 		<put-attribute name="title" value="James An College Connected Class Page" />
 		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/megaExplanation.jsp" />
 	</definition>
-	<!-- <definition name="megaGATestPage" extends="tile.definition">
+	<definition name="revisionTestPage" extends="tile.definition">
 		<put-attribute name="title" value="James An College Connected Class Page" />
-		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/megaGA.jsp" />
-	</definition> -->
-	<definition name="omrResultPage" extends="tile.definition">
+		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/revision.jsp" />
+	</definition>
+	<definition name="revisionExplanationPage" extends="tile.definition">
 		<put-attribute name="title" value="James An College Connected Class Page" />
-		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/omr.jsp" />
+		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/revisionExplanation.jsp" />
+	</definition>
+	<definition name="acerTestPage" extends="tile.definition">
+		<put-attribute name="title" value="James An College Connected Class Page" />
+		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/acer.jsp" />
+	</definition>
+	<definition name="eduTestPage" extends="tile.definition">
+		<put-attribute name="title" value="James An College Connected Class Page" />
+		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/edu.jsp" />
+	</definition>
+	<definition name="mockTestPage" extends="tile.definition">
+		<put-attribute name="title" value="James An College Connected Class Page" />
+		<put-attribute name="body" value="/WEB-INF/layouts/connected/test/mock.jsp" />
 	</definition>
 
 
