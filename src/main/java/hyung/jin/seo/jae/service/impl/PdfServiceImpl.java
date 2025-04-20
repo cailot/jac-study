@@ -71,6 +71,31 @@ import hyung.jin.seo.jae.utils.JaeUtils;
 @Service
 public class PdfServiceImpl implements PdfService {
 
+	private static final int ANSWER_SPLIT_SIZE = 30;
+
+	private static final int[][] PERCENT_GRADE = {
+		{31, 45, 67, 34, 56, 78, 42, 65, 37, 59, 32, 54, 76, 43, 66, 38, 57, 33, 55, 77, 44, 68, 39, 58, 35, 53, 75, 41, 64, 36, 52, 74, 40, 63, 37, 51, 73, 46, 62, 38, 50, 72, 47, 61, 39, 49, 71, 48, 60, 40, 48, 70, 42, 59, 41, 47, 69, 43, 58, 42},
+		{32, 46, 68, 35, 57, 77, 43, 66, 38, 58, 33, 55, 75, 44, 67, 39, 56, 34, 54, 76, 45, 69, 40, 57, 36, 52, 74, 42, 65, 37, 51, 73, 41, 64, 38, 50, 72, 47, 63, 39, 49, 71, 48, 62, 40, 48, 70, 49, 61, 41, 47, 69, 43, 60, 42, 46, 68, 44, 59, 43},
+		{33, 47, 69, 36, 58, 76, 44, 67, 39, 57, 34, 56, 74, 45, 68, 40, 55, 35, 53, 75, 46, 70, 41, 56, 37, 51, 73, 43, 66, 38, 50, 72, 42, 65, 39, 49, 71, 48, 64, 40, 48, 70, 49, 63, 41, 47, 69, 50, 62, 42, 46, 68, 44, 61, 43, 45, 67, 45, 60, 44},
+		{34, 48, 70, 37, 59, 75, 45, 68, 40, 56, 35, 57, 73, 46, 69, 41, 54, 36, 52, 74, 47, 71, 42, 55, 38, 50, 72, 44, 67, 39, 49, 71, 43, 66, 40, 48, 70, 49, 65, 41, 47, 69, 50, 64, 42, 46, 68, 51, 63, 43, 45, 67, 45, 62, 44, 44, 66, 46, 61, 45},
+		{35, 49, 71, 38, 60, 74, 46, 69, 41, 55, 36, 58, 72, 47, 70, 42, 53, 37, 51, 73, 48, 72, 43, 54, 39, 49, 71, 45, 68, 40, 48, 70, 44, 67, 41, 47, 69, 50, 66, 42, 46, 68, 51, 65, 43, 45, 67, 52, 64, 44, 44, 66, 46, 63, 45, 43, 65, 47, 62, 46},
+		{36, 50, 72, 39, 61, 73, 47, 70, 42, 54, 37, 59, 71, 48, 71, 43, 52, 38, 50, 72, 49, 73, 44, 53, 40, 48, 70, 46, 69, 41, 47, 69, 45, 68, 42, 46, 68, 51, 67, 43, 45, 67, 52, 66, 44, 44, 66, 53, 65, 45, 43, 65, 47, 64, 46, 42, 64, 48, 63, 47},
+		{37, 51, 73, 40, 62, 72, 48, 71, 43, 53, 38, 60, 70, 49, 72, 44, 51, 39, 49, 71, 50, 74, 45, 52, 41, 47, 69, 47, 70, 42, 46, 68, 46, 69, 43, 45, 67, 52, 68, 44, 44, 66, 53, 67, 45, 43, 65, 54, 66, 46, 42, 64, 48, 65, 47, 41, 63, 49, 64, 48},
+		{38, 52, 74, 41, 63, 71, 49, 72, 44, 52, 39, 61, 69, 50, 73, 45, 50, 40, 48, 70, 51, 75, 46, 51, 42, 46, 68, 48, 71, 43, 45, 67, 47, 70, 44, 44, 66, 53, 69, 45, 43, 65, 54, 68, 46, 42, 64, 55, 67, 47, 41, 63, 49, 66, 48, 40, 62, 50, 65, 49},
+		{39, 53, 75, 42, 64, 70, 50, 73, 45, 51, 40, 62, 68, 51, 74, 46, 49, 41, 47, 69, 52, 76, 47, 50, 43, 45, 67, 49, 72, 44, 44, 66, 48, 71, 45, 43, 65, 54, 70, 46, 42, 64, 55, 69, 47, 41, 63, 56, 68, 48, 40, 62, 50, 67, 49, 39, 61, 51, 66, 50},
+		{40, 54, 76, 43, 65, 69, 51, 74, 46, 50, 41, 63, 67, 52, 75, 47, 48, 42, 46, 68, 53, 77, 48, 49, 44, 44, 66, 50, 73, 45, 43, 65, 49, 72, 46, 42, 64, 55, 71, 47, 41, 63, 56, 70, 48, 40, 62, 57, 69, 49, 39, 61, 51, 68, 50, 38, 60, 52, 67, 51},
+		{41, 55, 77, 44, 66, 68, 52, 75, 47, 49, 42, 64, 66, 53, 76, 48, 47, 43, 45, 67, 54, 78, 49, 48, 45, 43, 65, 51, 74, 46, 42, 64, 50, 73, 47, 41, 63, 56, 72, 48, 40, 62, 57, 71, 49, 39, 61, 58, 70, 50, 38, 60, 52, 69, 51, 37, 59, 53, 68, 52},
+		{42, 56, 78, 45, 67, 67, 53, 76, 48, 48, 43, 65, 65, 54, 77, 49, 46, 44, 44, 66, 55, 77, 50, 47, 46, 42, 64, 52, 75, 47, 41, 63, 51, 74, 48, 40, 62, 57, 73, 49, 39, 61, 58, 72, 50, 38, 60, 59, 71, 51, 37, 59, 53, 70, 52, 36, 58, 54, 69, 53},
+		{43, 57, 77, 46, 68, 66, 54, 77, 49, 47, 44, 66, 64, 55, 78, 50, 45, 45, 43, 65, 56, 76, 51, 46, 47, 41, 63, 53, 76, 48, 40, 62, 52, 75, 49, 39, 61, 58, 74, 50, 38, 60, 59, 73, 51, 37, 59, 60, 72, 52, 36, 58, 54, 71, 53, 35, 57, 55, 70, 54},
+		{44, 58, 76, 47, 69, 65, 55, 78, 50, 46, 45, 67, 63, 56, 77, 51, 44, 46, 42, 64, 57, 75, 52, 45, 48, 40, 62, 54, 77, 49, 39, 61, 53, 76, 50, 38, 60, 59, 75, 51, 37, 59, 60, 74, 52, 36, 58, 61, 73, 53, 35, 57, 55, 72, 54, 34, 56, 56, 71, 55},
+		{45, 59, 75, 48, 70, 64, 56, 77, 51, 45, 46, 68, 62, 57, 76, 52, 43, 47, 41, 63, 58, 74, 53, 44, 49, 39, 61, 55, 78, 50, 38, 60, 54, 77, 51, 37, 59, 60, 76, 52, 36, 58, 61, 75, 53, 35, 57, 62, 74, 54, 34, 56, 56, 73, 55, 33, 55, 57, 72, 56},
+		{46, 60, 74, 49, 71, 63, 57, 76, 52, 44, 47, 69, 61, 58, 75, 53, 42, 48, 40, 62, 59, 73, 54, 43, 50, 38, 60, 56, 77, 51, 37, 59, 55, 78, 52, 36, 58, 61, 77, 53, 35, 57, 62, 76, 54, 34, 56, 63, 75, 55, 33, 55, 57, 74, 56, 32, 54, 58, 73, 57},
+		{47, 61, 73, 50, 72, 62, 58, 75, 53, 43, 48, 70, 60, 59, 74, 54, 41, 49, 39, 61, 60, 72, 55, 42, 51, 37, 59, 57, 76, 52, 36, 58, 56, 77, 53, 35, 57, 62, 78, 54, 34, 56, 63, 77, 55, 33, 55, 64, 76, 56, 32, 54, 58, 75, 57, 31, 53, 59, 74, 58},
+		{48, 62, 72, 51, 73, 61, 59, 74, 54, 42, 49, 71, 59, 60, 73, 55, 40, 50, 38, 60, 61, 71, 56, 41, 52, 36, 58, 58, 75, 53, 35, 57, 57, 76, 54, 34, 56, 63, 77, 55, 33, 55, 64, 78, 56, 32, 54, 65, 77, 57, 31, 53, 59, 76, 58, 32, 52, 60, 75, 59},
+		{49, 63, 71, 52, 74, 60, 60, 73, 55, 41, 50, 72, 58, 61, 72, 56, 39, 51, 37, 59, 62, 70, 57, 40, 53, 35, 57, 59, 74, 54, 34, 56, 58, 75, 55, 33, 55, 64, 76, 56, 32, 54, 65, 77, 57, 31, 53, 66, 78, 58, 32, 52, 60, 77, 59, 33, 51, 61, 76, 60},
+		{50, 64, 70, 53, 75, 59, 61, 72, 56, 40, 51, 73, 57, 62, 71, 57, 38, 52, 36, 58, 63, 69, 58, 39, 54, 34, 56, 60, 73, 55, 33, 55, 59, 74, 56, 32, 54, 65, 75, 57, 31, 53, 66, 76, 58, 32, 52, 67, 77, 59, 33, 51, 61, 78, 60, 34, 50, 62, 77, 61}
+	};
+
 	@Autowired
 	private ResourceLoader resourceLoader;
 
@@ -137,7 +162,7 @@ public class PdfServiceImpl implements PdfService {
 				totalScore.addCell(detailCell("You have scored " + studentAnswerCorrects.get(i)+ " out of " + testAnswerTotals.get(i)+ " (" + scores.get(i) + "%)").setFontSize(8f).setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
 				document.add(totalScore);
 				// 3. answer section
-				Table detailScore = getDetailAnswer(wholeWidth, studentAnswers.get(i), testAnswers.get(i));
+				Table detailScore = getDetailAnswer(wholeWidth, studentAnswers.get(i), testAnswers.get(i), student.getGrade());
 				document.add(detailScore);
 				document.add(onespace);
 				// 4. statistics title section
@@ -214,29 +239,29 @@ public class PdfServiceImpl implements PdfService {
 	}
 
 	// 3. answer section
-	private Table getDetailAnswer(float width, List<Integer> studentAnswers, List<TestAnswerItem> testAnswers) {
+	private Table getDetailAnswer(float width, List<Integer> studentAnswers, List<TestAnswerItem> testAnswers, String grade) {
 		Table body = new Table(new float[]{(width / 2), (width / 2)});
 		if (testAnswers == null || testAnswers.isEmpty()) {
 			return body;
 		}
 	
 		int size = testAnswers.size();
-		int splitSize = 30;	
-		if (size <= splitSize) {
+		// int splitSize = 30;	
+		if (size <= ANSWER_SPLIT_SIZE) {
 			// If size is less than or equal to 30, use only the left table
-			Table left = getLeftDetailScore(width, studentAnswers, testAnswers);
+			Table left = getLeftDetailScore(width, studentAnswers, testAnswers, grade);
 			body.addCell(new Cell().add(left).setBorder(Border.NO_BORDER));
 			body.addCell(new Cell().setBorder(Border.NO_BORDER)); // Empty right cell
 		} else {
 			// Split testAnswers into left and right parts
-			List<Integer> leftStudentAnswers = studentAnswers.subList(0, splitSize);
-			List<Integer> rightStudentAnswers = studentAnswers.subList(splitSize, size);
-			List<TestAnswerItem> leftAnswers = testAnswers.subList(0, splitSize);
-			List<TestAnswerItem> rightAnswers = testAnswers.subList(30, splitSize);
+			List<Integer> leftStudentAnswers = studentAnswers.subList(0, ANSWER_SPLIT_SIZE);
+			List<Integer> rightStudentAnswers = studentAnswers.subList(ANSWER_SPLIT_SIZE, size);
+			List<TestAnswerItem> leftAnswers = testAnswers.subList(0, ANSWER_SPLIT_SIZE);
+			List<TestAnswerItem> rightAnswers = testAnswers.subList(ANSWER_SPLIT_SIZE, size);
 	
 			// Generate left and right tables
-			Table left = getLeftDetailScore(width, leftStudentAnswers, leftAnswers);
-			Table right = getRightDetailScore(width, rightStudentAnswers, rightAnswers);
+			Table left = getLeftDetailScore(width, leftStudentAnswers, leftAnswers, grade);
+			Table right = getRightDetailScore(width, rightStudentAnswers, rightAnswers, grade);
 	
 			// Add left and right tables to the body
 			body.addCell(new Cell().add(left).setBorder(Border.NO_BORDER));
@@ -247,7 +272,7 @@ public class PdfServiceImpl implements PdfService {
 	}
 
 	// left answer from 1 ~ 30
-	private Table getLeftDetailScore(float width, List<Integer> studentAnswers, List<TestAnswerItem> testAnswers){ 
+	private Table getLeftDetailScore(float width, List<Integer> studentAnswers, List<TestAnswerItem> testAnswers, String grade){ 
 		Table subject = new Table(new float[]{(width/2)});
 		Table details = new Table(new float[]{(width/2)/10, ((width/2)/10)*2, (width/2)/10, ((width/2)/10)*2, ((width/2)/10)*4});
 		details.addCell(detailCell("Q.No").setBold().setBorder(Border.NO_BORDER)).setTextAlignment(TextAlignment.CENTER);
@@ -266,7 +291,9 @@ public class PdfServiceImpl implements PdfService {
 			details.addCell(cell2);			
 			Cell cell3 = detailCell(formatAnswer(studentAnswers.get(i))+"").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
 			details.addCell(cell3);			
-			Cell cell4 = detailCell("57").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER); // percent
+			
+			//Cell cell4 = detailCell("57").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER); // percent
+			Cell cell4 = detailCell(PERCENT_GRADE[Integer.parseInt(grade)-1][i]+"").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER); // percent
 			details.addCell(cell4);			
 			Cell cell5 = detailCell(testAnswers.get(i).getTopic()).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.LEFT); // topics
 			details.addCell(cell5);
@@ -276,7 +303,7 @@ public class PdfServiceImpl implements PdfService {
 	}
 
 	// right answer from question 31 ~
-	private Table getRightDetailScore(float width, List<Integer> studentAnswers, List<TestAnswerItem> testAnswers){ 
+	private Table getRightDetailScore(float width, List<Integer> studentAnswers, List<TestAnswerItem> testAnswers, String grade){ 
 		Table subject = new Table(new float[]{(width/2)});
 		Table details = new Table(new float[]{(width/2)/10, ((width/2)/10)*2, (width/2)/10, ((width/2)/10)*2, ((width/2)/10)*4});
 		details.addCell(detailCell("Q.No").setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
@@ -295,7 +322,8 @@ public class PdfServiceImpl implements PdfService {
 			details.addCell(cell2);            
 			Cell cell3 = detailCell(formatAnswer(studentAnswers.get(i))+"").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
 			details.addCell(cell3);            
-			Cell cell4 = detailCell("31").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER); // percent
+			//	Cell cell4 = detailCell("31").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER); // percent
+			Cell cell4 = detailCell(PERCENT_GRADE[Integer.parseInt(grade)-1][i+ANSWER_SPLIT_SIZE]+"").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER); // percent
 			details.addCell(cell4);            
 			Cell cell5 = detailCell(testAnswers.get(i).getTopic()).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.LEFT); // topics
 			details.addCell(cell5);
