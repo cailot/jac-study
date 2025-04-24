@@ -269,7 +269,7 @@ public class AssessmentController {
 		List<AssessmentAnswerDTO> aas = new ArrayList<>();
 		// 4. get assessment answers
 		for(GuestStudentAssessmentDTO gsa : gsas){
-			List<Integer> gsAnswer = gsa.getAnswers();
+			// List<Integer> gsAnswer = gsa.getAnswers();
 			AssessmentAnswerDTO aa = assessmentService.getAssessmentAnswer(gsa.getAssessmentId());
 			aas.add(aa);
 		}
@@ -280,7 +280,7 @@ public class AssessmentController {
 		// byte[] pdfData = pdfService.dummyPdf();
 		
 		// 6. send email
-		String emailRecipient = "jamesanvic@outlook.com";
+		String emailRecipient = "cailot@naver.com";//"jamesanvic@outlook.com";
 		StringBuilder emailBodyBuilder = new StringBuilder();
 		emailBodyBuilder.append("<html>")
             .append("<head>")

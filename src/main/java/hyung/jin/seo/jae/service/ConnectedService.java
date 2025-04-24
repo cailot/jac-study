@@ -368,5 +368,4 @@ public interface ConnectedService {
 	// get most recent Test Schedule by testGroup & grade & week
 	TestScheduleDTO getMostRecentTestSchedule(String testGroup, String grade, String week);
 	
-
 }

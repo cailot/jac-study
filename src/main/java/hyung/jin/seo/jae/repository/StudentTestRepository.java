@@ -32,8 +32,8 @@ public interface StudentTestRepository extends JpaRepository<StudentTest, Long> 
                 "WHERE st.student.id = :studentId AND st.test.id = :testId " +
                 "AND st.registerDate BETWEEN :fromTime AND :toTime")
         StudentTestDTO findStudentTest(@Param("studentId") Long studentId, @Param("testId") Long testId, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);	// // bring latest EnrolmentDTO by student id, called from retrieveEnrolment() in
-	// // courseInfo.jsp
-	// check whether there is a record in StudentTest table by studentId and testId
+	
+        // check whether there is a record in StudentTest table by studentId and testId
         @Query("SELECT st FROM StudentTest st WHERE st.student.id = :studentId AND st.test.id = :testId AND st.registerDate BETWEEN :fromTime AND :toTime")
 	Optional<StudentTest> findByStudentIdAndTestIdWithYear(@Param("studentId") Long studentId, @Param("testId") Long testId, @Param("fromTime") LocalDate fromTime, @Param("toTime") LocalDate toTime);
 	

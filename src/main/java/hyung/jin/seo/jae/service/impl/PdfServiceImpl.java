@@ -73,6 +73,12 @@ public class PdfServiceImpl implements PdfService {
 
 	private static final int ANSWER_SPLIT_SIZE = 30;
 
+	private static final int MEGA_REVISION_HISTORY_SIZE = 5;
+	
+	private static final int EDU_HISTORY_SIZE = 32;
+	
+	private static final int ACER_HISTORY_SIZE = 40;
+
 	private static final int[][] PERCENT_GRADE = {
 		{31, 45, 67, 34, 56, 78, 42, 65, 37, 59, 32, 54, 76, 43, 66, 38, 57, 33, 55, 77, 44, 68, 39, 58, 35, 53, 75, 41, 64, 36, 52, 74, 40, 63, 37, 51, 73, 46, 62, 38, 50, 72, 47, 61, 39, 49, 71, 48, 60, 40, 48, 70, 42, 59, 41, 47, 69, 43, 58, 42},
 		{32, 46, 68, 35, 57, 77, 43, 66, 38, 58, 33, 55, 75, 44, 67, 39, 56, 34, 54, 76, 45, 69, 40, 57, 36, 52, 74, 42, 65, 37, 51, 73, 41, 64, 38, 50, 72, 47, 63, 39, 49, 71, 48, 62, 40, 48, 70, 49, 61, 41, 47, 69, 43, 60, 42, 46, 68, 44, 59, 43},
@@ -123,7 +129,6 @@ public class PdfServiceImpl implements PdfService {
 
 	@Override
 	public byte[] generateTestResult(Map<String, Object> data) {
-
 		// prepare ingredients
 		StudentDTO student = (StudentDTO) data.get(JaeConstants.STUDENT_INFO);
 		String testGroupName = (String) data.get(JaeConstants.TEST_GROUP_INFO);
@@ -140,7 +145,19 @@ public class PdfServiceImpl implements PdfService {
 		List<List<Integer>> studentAnswers = (List<List<Integer>>) data.get(JaeConstants.STUDENT_ANSWERS);
 		List<List<TestAnswerItem>> testAnswers = (List<List<TestAnswerItem>>) data.get(JaeConstants.TEST_ANSWERS);
 		List<List<TestResultHistoryDTO>> histories = (List<List<TestResultHistoryDTO>>) data.get(JaeConstants.TEST_RESULT_HISTORY);
-
+		// get test group
+		int testGroup = 0;
+		if(StringUtils.startsWithIgnoreCase(testGroupName, "Mega")){
+			testGroup = 1;
+		}else if(StringUtils.startsWithIgnoreCase(testGroupName, "Revision")) {
+			testGroup = 2;
+		}else if(StringUtils.startsWithIgnoreCase(testGroupName, "Edu")){
+			testGroup = 3;
+		}else if(StringUtils.startsWithIgnoreCase(testGroupName, "Acer")){
+			testGroup = 4;
+		}else{
+			testGroup = 5;
+		}
 		try {
 			// // Set the content type and attachment header.
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -182,37 +199,40 @@ public class PdfServiceImpl implements PdfService {
 				Table historyTitle = new Table(new float[]{wholeWidth});
 				historyTitle.addCell(detailCell(testTitles.get(i) + " Past Average & Your Scores").setFontSize(8f).setBold().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
 				document.add(historyTitle);
+				
 				// 8. history section
-				boolean isMegaOrRevision = false;
-				if (StringUtils.startsWithIgnoreCase(testGroupName, "Mega") || StringUtils.startsWithIgnoreCase(testGroupName, "Revision")) {
-					isMegaOrRevision = true;
-				}
-				if(isMegaOrRevision){
-					Table historySection1 = getHistoryTopTable(wholeWidth, histories.get(i), 6);
+				List<TestResultHistoryDTO> historyDTOs = histories.get(i);
+
+				if ((testGroup==JaeConstants.MEGA_TEST) || (testGroup==JaeConstants.REVISION_TEST)) {
+					Table historySection1 = getHistoryTopTable(wholeWidth, historyDTOs, MEGA_REVISION_HISTORY_SIZE);
 					document.add(historySection1);
 					document.add(onespace);
-				}else{ // for other test groups : Acer, Edu... but think about Mock later
-					List<TestResultHistoryDTO> dummy = getDummyHistory();
-					// maximum = 42 (40 + 2 title columns)
-					if (dummy.size() > 20) {
-						// Call getHistoryTopTable for the first 20 items
-						List<TestResultHistoryDTO> topHistory = dummy.subList(0, 20); // First 20 items (index 0 to 19)
-						Table historySection1 = getHistoryTopTable(wholeWidth, topHistory, topHistory.size());
-						document.add(historySection1);
-					
-						// Call getHistoryBottomTable for the remaining items
-						List<TestResultHistoryDTO> bottomHistory = dummy.subList(20, dummy.size()); // Remaining items (index 20 to end)
-						Table historySection2 = getHistoryBottomTable(wholeWidth, bottomHistory);
-						document.add(historySection2);
-					} else {
-						// Call getHistoryTopTable for all items if size <= 20
-						Table historySection1 = getHistoryTopTable(wholeWidth, dummy, dummy.size());
-						document.add(historySection1);
-					}
+				}else if(testGroup==JaeConstants.EDU_TEST){ 
+					// Edu : Maximum 32 (30 + 2 title columns)
+					// Call getHistoryTopTable for the first 16 items
+					List<TestResultHistoryDTO> topHistory = historyDTOs.subList(0, EDU_HISTORY_SIZE/2); // First 20 items (index 0 to 15)
+					Table historySection1 = getHistoryTopTable(wholeWidth, topHistory, topHistory.size());
+					document.add(historySection1);				
+					// Call getHistoryBottomTable for the remaining items
+					List<TestResultHistoryDTO> bottomHistory = historyDTOs.subList(EDU_HISTORY_SIZE/2, historyDTOs.size()); // Remaining items (index 16 to 32)
+					Table historySection2 = getHistoryBottomTable(wholeWidth, bottomHistory, bottomHistory.size(), topHistory.size(), testGroup);
+					document.add(historySection2);					
 					document.add(onespace);
-				}
+				}else if(testGroup==JaeConstants.ACER_TEST){
+					// Acer : Maximum 42 (40 + 2 title columns)
+					// Call getHistoryTopTable for the first 20 items
+					List<TestResultHistoryDTO> topHistory = historyDTOs.subList(0, ACER_HISTORY_SIZE/2); // First 20 items (index 0 to 19)
+					Table historySection1 = getHistoryTopTable(wholeWidth, topHistory, topHistory.size());
+					document.add(historySection1);
+					// Call getHistoryBottomTable for the remaining items
+					List<TestResultHistoryDTO> bottomHistory = historyDTOs.subList(ACER_HISTORY_SIZE/2, historyDTOs.size()); // Remaining items (index 20 to 40)
+					Table historySection2 = getHistoryBottomTable(wholeWidth, bottomHistory, bottomHistory.size(), topHistory.size(), testGroup);
+					document.add(historySection2);					
+					document.add(onespace);					
+				}// what about Mock?.....
+
 				// 9. history graph section
-				Table historyGraph = getHistoryGraphTable(wholeWidth, histories.get(i));
+				Table historyGraph = getHistoryGraphTable(wholeWidth, historyDTOs);
 				document.add(historyGraph);
 				// Add a page break for next subject
 				if(i < testTitles.size() - 1) {
@@ -287,9 +307,9 @@ public class PdfServiceImpl implements PdfService {
 			Cell cell1 = detailCell(testAnswers.get(i).getQuestion() + "").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setBold().setTextAlignment(TextAlignment.CENTER);
 			details.addCell(cell1);
 			char mark = testAnswers.get(i).getAnswer() == studentAnswers.get(i) ? 'O' : 'X';			
-			Cell cell2 = detailCell(formatAnswer(testAnswers.get(i).getAnswer()) + " - " + mark).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
+			Cell cell2 = detailCell(JaeUtils.formatAnswer(testAnswers.get(i).getAnswer()) + " - " + mark).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
 			details.addCell(cell2);			
-			Cell cell3 = detailCell(formatAnswer(studentAnswers.get(i))+"").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
+			Cell cell3 = detailCell(JaeUtils.formatAnswer(studentAnswers.get(i))+"").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
 			details.addCell(cell3);			
 			
 			//Cell cell4 = detailCell("57").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER); // percent
@@ -318,9 +338,9 @@ public class PdfServiceImpl implements PdfService {
 			Cell cell1 = detailCell(testAnswers.get(i).getQuestion() + "").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setBold().setTextAlignment(TextAlignment.CENTER);
 			details.addCell(cell1);
 			char mark = testAnswers.get(i).getAnswer() == studentAnswers.get(i) ? 'O' : 'X';			
-			Cell cell2 = detailCell(formatAnswer(testAnswers.get(i).getAnswer()) + " - " + mark).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);	            
+			Cell cell2 = detailCell(JaeUtils.formatAnswer(testAnswers.get(i).getAnswer()) + " - " + mark).setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);	            
 			details.addCell(cell2);            
-			Cell cell3 = detailCell(formatAnswer(studentAnswers.get(i))+"").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
+			Cell cell3 = detailCell(JaeUtils.formatAnswer(studentAnswers.get(i))+"").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER);
 			details.addCell(cell3);            
 			//	Cell cell4 = detailCell("31").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER); // percent
 			Cell cell4 = detailCell(PERCENT_GRADE[Integer.parseInt(grade)-1][i+ANSWER_SPLIT_SIZE]+"").setBorder(Border.NO_BORDER).setBackgroundColor(backgroundColor).setTextAlignment(TextAlignment.CENTER); // percent
@@ -332,7 +352,6 @@ public class PdfServiceImpl implements PdfService {
 		subject.setBorder(Border.NO_BORDER);
 		return subject;
 	}
-
 
 	// 5. stats section
 	private Table getStatisticsTable(float width, double score, double average, double highest, double lowest) {
@@ -561,8 +580,8 @@ public class PdfServiceImpl implements PdfService {
 	// 8. history section
 	private Table getHistoryTopTable(float width, List<TestResultHistoryDTO> histories, int num){
 		// dynamic width based on num
-		float[] columnWidths = new float[num];
-		for (int i = 0; i < num; i++) {
+		float[] columnWidths = new float[num + 1];
+		for (int i = 0; i <= num; i++) {
 			if (i == 0) {
 				columnWidths[i] = (width / num) * 2; // First column is wider
 			} else {
@@ -573,14 +592,14 @@ public class PdfServiceImpl implements PdfService {
 		// Define header background color
     	DeviceRgb headerBgColor = new DeviceRgb(200, 200, 200); // Light gray
 		details.addCell(detailCell("Test No").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		for (int i = 1; i < num; i++) {
+		for (int i = 1; i <= num; i++) {
 			details.addCell(detailCell(String.valueOf(i)).setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
 		}
 		// first row
 		Cell cell1_1 = detailCell("Your Score").setBold().setTextAlignment(TextAlignment.CENTER);
 		details.addCell(cell1_1);
 		// loop through the history if testID from 1 to 14
-		for (int i = 1; i < num; i++) {
+		for (int i = 1; i <= num; i++) {
 			String studentScore = "";
 			for (TestResultHistoryDTO history : histories) {
 				if (history.getTestNo() == i) {
@@ -595,7 +614,7 @@ public class PdfServiceImpl implements PdfService {
 		Cell cell2_1 = detailCell("Average").setBold().setTextAlignment(TextAlignment.CENTER);
 		details.addCell(cell2_1);
 		// loop through the history if testID from 1 to 14
-		for (int i = 1; i < num; i++) {
+		for (int i = 1; i <= num; i++) {
 			String average = "";
 			for (TestResultHistoryDTO history : histories) {
 				if (history.getTestNo() == i) {
@@ -610,62 +629,83 @@ public class PdfServiceImpl implements PdfService {
 	}
 	
 	// 8. history section
-	private Table getHistoryBottomTable(float width, List<TestResultHistoryDTO> histories){
-		Table details = new Table(new float[]{((width)/15*2), (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15, (width)/15,});
+	private Table getHistoryBottomTable(float width, List<TestResultHistoryDTO> histories, int num, int topNum, int testGroup){
+		// dynamic width based on num
+		float[] columnWidths = new float[num + 1];
+		for (int i = 0; i <= num; i++) {
+			if (i == 0) {
+				columnWidths[i] = (width / num) * 2; // First column is wider
+			} else {
+				columnWidths[i] = width / num; // Other columns have equal width
+			}
+		}
+		Table details = new Table(columnWidths);
 		// Define header background color
     	DeviceRgb headerBgColor = new DeviceRgb(200, 200, 200); // Light gray
 		details.addCell(detailCell("Test No").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("15").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("16").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("17").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("18").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("19").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("20").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("21").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("22").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("23").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("24").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("25").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("26").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("27").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
-		details.addCell(detailCell("28").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+		// only last 5 should be named as SIM1, SIM2, SIM3, SIM4, SIM5
+		for (int i = topNum + 1; i <= topNum + num; i++) {
+			if (testGroup == 4) {// Acer test
+				// For Acer test, show S1-S5 for last 5 tests
+				if (i == topNum + num) {
+					details.addCell(detailCell("S5").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+				} else if (i == topNum + num - 1) {
+					details.addCell(detailCell("S4").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+				} else if (i == topNum + num - 2) {
+					details.addCell(detailCell("S3").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+				} else if (i == topNum + num - 3) {
+					details.addCell(detailCell("S2").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+				} else if (i == topNum + num - 4) {
+					details.addCell(detailCell("S1").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+				} else {
+					details.addCell(detailCell(String.valueOf(i)).setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+				}
+			} else if (testGroup == 3) {// Edu test
+				// For Edu test, show S1-S2 for last 2 tests only
+				if (i == topNum + num) {
+					details.addCell(detailCell("S2").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+				} else if (i == topNum + num - 1) {
+					details.addCell(detailCell("S1").setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+				} else {
+					details.addCell(detailCell(String.valueOf(i)).setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+				}
+			}else{// Mega/Revision/Mock test
+				details.addCell(detailCell(String.valueOf(i)).setBold().setBackgroundColor(headerBgColor)).setTextAlignment(TextAlignment.CENTER);
+			}
+		}
 		// first row
 		Cell cell1_1 = detailCell("Your Score").setBold().setTextAlignment(TextAlignment.CENTER);
 		details.addCell(cell1_1);
 		// loop through the history if testID from 1 to 14
-		for(int i=15; i<29; i++){
-			// int testNo = i;
+		for (int i = topNum + 1; i <= topNum + num; i++) {
 			String studentScore = "";
-			for(TestResultHistoryDTO history : histories){
-				if(history.getTestNo() == i){
+			for (TestResultHistoryDTO history : histories) {
+				if (history.getTestNo() == i) {
 					studentScore = history.getStudentScore() > 0 ? String.valueOf(history.getStudentScore()) : "";
 					break;
 				}
 			}
 			Cell cell = detailCell(studentScore).setTextAlignment(TextAlignment.CENTER);
 			details.addCell(cell);
-			// System.out.println(testNo + " " + studentScore);
-		}
+		}		
 		// second row
 		Cell cell2_1 = detailCell("Average").setBold().setTextAlignment(TextAlignment.CENTER);
 		details.addCell(cell2_1);
 		// loop through the history if testID from 1 to 14
-		for(int i=15; i<29; i++){
-			// int testNo = i;
+		for (int i = topNum + 1; i <= topNum + num; i++) {
 			String average = "";
-			for(TestResultHistoryDTO history : histories){
-				if(history.getTestNo() == i){
-					// average = String.valueOf(history.getAverage());
+			for (TestResultHistoryDTO history : histories) {
+				if (history.getTestNo() == i) {
 					average = history.getAverage() > 0 ? String.valueOf(history.getAverage()) : "";
 					break;
 				}
 			}
 			Cell cell = detailCell(average).setTextAlignment(TextAlignment.CENTER);
 			details.addCell(cell);
-			// System.out.println(testNo + " " + average);
 		}
-		return details;
-		
+			
+		details.setBorderTop(Border.NO_BORDER);
+		return details;		
 	}
 
 	// 9. history graph section
@@ -1158,29 +1198,6 @@ public class PdfServiceImpl implements PdfService {
 		return barChart;
     }
 
-	private String formatAnswer(int num){
-		String answer = "";
-		switch(num){
-			case 1:
-				answer = "A";
-				break;
-			case 2:
-				answer = "B";
-				break;
-			case 3:
-				answer = "C";
-				break;
-			case 4:
-				answer = "D";
-				break;
-			case 5:
-				answer = "E";
-				break;
-			default:
-				answer = "";
-		}
-		return answer;
-	}
 
 
 
@@ -1296,28 +1313,6 @@ private void generateTestPdf(Map<String, Object> data) {
 			}
 		}
 		return "Top"; // If it's >= highest
-	}
-
-
-
-	private List<TestResultHistoryDTO> getDummyHistory(){
-		List<TestResultHistoryDTO> list = new ArrayList<>();
-		for(int i=5; i<35; i++){
-			TestResultHistoryDTO dto = new TestResultHistoryDTO();
-			dto.setTestNo(i);
-			// random number from 20~99
-			dto.setAverage(new Random().nextInt(80) + 20);
-			list.add(dto);
-		}
-		for(int i=10; i<=20; i++){
-			TestResultHistoryDTO dto = new TestResultHistoryDTO();
-			dto.setTestNo(i);
-			// random number from 20~99
-			dto.setAverage(new Random().nextInt(80) + 20);
-			dto.setStudentScore(new Random().nextInt(80) + 20);
-			list.add(dto);
-		}
-		return list;
 	}
 
 }

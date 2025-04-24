@@ -508,4 +508,29 @@ public class JaeUtils {
 		return answer;
 	}
 
+	// format answer
+	public static String formatAnswer(int num){
+		String answer = "";
+		switch(num){
+			case 1:
+				answer = "A";
+				break;
+			case 2:
+				answer = "B";
+				break;
+			case 3:
+				answer = "C";
+				break;
+			case 4:
+				answer = "D";
+				break;
+			case 5:
+				answer = "E";
+				break;
+			default:
+				answer = "";
+		}
+		return answer;
+	}
+	
 }

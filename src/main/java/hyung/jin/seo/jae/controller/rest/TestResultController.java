@@ -72,11 +72,26 @@ public class TestResultController {
                 .headers(headers)
                 .body(pdfData);
 		}
+		// prepare pdf data
+		Map<String, Object> data = preparePdfData(id, studentTests);
+		// generate pdf data
+		byte[] pdfData = pdfService.generateTestResult(data);
+		// Log the PDF size (important for debugging)
+		System.out.println("Generated PDF size: " + (pdfData != null ? pdfData.length : "null"));
 
+		if (pdfData == null || pdfData.length == 0) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+
+        return ResponseEntity.ok().headers(headers).body(pdfData);
+	}
+
+	// prepare pdf data
+	private Map<String, Object> preparePdfData(Long studentId, List<StudentTestDTO> studentTests) {
 		// Set Map to store ingredients
 		Map<String, Object> data = new HashMap<>();
 		// add student info
-		Student std = studentService.getStudent(id);
+		Student std = studentService.getStudent(studentId);
 		data.put(JaeConstants.STUDENT_INFO, new StudentDTO(std));
 		// add test result info
 		data.put(JaeConstants.TEST_RESULT_INFO, studentTests);
@@ -155,7 +170,7 @@ public class TestResultController {
 			int testAnswerCount = connectedService.getTestAnswerCount(testId);
 			testAnswerTotalCount.add(testAnswerCount);
 			// get student answer correct count info
-			List<Integer> answers = connectedService.getStudentTestAnswer(id, testId, cycle.getStartDate(), cycle.getEndDate());	
+			List<Integer> answers = connectedService.getStudentTestAnswer(studentId, testId, cycle.getStartDate(), cycle.getEndDate());	
 			List<TestAnswerItem> testAnswerItems = connectedService.getAnswersByTest(testId);
 			int correctCount = JaeUtils.countTestScore(answers, testAnswerItems);
 			studentAnswerCorrectCount.add(correctCount);
@@ -172,19 +187,22 @@ public class TestResultController {
 			lowestScores.add(lowestScore);
 
 			// get test result history
-			List<TestResultHistoryDTO> history = new ArrayList<>();
+			List<TestResultHistoryDTO> history = null;// new ArrayList<>();
 			int weekCount = 0;	
 			if(testGroup == 1 || testGroup == 2) { // Mega, Revision
 				weekCount = 5;
-			}else if(testGroup == 3){ // Edu - max 24
-				weekCount = 24;
+			}else if(testGroup == 3){ // Edu - max 32
+				weekCount = 32;
 			}else{ // Acer - max 40
 				weekCount = 40;
-			}	
+			}
+			history = new ArrayList<>(weekCount);
 			// get test result history
 			for(int i=1; i<=weekCount; i++){
 				TestScheduleDTO testSchedule = connectedService.getMostRecentTestSchedule(testGroup+"", testGrade, i+"");
+				TestResultHistoryDTO testHistory = new TestResultHistoryDTO();
 				if(testSchedule == null) {
+					history.add(testHistory);
 					continue;
 				}
 				String from = testSchedule.getFrom(); // ex> 01/04/2025, 17:38
@@ -209,13 +227,12 @@ public class TestResultController {
 				from = fromDate.toString(); // Convert back to String
 
 				double average = connectedService.getAverageScoreByTest(studentTest.getTestId(), from, to);
-				TestResultHistoryDTO testHistory = new TestResultHistoryDTO();
 				testHistory.setTestNo(i);
 				testHistory.setAverage((int)(average));
 				// student score
-				StudentTestDTO studentTestHistory = connectedService.findStudentTestByStudentNTest(id, testId, from, to);
+				StudentTestDTO studentTestHistory = connectedService.findStudentTestByStudentNTest(studentId, testId, from, to);
 				testHistory.setStudentScore(studentTestHistory==null ? 0 : (int)(studentTestHistory.getScore()));
-				history.add(testHistory);
+				history.add(testHistory);			
 			}
 			histories.add(history);
 		}
@@ -239,17 +256,7 @@ public class TestResultController {
 		data.put(JaeConstants.TEST_ANSWERS, testAnswers);
 		// add test result history
 		data.put(JaeConstants.TEST_RESULT_HISTORY, histories);
-
-
-		byte[] pdfData = pdfService.generateTestResult(data);
-		// Log the PDF size (important for debugging)
-		System.out.println("Generated PDF size: " + (pdfData != null ? pdfData.length : "null"));
-
-		if (pdfData == null || pdfData.length == 0) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
-
-        return ResponseEntity.ok().headers(headers).body(pdfData);
+		return data;
 	}
 
 }

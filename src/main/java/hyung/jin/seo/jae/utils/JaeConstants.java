@@ -346,4 +346,34 @@ public interface JaeConstants {
 
 	int SECOND_WEEK = 2;
 
+	////////////////////////////////////
+	//
+	//	TEST GROUP
+	//
+	////////////////////////////////////
+
+	int MEGA_TEST = 1;
+
+	int REVISION_TEST = 2;
+
+	int EDU_TEST = 3;
+
+	int ACER_TEST = 4;
+
+	int MOCK_TEST = 5;
+	
+	////////////////////////////////////
+	//
+	//	OMR PROCESS
+	//
+	////////////////////////////////////
+
+	String OMR_FILE_JPG = "jpg";
+
+	String OMR_FILE_JPEG = "jpeg";
+
+	String OMR_FILE_PDF = "pdf";
+
+	String OMR_FOLDER = "omr";
+	
 }
