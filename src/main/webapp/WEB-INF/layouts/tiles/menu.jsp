@@ -483,3 +483,22 @@ function updatePassword() {
 	</div>
 </div>
 
+ 
+<style>
+	/* Main menu (top-level) */
+	.navbar-nav > li.nav-item > a.nav-link:hover,
+	.navbar-nav > li.nav-item > a.nav-link:focus,
+	.navbar-nav > li.nav-item > a.nav-link:hover .custom-icon,
+	.navbar-nav > li.nav-item > a.nav-link:focus .custom-icon {
+		color: #ffC107 !important;
+		background-color: inherit !important;
+	}
+	/* Submenu (dropdown) */
+	.navbar-nav li.nav-item.dropdown .dropdown-menu a.dropdown-item:hover,
+	.navbar-nav li.nav-item.dropdown .dropdown-menu a.dropdown-item:focus,
+	.navbar-nav li.nav-item.dropdown .dropdown-menu a.dropdown-item:hover .custom-icon,
+	.navbar-nav li.nav-item.dropdown .dropdown-menu a.dropdown-item:focus .custom-icon {
+		color: #ffC107 !important;
+		background-color: inherit !important;
+	}
+</style>
