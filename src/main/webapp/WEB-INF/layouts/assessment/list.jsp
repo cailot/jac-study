@@ -187,24 +187,38 @@ function sendEmail() {
         url: '${pageContext.request.contextPath}/assessment/sendResult/' + currentId,
         type: 'GET',
         dataType: 'json',
-        contentType: 'application/json',
-        success: function (data) {
-            // debugger;
-            console.log(data);
-            // Display the success alert
-            // $('#success-alert .modal-body').text(data);
-            $('#success-alert .modal-body').html(data);
-            
-            $('#success-alert').modal('show');
-            $('#success-alert').on('hidden.bs.modal', function (e) {
-                document.getElementById('mathTest').disabled = true;
-                document.getElementById('englishTest').disabled = true;
-                document.getElementById('gaTest').disabled = true;
-                document.getElementById('selectionCount').disabled = true;
-            });
+        success : function(response) {
+            if (response.status === 'success') {
+                $('#success-alert .modal-body').html(response.message);
+                $('#success-alert').modal('show');
+                $('#success-alert').on('hidden.bs.modal', function (e) {
+                    document.getElementById('mathTest').disabled = true;
+                    document.getElementById('englishTest').disabled = true;
+                    document.getElementById('gaTest').disabled = true;
+                    document.getElementById('selectionCount').disabled = true;
+                });
+            } else {
+                $('#validation-alert .modal-body').html(response.message || 'Failed to send email.');
+                $('#validation-alert').modal('show');
+            }
         },
-        error: function (xhr, status, error) {
-            console.log('Error Details: ' + error);
+        error : function(xhr, status, error) {
+            console.log('Error:', error);
+            console.log('Status:', status);
+            console.log('Response:', xhr.responseText);
+            
+            let errorMessage = 'Failed to send email.';
+            try {
+                const response = JSON.parse(xhr.responseText);
+                if (response.message) {
+                    errorMessage = response.message;
+                }
+            } catch(e) {
+                console.log('Error parsing response:', e);
+            }
+            
+            $('#validation-alert .modal-body').html(errorMessage);
+            $('#validation-alert').modal('show');
         }
     });
 }
@@ -218,4 +232,14 @@ function sendEmail() {
 			<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 		</div>
 	</div>
+</div>
+
+<!-- Validation Alert -->
+<div id="validation-alert" class="modal fade">
+    <div class="modal-dialog">
+        <div class="alert alert-block alert-danger alert-dialog-display jae-border-danger">
+            <i class="bi bi-exclamation-circle-fill h5 mt-2"></i>&nbsp;&nbsp;<div class="modal-body"></div>
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        </div>
+    </div>
 </div>

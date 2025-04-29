@@ -55,4 +55,23 @@ public class EmailServiceImpl implements EmailService {
         mailSender.send(preparator);
     }
 
+    @Override
+    public void emailReport(String from, String to, String body, byte[] fileData) throws MessagingException {
+
+        MimeMessagePreparator preparator = mimeMessage -> {
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true); // true indicates multipart
+            messageHelper.setFrom(from);
+            messageHelper.setTo(to);
+            messageHelper.setSubject("Fwd: Assessment Submitted " + JaeUtils.getToday());
+            messageHelper.setText(body, true);
+
+            if (fileData != null && fileData.length > 0) {
+                ByteArrayDataSource dataSource = new ByteArrayDataSource(fileData, "application/octet-stream");
+                messageHelper.addAttachment("assessment.pdf", dataSource);
+            }
+        };
+
+        mailSender.send(preparator);
+    }
+
 }

@@ -499,6 +499,6 @@ function updatePassword() {
 	.navbar-nav li.nav-item.dropdown .dropdown-menu a.dropdown-item:hover .custom-icon,
 	.navbar-nav li.nav-item.dropdown .dropdown-menu a.dropdown-item:focus .custom-icon {
 		color: #ffC107 !important;
-		background-color: inherit !important;
+		background-color: #2d398e !important;
 	}
 </style>

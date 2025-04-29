@@ -341,12 +341,14 @@ public class AssessmentController {
 		
 		String emailBody = emailBodyBuilder.toString();
 		try {
-			emailService.emailReport(emailRecipient, emailBody, pdfData);
-		} catch (MessagingException e) {
-			String message = "Error updating Assessment : " + e.getMessage();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+			emailService.emailReport(assessmentName, emailRecipient, emailBody, pdfData);
+			return ResponseEntity.ok().body("{\"status\": \"success\", \"message\": \" Now You can close this browser.\"}");
+		}catch(Exception e){
+			String errorMessage = e.getMessage() != null ? e.getMessage() : "Unknown error occurred";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+							   .body("{\"status\": \"error\", \"message\": \"" + errorMessage.replace("\"", "'") + "\"}");		
 		}
-		return ResponseEntity.ok("\"Assessment result processed successfully. <br>Now You can close this browser.\"");
+
 	}
 
 	// helper method converting test answers Map to List
