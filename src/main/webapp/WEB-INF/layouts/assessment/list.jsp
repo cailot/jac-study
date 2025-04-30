@@ -182,12 +182,16 @@ function modifyButtonBasedOnUrl() {
 
 // request sending results via email
 function sendEmail() {
+    // Show loading spinner
+    $('#loading-message').text('Sending results to email');
+    $('#loading-spinner').modal('show');
     // Send AJAX to server
     $.ajax({
         url: '${pageContext.request.contextPath}/assessment/sendResult/' + currentId,
         type: 'GET',
         dataType: 'json',
         success : function(response) {
+            $('#loading-spinner').modal('hide');    
             if (response.status === 'success') {
                 $('#success-alert .modal-body').html(response.message);
                 $('#success-alert').modal('show');
@@ -203,6 +207,7 @@ function sendEmail() {
             }
         },
         error : function(xhr, status, error) {
+            $('#loading-spinner').modal('hide');
             console.log('Error:', error);
             console.log('Status:', status);
             console.log('Response:', xhr.responseText);
