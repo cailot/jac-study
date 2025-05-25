@@ -186,8 +186,6 @@ function getOnlineLive(studentId, year, week) {
 //		Retrieve Recorded Session Info
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function getRecordedSession(studentId, year, week, set, day, before) {
-	// Clear existing record blocks before adding new ones
-	$('#recordBlocks').empty();
 	$.ajax({
         url: '${pageContext.request.contextPath}/elearning/getRecord/' + studentId + '/' + year + '/' + week + '/' + set,
         type: 'GET',
@@ -210,6 +208,7 @@ function getRecordedSession(studentId, year, week, set, day, before) {
 					// Add event listener to the newly created element
 					sessionElement.on('click', handleRecordLessonClick);
 					// Update the elements here after they have been appended
+					//before ? $("#recordWeek" + index).text(set-1) : $("#recordWeek" + index).text(set);
 					$("#recordWeek" + index).text(record.week);
 					before ? $("#recordLessonDayTitle" + index).text('Available until this ' + dayName(record.day) + ', ' + record.startTime) : $("#recordLessonDayTitle" + index).text('Available until next ' + dayName(record.day) + ', ' + record.startTime ) ;
 				}
