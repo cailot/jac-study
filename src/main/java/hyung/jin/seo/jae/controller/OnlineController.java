@@ -56,9 +56,13 @@ public class OnlineController {
 	@ResponseBody
 	public List<OnlineSessionDTO> getOnlineLive(@PathVariable("id") long id, @PathVariable("year") int year, @PathVariable("week") int week) {	
 		// 1. get clazzId via Enrolment with parameters - studentId, year, week, online
-		Long clazzId = enrolmentService.findClazzId4OnlineSession(id, year, week);
+		List<Long> clazzIds = enrolmentService.findClazzId4OnlineSession(id, year, week);
 		// 2. get OnlineSession by clazzId, set (week-1)
-		List<OnlineSessionDTO> dtos = onlineSessionService.findSessionByClazzNWeek(clazzId, week-1);
+		List<OnlineSessionDTO> dtos = new ArrayList<>();
+		for(Long clazzId : clazzIds){
+			List<OnlineSessionDTO> sessions = onlineSessionService.findSessionByClazzNWeek(clazzId, week-1);
+			dtos.addAll(sessions);
+		}
 		// 4. return OnlineSessionDTO
 		return dtos;
 	}
@@ -109,9 +113,13 @@ public class OnlineController {
 			}
 		}
 		// 1. get clazzId via Enrolment with parameters - studentId, year, week, online
-		Long clazzId = enrolmentService.findClazzId4OnlineSession(id, year, week);
+		List<Long> clazzIds = enrolmentService.findClazzId4OnlineSession(id, year, week);
 		// 2. get OnlineSession by clazzId, set (week-1)
-		List<OnlineSessionDTO> dtos = onlineSessionService.findSessionByClazzNWeek(clazzId, set);
+		List<OnlineSessionDTO> dtos = new ArrayList<>();
+		for(Long clazzId : clazzIds){
+			List<OnlineSessionDTO> sessions = onlineSessionService.findSessionByClazzNWeek(clazzId, set);
+			dtos.addAll(sessions);
+		}
 		// 4. return OnlineSessionDTO
 		return dtos;
 	}

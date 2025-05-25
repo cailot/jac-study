@@ -87,8 +87,8 @@ public interface EnrolmentRepository extends JpaRepository<Enrolment, Long> {
 	Integer getStudentNumberByClazzId(@Param("clazzId") long clazzId, @Param("week") int week);
 
 	// return clazz id by student id, year, week and online
-	@Query("SELECT e.clazz.id FROM Enrolment e WHERE e.student.id = ?1 AND e.clazz.course.cycle.year =?2 AND ?3 >= e.startWeek AND ?3 <= e.endWeek AND e.clazz.course.online = true")
-	Optional<Long> findClazzId4fOnlineSession(long studentId, int year, int week);
+	@Query("SELECT DISTINCT e.clazz.id, e.registerDate FROM Enrolment e WHERE e.student.id = ?1 AND e.clazz.course.cycle.year =?2 AND ?3 >= e.startWeek AND ?3 <= e.endWeek AND e.clazz.course.online = true AND e.old = false AND e.cancelled = false ORDER BY e.registerDate DESC")
+	List<Object[]> findClazzId4fOnlineSession(long studentId, int year, int week);
 
 	// return enrolment id by student id, year and week; it requires +1 week as the gap between onsite & online session 
 	@Query("SELECT en.id FROM Enrolment en " +

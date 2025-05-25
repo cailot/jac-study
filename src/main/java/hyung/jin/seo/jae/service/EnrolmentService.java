@@ -70,7 +70,7 @@ public interface EnrolmentService {
 	Integer getStudentNumberByClazz(Long clazzId, int week);
 
 	// return clazz Id for online session search
-	Long findClazzId4OnlineSession(long studentId, int year, int week);
+	List<Long> findClazzId4OnlineSession(long studentId, int year, int week);
 
 	// check if enrolement is still valid
 	// boolean isEnrolmentValid(long studentId);

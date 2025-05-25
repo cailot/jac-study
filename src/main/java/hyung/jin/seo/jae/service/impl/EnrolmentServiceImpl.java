@@ -290,16 +290,18 @@ public class EnrolmentServiceImpl implements EnrolmentService {
 	}
 
 	@Override
-	public Long findClazzId4OnlineSession(long studentId, int year, int week) {
-		Optional<Long> optionalId = null;
-		Long clazzId = 0L;
-		try{
-			optionalId = enrolmentRepository.findClazzId4fOnlineSession(studentId, year, week);
-			clazzId = optionalId.orElse(0L);
-		}catch(Exception e){
+	public List<Long> findClazzId4OnlineSession(long studentId, int year, int week) {
+		List<Long> ids = new ArrayList<>();
+		try {
+			List<Object[]> results = enrolmentRepository.findClazzId4fOnlineSession(studentId, year, week);
+			if (!results.isEmpty()) {
+				// Get the first result's class ID (first element in the Object[] array)
+				ids.add((Long) results.get(0)[0]);
+			}
+		} catch(Exception e) {
 			System.out.println("No class found");
 		}
-		return clazzId;
+		return ids;
 	}
 
 }

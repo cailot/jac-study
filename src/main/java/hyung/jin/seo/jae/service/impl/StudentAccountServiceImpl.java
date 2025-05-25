@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import hyung.jin.seo.jae.dto.CycleDTO;
 import hyung.jin.seo.jae.dto.StudentAccount;
@@ -31,6 +33,8 @@ import hyung.jin.seo.jae.repository.UserRepository;
 
 @Service
 public class StudentAccountServiceImpl implements StudentAccountService {
+
+	private static final Logger logger = LoggerFactory.getLogger(StudentAccountServiceImpl.class);
 
 	@Autowired
 	private StudentRepository studentRepository;
@@ -58,21 +62,29 @@ public class StudentAccountServiceImpl implements StudentAccountService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		try {
+			logger.debug("Attempting login for username: {}", username);
 			boolean isStudent = username.length() == 8;
+			
 			if (isStudent) { // normal case for student
+				logger.debug("Processing student login...");
 				Object[] result = studentRepository.checkStudentAccount(Long.parseLong(username));
+				
 				if (result != null && result.length > 0) {
+					logger.debug("Found student account in database");
 					Object[] obj = (Object[]) result[0];
 					StudentAccount account = new StudentAccount(obj);
+					
 					// Check enrolment is valid if student is active
 					int currentYear = getYear();
 					int currentWeek = getWeek();
+					logger.debug("Checking enrollment for Year: {}, Week: {}", currentYear, currentWeek);
 
 					////////////////////////////////////////////////////////////////////////////////
 					// if currentWeek is first week, then check previous year last week
 					if(currentWeek==1) {
 						currentYear = currentYear - 1;
-						currentWeek = cycleService.lastAcademicWeek(currentYear);				
+						currentWeek = cycleService.lastAcademicWeek(currentYear);
+						logger.debug("First week detected, checking previous year. New Year: {}, Week: {}", currentYear, currentWeek);				
 					}
 					///////////////////////////////////////////////////////////////////////////////
 
@@ -80,31 +92,40 @@ public class StudentAccountServiceImpl implements StudentAccountService {
 					List<Long> ids = enrolmentRepository.checkEnrolmentTime(Long.parseLong(username), currentYear, currentWeek);
 					if (ids == null || ids.isEmpty()) {
 						// No enrolment
+						logger.debug("No valid enrollment found for student");
 						account.setEnabled(JaeConstants.INACTIVE);
 						throw new DisabledException("User enrolment is not valid");
 					}
+					logger.debug("Valid enrollment found for student");
 
 					String fromWhere = (String) session.getAttribute("referer");
 					// keep login entry if user is connected from login page
 					if(fromWhere!=null && fromWhere.contains(JaeConstants.CONNECTED_FROM)) {
+						logger.debug("Saving login activity for connected student");
 						// add login activity
 						loginActivityService.saveLoginActivity(Long.parseLong(username));
 					}
+					logger.debug("Student login successful");
 					return account;
 				} else {
+					logger.debug("Student not found in database");
 					throw new UsernameNotFoundException("Student not found");
 				}
 			} else { // admin case
+				logger.debug("Processing admin login...");
 				Object[] result = userRepository.checkUserAccount(username);
 				if (result != null && result.length > 0) {
+					logger.debug("Admin login successful");
 					Object[] obj = (Object[]) result[0];
 					User account = new User(obj);                
 					return account;
 				} else {
+					logger.debug("Admin not found in database");
 					throw new UsernameNotFoundException("Admin not found");
 				}
 			}
 		} catch (Exception e) {
+			logger.error("Login failed for username: {}. Error: {}", username, e.getMessage());
 			throw new UsernameNotFoundException("User: " + username + " was not found in the database", e);
 		}
 	}

@@ -29,11 +29,11 @@ public interface StudentRepository extends JpaRepository<Student, Long>, JpaSpec
         List<Integer> findYearsByStudentId(Long id);	
 
 	// retrieve active student by state, branch & grade called from studentList.jsp
-	@Query(value = "SELECT new hyung.jin.seo.jae.dto.StudentDTO(s.id, s.firstName, s.lastName, s.grade, s.gender, s.contactNo1, s.contactNo2, s.email1, s.email2, s.state, s.branch, s.registerDate, s.endDate, s.password, s.active) FROM Student s WHERE s.state LIKE ?1 AND s.branch LIKE ?2 AND s.grade LIKE ?3 AND s.active = 0")
+	@Query(value = "SELECT new hyung.jin.seo.jae.dto.StudentDTO(s.id, s.firstName, s.lastName, s.grade, s.gender, s.contactNo1, s.contactNo2, s.email1, s.email2, s.state, s.branch, s.registerDate, s.endDate, s.password, s.active) FROM Student s WHERE s.state LIKE ?1 AND s.branch LIKE ?2 AND s.grade LIKE ?3 AND s.active = 1")
 	List<StudentDTO> listActiveStudent(String state, String branch, String grade);
 
 	// retrieve inactive student by state, branch & grade called from studentList.jsp
-	@Query(value = "SELECT new hyung.jin.seo.jae.dto.StudentDTO(s.id, s.firstName, s.lastName, s.grade, s.gender, s.contactNo1, s.contactNo2, s.email1, s.email2, s.state, s.branch, s.registerDate, s.endDate, s.password, s.active) FROM Student s WHERE s.state LIKE ?1 AND s.branch LIKE ?2 AND s.grade LIKE ?3 AND s.active = 1")
+	@Query(value = "SELECT new hyung.jin.seo.jae.dto.StudentDTO(s.id, s.firstName, s.lastName, s.grade, s.gender, s.contactNo1, s.contactNo2, s.email1, s.email2, s.state, s.branch, s.registerDate, s.endDate, s.password, s.active) FROM Student s WHERE s.state LIKE ?1 AND s.branch LIKE ?2 AND s.grade LIKE ?3 AND s.active = 0")
 	List<StudentDTO> listInactiveStudent(String state, String branch, String grade);
 
         @Query("SELECT new hyung.jin.seo.jae.dto.StudentDTO" +
@@ -74,7 +74,7 @@ public interface StudentRepository extends JpaRepository<Student, Long>, JpaSpec
         @Query(value = "UPDATE Student s SET s.password = ?2 WHERE s.id = ?1 AND ACTIVE = 0", nativeQuery = true)
         void updatePassword(Long id, String password);    
 
-        @Query(value = "SELECT s.id, s.password, s.firstName, s.lastName, s.active, s.grade FROM Student s WHERE s.id =?1 AND ACTIVE = 0", nativeQuery = true)   
+        @Query(value = "SELECT s.id, s.password, s.firstName, s.lastName, s.active, s.grade FROM Student s WHERE s.id =?1 AND ACTIVE = 1", nativeQuery = true)   
 	Object[] checkStudentAccount(Long id);
 
 
