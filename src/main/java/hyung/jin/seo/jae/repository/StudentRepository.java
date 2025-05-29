@@ -50,7 +50,6 @@ public interface StudentRepository extends JpaRepository<Student, Long>, JpaSpec
         "SELECT cyc.id FROM Cycle cyc WHERE cyc.year = :year))")
 	List<StudentDTO> listActiveStudent(@Param("state") String state, @Param("branch") String branch, @Param("grade") String grade, @Param("year") int year);
 
-
 	@Query("SELECT new hyung.jin.seo.jae.dto.StudentDTO" +
         "(s.id, s.firstName, s.lastName, s.grade, s.gender, s.contactNo1, s.contactNo2, s.email1, s.email2, s.state, s.branch, s.registerDate, s.endDate, s.password, s.active, e.startWeek, e.endWeek) " +
         "FROM Student s " +
@@ -63,12 +62,7 @@ public interface StudentRepository extends JpaRepository<Student, Long>, JpaSpec
         "AND e.clazz.id IN (" +
         "SELECT cla.id FROM Clazz cla WHERE cla.course.cycle.id IN (" +
         "SELECT cyc.id FROM Cycle cyc WHERE cyc.year = :year))")
-	List<StudentDTO> listInactiveStudent(@Param("state") String state, @Param("branch") String branch, @Param("grade") String grade, @Param("year") int year);
-
-        
-        
-        
-        
+	List<StudentDTO> listInactiveStudent(@Param("state") String state, @Param("branch") String branch, @Param("grade") String grade, @Param("year") int year);        
         
         @Modifying
         @Query(value = "UPDATE Student s SET s.password = ?2 WHERE s.id = ?1 AND ACTIVE = 0", nativeQuery = true)
@@ -76,8 +70,6 @@ public interface StudentRepository extends JpaRepository<Student, Long>, JpaSpec
 
         @Query(value = "SELECT s.id, s.password, s.firstName, s.lastName, s.active, s.grade FROM Student s WHERE s.id =?1 AND ACTIVE = 1", nativeQuery = true)   
 	Object[] checkStudentAccount(Long id);
-
-
 
 
         @Modifying

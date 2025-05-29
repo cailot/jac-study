@@ -154,9 +154,12 @@ function getOnlineLive(studentId, year, week) {
 		url : '${pageContext.request.contextPath}/elearning/getLive/' + studentId + '/' + year + '/' + week,
 		type : 'GET',
 		success : function(data) {
+			// Clear existing blocks
+			$('#liveBlocks').empty();
+			$('#recordBlocks').empty();
+			
+			// Process all live sessions first
 			$.each(data, function(index, live) {
-				// console.log("Live : " + index);
-			    // console.log(live);
 				var url = live.address;
 				// Create a new session element
 				var sessionElement = $('<div id="onlineLesson'+index+'" class="onlineLesson alert alert-info jae-border-warning"></div>');
@@ -172,9 +175,49 @@ function getOnlineLive(studentId, year, week) {
                 $('#liveBlocks').append(sessionElement);
 				// Add event listener to the newly created element
                 sessionElement.on('click', handleOnlineLessonClick);
-               // check recorded session
-				determineLiveOrRecordedLesson(index);
 			});
+			
+			// Now process recorded sessions only once for the first live session
+			if(data.length > 0) {
+				var firstLive = data[0];
+				var now = new Date();
+				var lessonDay = dayName(firstLive.day);
+				var lessonStart = firstLive.startTime;
+				var lessonEnd = firstLive.endTime;
+				
+				var lessonStartDate = getTimeForDayAndTime(lessonDay, lessonStart);
+				var lessonEndDate = getTimeForDayAndTime(lessonDay, lessonEnd);
+				lessonEndDate.setHours(lessonEndDate.getHours() + 18);
+				
+				if (now.getTime() >= lessonStartDate && now.getTime() <= lessonEndDate) {
+					// ON AIR - show last week's recording
+					getRecordedSession(studentId, academicYear, academicWeek, academicSet - 1, lessonDay, false);
+				} else if (now.getTime() < lessonStartDate) {
+					// BEFORE AIR - show last week's recording
+					getRecordedSession(studentId, academicYear, academicWeek, academicSet - 1, lessonDay, true);
+				} else {
+					// AFTER AIR - show this week's recording
+					getRecordedSession(studentId, academicYear, academicWeek, academicSet, lessonDay, false);
+				}
+				
+				// Update live session UI
+				$.each(data, function(index, live) {
+					if (now.getTime() >= lessonStartDate && now.getTime() <= lessonEndDate) {
+						// ON AIR
+						$('#micIcon' + index).removeClass('text-secondary').addClass('text-danger');
+						$('#onlineLesson'+index).css({'pointer-events': 'auto', 'cursor': 'pointer'});
+					} else {
+						// NOT ON AIR
+						var liveBlock = $('#onlineLesson' + index);
+						liveBlock.removeClass('alert-info').addClass('alert-secondary');
+						var liveIcon = $('#livePlayIcon' + index);
+						liveIcon.removeClass('text-primary').addClass('text-secondary');
+						liveBlock.attr('data-video-url', '');
+						liveBlock.css('pointer-events', 'none');
+						liveBlock.css('cursor', 'not-allowed');
+					}
+				});
+			}
 		},
 		error : function(xhr, status, error) {
 			console.log('Error : ' + error);
@@ -511,7 +554,7 @@ body {
 			</div>
 			<div class="card-body jae-background-color text-center" style="padding: 1rem;">
 				<img src="${pageContext.request.contextPath}/image/logo.png" style="filter: brightness(0) invert(1);width:65px;" >
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-light align-middle h2">Jac-eLearning Student Lecture</span>           
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-light align-middle h2">JAC-eLearning Student Lecture</span>           
 			</div>
 			<div>
 				<div style="display: flex; align-items: center; margin-top: 5px;">
@@ -538,7 +581,7 @@ body {
 	<div class="container py-2">
         <div class="card shadow-sm rounded-4 mt-2">
             <div class="card-body text-center" style="padding-bottom: 0px;">
-                <h3 class="card-title text-primary mt-2">Welcome to Jac-eLearning!</h3>
+                <h3 class="card-title text-primary mt-2">Welcome to JAC-eLearning!</h3>
                 <p class="text-muted">Your personal hub for live and recorded online lessons at James An College.</p>
                 <div class="my-1">
                     <!-- <img src="${pageContext.request.contextPath}/image/live.png" alt="Online Class" style="width: 200px;"> -->

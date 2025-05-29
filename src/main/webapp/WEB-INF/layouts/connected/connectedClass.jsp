@@ -60,7 +60,110 @@
 		color: #2d398e;
 	}
 	
+	/* Floating Announcement Styles */
+	.floating-announcement {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background-color: white;
+		padding: 20px;
+		border-radius: 10px;
+		box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+		z-index: 1000;
+		max-width: 500px;
+		width: 90%;
+		display: none;
+		animation: floatIn 0.5s ease-out;
+	}
+
+	.announcement-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 15px;
+	}
+
+	.announcement-title {
+		color: #007bff;
+		margin: 0;
+		font-size: 1.5rem;
+	}
+
+	.close-announcement {
+		background: none;
+		border: none;
+		font-size: 1.5rem;
+		cursor: pointer;
+		color: #666;
+	}
+
+	.announcement-content {
+		margin-bottom: 15px;
+	}
+
+	.overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 999;
+		display: none;
+	}
+
+	@keyframes floatIn {
+		from {
+			opacity: 0;
+			transform: translate(-50%, -60%);
+		}
+		to {
+			opacity: 1;
+			transform: translate(-50%, -50%);
+		}
+	}
 </style>
+
+<!-- Floating Announcement -->
+<div class="overlay" id="announcementOverlay"></div>
+<div class="floating-announcement" id="announcementBox">
+    <div class="announcement-header">
+        <h3 class="announcement-title">Important Announcement</h3>
+        <button class="close-announcement" onclick="closeAnnouncement()">&times;</button>
+    </div>
+    <div class="announcement-content">
+        <p>${announcement != null ? announcement : 'Welcome to Our New Connected Class! Check out our latest updates and features.'}</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        showAnnouncement();
+    });
+
+    function showAnnouncement() {
+        document.getElementById('announcementBox').style.display = 'block';
+        document.getElementById('announcementOverlay').style.display = 'block';
+    }
+
+    function closeAnnouncement() {
+        document.getElementById('announcementBox').style.display = 'none';
+        document.getElementById('announcementOverlay').style.display = 'none';
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 <div class="container mt-5" style="background-image: url('${pageContext.request.contextPath}/image/cc-welcome.jpg'); background-size: cover;">
 	<h1 class="text-center font-italic jae-color mb-4" style="text-shadow: 5px 5px 5px rgba(170, 221, 238, 1);">Welcome to Connected Class!</h1>
@@ -81,7 +184,7 @@
 			</div>
 			<div class="card">
 				<div class="card-body">
-					<h4 class="card-title">Jac-eLearning</h4>
+					<h4 class="card-title">JAC-eLearning</h4>
 					<p class="card-text">Need access to online classes? Look no further than Jac e-Learning! Whether it's live streams or recorded sessions, this link has everything you need to stay connected to your education. Join the online learning revolution and take control of your academic journey from anywhere, anytime. With Jac e-Learning, the classroom is always just a click away.</p>
 				</div>
 			</div>

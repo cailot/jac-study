@@ -304,7 +304,7 @@ function updatePassword() {
                 <li class="nav-item">
                     <a class="nav-link" href="${pageContext.request.contextPath}/online/lesson">
                         <i class="bi bi-pencil-square custom-icon"></i>
-                        <span class="h4">Jac-eLearning</span>
+                        <span class="h4">JAC-eLearning</span>
                     </a>
                 </li>
             </ul>

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -39,6 +40,12 @@ public class JaeStudentSecurity extends WebSecurityConfigurerAdapter{
                         ); // excluding folders list
 	}
 
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
+
         @Configuration
         @Order(1)
         public static class OnlineSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -54,7 +61,8 @@ public class JaeStudentSecurity extends WebSecurityConfigurerAdapter{
                                 .antMatcher("/online/**")
                                 .authorizeRequests(requests -> requests
                                 .antMatchers("/online/lesson").authenticated() // Secure /online/lesson
-                                .antMatchers("/online/login").permitAll())
+                                .antMatchers("/online/login").permitAll()
+                                .antMatchers("/online/urlLoginEncrypted").permitAll()) // Allow encrypted URL-based login
                                 .formLogin(login -> login
                                         .loginPage("/online/login") // login page link
                                         .loginProcessingUrl("/online/processLogin")
@@ -87,7 +95,8 @@ public class JaeStudentSecurity extends WebSecurityConfigurerAdapter{
                                 // .antMatchers("/connected/", "/connected/login").permitAll())
                                 // .antMatchers("/connected/lesson").authenticated() // Secure /online/lesson
                                 .antMatchers("/connected/**").authenticated() // Secure all /connected/* paths
-                                .antMatchers("/connected/login").permitAll())
+                                .antMatchers("/connected/login").permitAll()
+                                .antMatchers("/connected/urlLoginEncrypted").permitAll()) // Allow encrypted URL-based login
                                 .formLogin(login -> login
                                         .loginPage("/connected/login") // login page link
                                         .loginProcessingUrl("/connected/processLogin")

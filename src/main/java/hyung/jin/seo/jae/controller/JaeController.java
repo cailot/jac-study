@@ -1,11 +1,104 @@
 package hyung.jin.seo.jae.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import hyung.jin.seo.jae.service.LoginActivityService;
+import hyung.jin.seo.jae.service.StudentAccountService;
 
 @Controller
 public class JaeController {
 
+	@Autowired
+	private LoginActivityService loginActivityService;
+
+	@Autowired
+	private StudentAccountService studentAccountService;
+
+	// URL-based authentication for online system (with encrypted password from database)
+	@GetMapping("/online/urlLoginEncrypted")
+	public String authenticateOnlineByEncryptedUrl(@RequestParam("id") String id, 
+	                                              @RequestParam("encPassword") String encryptedPassword,
+	                                              HttpServletRequest request, 
+	                                              HttpServletResponse response) {
+		try {
+			// Load user details directly
+			UserDetails userDetails = studentAccountService.loadUserByUsername(id);
+			
+			// Check if the encrypted password matches
+			if (userDetails != null && userDetails.getPassword().equals(encryptedPassword)) {
+				// Create authenticated token directly
+				UsernamePasswordAuthenticationToken authToken = 
+					new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+				
+				// Set additional details
+				authToken.setDetails(new WebAuthenticationDetails(request));
+				
+				// Set the authentication in the security context
+				SecurityContextHolder.getContext().setAuthentication(authToken);
+				
+				// Save login activity
+				loginActivityService.saveLoginActivity(Long.parseLong(id));
+				
+				// Redirect to online lesson page
+				return "redirect:/online/lesson";
+			} else {
+				// Authentication failed
+				return "redirect:/online/login?error=true";
+			}
+			
+		} catch (Exception e) {
+			// Authentication failed - redirect to login page with error
+			return "redirect:/online/login?error=true";
+		}
+	}
+
+	// URL-based authentication for connected system (with encrypted password from database)
+	// @GetMapping("/connected/urlLoginEncrypted")
+	// public String authenticateConnectedByEncryptedUrl(@RequestParam("id") String id, 
+	//                                                   @RequestParam("encPassword") String encryptedPassword,
+	//                                                   HttpServletRequest request, 
+	//                                                   HttpServletResponse response) {
+	// 	try {
+	// 		// Load user details directly
+	// 		UserDetails userDetails = studentAccountService.loadUserByUsername(id);
+			
+	// 		// Check if the encrypted password matches
+	// 		if (userDetails != null && userDetails.getPassword().equals(encryptedPassword)) {
+	// 			// Create authenticated token directly
+	// 			UsernamePasswordAuthenticationToken authToken = 
+	// 				new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+				
+	// 			// Set additional details
+	// 			authToken.setDetails(new WebAuthenticationDetails(request));
+				
+	// 			// Set the authentication in the security context
+	// 			SecurityContextHolder.getContext().setAuthentication(authToken);
+				
+	// 			// Save login activity
+	// 			loginActivityService.saveLoginActivity(Long.parseLong(id));
+				
+	// 			// Redirect to connected lesson page
+	// 			return "redirect:/connected/lesson";
+	// 		} else {
+	// 			// Authentication failed
+	// 			return "redirect:/connected/login?error=true";
+	// 		}
+			
+	// 	} catch (Exception e) {
+	// 		// Authentication failed - redirect to login page with error
+	// 		return "redirect:/connected/login?error=true";
+	// 	}
+	// }
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//
