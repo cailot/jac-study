@@ -348,25 +348,27 @@ function updatePassword() {
 								</select>
 							</div>
 							<div class="col-md-3">
+								<label for="editGrade" class="label-form">Grade</label> <select class="form-control" id="editGrade" name="editGrade" disabled>
+								</select>
+							</div>
+							<!-- <div class="col-md-3">
 								<label for="editRegisterDate" class="label-form">Registration</label> 
 								<input type="text" class="form-control" id="editRegisterDate" name="editRegisterDate" readonly>
-							</div>
+							</div> -->
 						</div>	
 						<div class="form-row mt-2">
-							<div class="col-md-3">
+							<div class="col-md-4">
 								<label for="editId" class="label-form">ID:</label> <input type="text" class="form-control" id="editId" name="editId" readonly>
 							</div>
 							<div class="col-md-4">
 								<label for="editFirstName" class="label-form">First Name:</label> <input type="text" class="form-control" id="editFirstName" name="editFirstName" readonly>
 							</div>
-							<div class="col-md-3">
+							<div class="col-md-4">
 								<label for="editLastName" class="label-form">Last Name:</label> <input type="text" class="form-control" id="editLastName" name="editLastName" readonly>
 							</div>
-							<div class="col-md-2">
-								<label for="editGrade" class="label-form">Grade</label> <select class="form-control" id="editGrade" name="editGrade" disabled>
-								</select>
-							</div>
 						</div>
+
+						<%--
 						<div class="form-row mt-2">
 							<div class="col-md-3">
 								<label for="editGender" class="label-form">Gender</label> <select class="form-control" id="editGender" name="editGender" disabled>
@@ -377,8 +379,7 @@ function updatePassword() {
 							<div class="col-md-9">
 								<label for="editAddress" class="label-form">Address</label> <input type="text" class="form-control" id="editAddress" name="editAddress" readonly>
 							</div>
-						</div>
-					
+						</div>					
 						<div class="form-row">
 							<div class="col-md-12 mt-4">
 								<section class="fieldset rounded" style="padding: 10px;">
@@ -429,11 +430,12 @@ function updatePassword() {
 								</section>
 							</div>
 						</div>
-						<div class="form-row">
+						--%>
+						<div class="form-row mt-3">
 							<div class="col-md-12 mt-4">
-								<section class="fieldset rounded" style="padding: 10px; background-color:beige;">
-									<header class="label-form" style="font-size: 0.9rem!important;">Password Reset</header>
-								<div class="row">
+								<section class="fieldset rounded border-warning" style="padding: 10px; background-color:beige;">
+									<header class="label-form" style="font-size: 1.0rem!important;"><strong>Password Reset</strong></header>
+								<div class="row mt-2">
 									<div class="col-md-5">
 										<label>New Password</label>
 									</div>

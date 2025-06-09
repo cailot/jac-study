@@ -1,3 +1,0 @@
-WHERE S.branch_code = 13
-  and s.Student_No = 130841
-  AND FM.Rcv_Date BETWEEN 20250401 AND 20250510; 

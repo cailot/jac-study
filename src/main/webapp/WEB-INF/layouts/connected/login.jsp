@@ -1,6 +1,16 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
+<script>
+
+$(document).ready(function() {
+    // Show the welcome popup every time
+    // $('#welcomeModal').modal('show');
+	$('#welcomeModal').modal('hide');
+});
+
+</script>
+
 <style>
 
 #background {
@@ -117,4 +127,34 @@
 			</h6>		
 		</div><!-- end of left-container-->
 	</div>
+</div>
+
+
+<!-- Add the welcome modal -->
+<div class="modal fade" id="welcomeModal" tabindex="-1" role="dialog" aria-labelledby="welcomeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #2d398e !important; color: white;">
+                <h5 class="modal-title" id="welcomeModalLabel">Welcome to JAC Study Beta Testing</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <img src="${pageContext.request.contextPath}/image/logo.png" alt="James An College Logo" style="max-width: 200px;">
+                </div>
+                <h4 class="text-center mb-3">Thanks for attending Demo<br> on Monday 26th May 2025</h4>
+                <p class="text-center">System will be officially launched on 16th June 2025.</p>
+                <p class="text-center">Please feel free to use this system for testing purposes.</p>
+				<!-- <p class="text-center">Please be aware that we are trying to apply the changes to the system as we go along, so this system is still under development and may not be the same as what you see in the demo.</p>		 -->
+                <div class="alert alert-info text-center">
+                    <small>If you don't have login credentials,<br>please contact jacviccom1@jamesancollegevic.com.au</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn text-white" style="background: #2d398e !important;" data-dismiss="modal">Get Started</button>
+            </div>
+        </div>
+    </div>
 </div>

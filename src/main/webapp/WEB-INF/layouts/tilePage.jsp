@@ -57,6 +57,52 @@
 				</div>
 			</div>
 		</div>
-	</div>	
+	</div>
+
+	<!-- Global Right-Click Protection -->
+	<script>
+	$(document).ready(function() {
+		// Disable right-click context menu globally
+		$(document).on('contextmenu', function(e) {
+			e.preventDefault();
+			return false;
+		});
+		
+		// Disable common developer tool keyboard shortcuts
+		$(document).on('keydown', function(e) {
+			// Disable F12 (Developer Tools)
+			if (e.keyCode === 123) {
+				e.preventDefault();
+				return false;
+			}
+			// Disable Ctrl+Shift+I (Developer Tools)
+			if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+				e.preventDefault();
+				return false;
+			}
+			// Disable Ctrl+Shift+C (Inspect Element)
+			if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+				e.preventDefault();
+				return false;
+			}
+			// Disable Ctrl+U (View Source)
+			if (e.ctrlKey && e.keyCode === 85) {
+				e.preventDefault();
+				return false;
+			}
+			// Disable Ctrl+Shift+J (Console)
+			if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+				e.preventDefault();
+				return false;
+			}
+		});
+		
+		// Disable text selection and dragging (optional)
+		$(document).on('selectstart dragstart', function(e) {
+			e.preventDefault();
+			return false;
+		});
+	});
+	</script>
 </body>
 </html>
