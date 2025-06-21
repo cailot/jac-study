@@ -22,7 +22,7 @@ $(function() {
             // save the response into the variable
             academicYear = response[0];
             academicWeek = parseInt(response[1]);
-            //console.log('NumericGrade ---> ' + numericGrade);
+            console.log('NumericGrade ---> ' + numericGrade);
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log('Error : ' + errorThrown);
@@ -35,7 +35,7 @@ $(function() {
         method: "GET",
         success: function(response) {
             // save the response into the variable
-            // console.log(response);
+            console.log(response);
             weeksData = response;
             displayCards();
         },

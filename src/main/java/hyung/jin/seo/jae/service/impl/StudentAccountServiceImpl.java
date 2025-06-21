@@ -81,23 +81,30 @@ public class StudentAccountServiceImpl implements StudentAccountService {
 
 					////////////////////////////////////////////////////////////////////////////////
 					// if currentWeek is first week, then check previous year last week
-					if(currentWeek==1) {
-						currentYear = currentYear - 1;
-						currentWeek = cycleService.lastAcademicWeek(currentYear);
-						logger.debug("First week detected, checking previous year. New Year: {}, Week: {}", currentYear, currentWeek);				
-					}
+					// if(currentWeek==1) {
+					// 	currentYear = currentYear - 1;
+					// 	currentWeek = cycleService.lastAcademicWeek(currentYear);
+					// 	logger.debug("First week detected, checking previous year. New Year: {}, Week: {}", currentYear, currentWeek);				
+					// }
 					///////////////////////////////////////////////////////////////////////////////
 
 					// Check if student is enrolled in any class for current week
-					List<Long> ids = enrolmentRepository.checkEnrolmentTime(Long.parseLong(username), currentYear, currentWeek);
-					if (ids == null || ids.isEmpty()) {
+					List<Object[]> enrols = enrolmentRepository.checkEnrolmentTime(Long.parseLong(username), currentYear, currentWeek);
+					if (enrols == null || enrols.isEmpty()) {
 						// No enrolment
 						logger.debug("No valid enrollment found for student");
 						account.setEnabled(JaeConstants.INACTIVE);
 						throw new DisabledException("User enrolment is not valid");
 					}
 					logger.debug("Valid enrollment found for student");
-
+					for(Object[] enrol : enrols){
+						String enrolId = enrol[0].toString();
+						String enrolGrade = enrol[1].toString();
+						// Set the grade in the account authorities
+						account.setGrade(enrolGrade);
+						logger.debug("Enrolled Id - {} and Grade - {}", enrolId, enrolGrade);
+					}
+					
 					String fromWhere = (String) session.getAttribute("referer");
 					// keep login entry if user is connected from login page
 					if(fromWhere!=null && fromWhere.contains(JaeConstants.CONNECTED_FROM)) {

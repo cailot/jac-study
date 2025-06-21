@@ -37,8 +37,11 @@ $(function() {
 			academicYear = response[0];
 			academicWeek = response[1];
 			academicSet = academicWeek-1;
+
+			console.log('NumericGrade ---> ' + numericGrade);
+
 			// update online url
-			getOnlineLive(studentId, academicYear, academicWeek);
+			getOnlineLive(numericGrade, academicYear, academicWeek);
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			console.log('Error : ' + errorThrown);
@@ -149,9 +152,9 @@ function updatePassword() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //		Retrieve Online Session Info
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function getOnlineLive(studentId, year, week) {
+function getOnlineLive(numericGrade, year, week) {
 	$.ajax({
-		url : '${pageContext.request.contextPath}/elearning/getLive/' + studentId + '/' + year + '/' + week,
+		url : '${pageContext.request.contextPath}/elearning/getLive/' + numericGrade + '/' + year + '/' + week,
 		type : 'GET',
 		success : function(data) {
 			// Clear existing blocks
@@ -160,11 +163,12 @@ function getOnlineLive(studentId, year, week) {
 			
 			// Process all live sessions first
 			$.each(data, function(index, live) {
+				// console.log('Live : ' + live);
 				var url = live.address;
 				// Create a new session element
 				var sessionElement = $('<div id="onlineLesson'+index+'" class="onlineLesson alert alert-info jae-border-warning"></div>');
                 sessionElement.attr('data-video-url', url);
-                sessionElement.append('<p id="liveBlock'+index+'" class="m-1">Online Live Weekly Lesson<strong> Set</strong> <span id="academicWeek'+index+'">'+ (week-1) +'</span> - <i>' + live.title+ '</i> (' +
+                sessionElement.append('<p id="liveBlock'+index+'" class="m-1">Online Live Weekly Lesson<strong> Set</strong> <span id="academicWeek'+index+'">'+ week +'</span> - <i>' + live.title+ '</i> (' +
                     '<span id="onlineLessonDayTitle'+index+'" name="onlineLessonDayTitle'+index+'">' + dayName(live.day) + '</span>, ' +
                     '<span id="onlineLessonStartTitle'+index+'" name="onlineLessonStartTitle'+index+'">' + live.startTime + '</span> ~ ' +
                     '<span id="onlineLessonEndTitle'+index+'" name="onlineLessonEndTitle'+index+'">' + live.endTime + '</span>&nbsp;&nbsp;' +
@@ -191,13 +195,13 @@ function getOnlineLive(studentId, year, week) {
 				
 				if (now.getTime() >= lessonStartDate && now.getTime() <= lessonEndDate) {
 					// ON AIR - show last week's recording
-					getRecordedSession(studentId, academicYear, academicWeek, academicSet - 1, lessonDay, false);
+					getRecordedSession(academicSet - 1, lessonDay, false);
 				} else if (now.getTime() < lessonStartDate) {
 					// BEFORE AIR - show last week's recording
-					getRecordedSession(studentId, academicYear, academicWeek, academicSet - 1, lessonDay, true);
+					getRecordedSession(academicSet - 1, lessonDay, true);
 				} else {
 					// AFTER AIR - show this week's recording
-					getRecordedSession(studentId, academicYear, academicWeek, academicSet, lessonDay, false);
+					getRecordedSession(academicSet, lessonDay, false);
 				}
 				
 				// Update live session UI
@@ -228,9 +232,9 @@ function getOnlineLive(studentId, year, week) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //		Retrieve Recorded Session Info
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function getRecordedSession(studentId, year, week, set, day, before) {
+function getRecordedSession(set, day, before) {
 	$.ajax({
-        url: '${pageContext.request.contextPath}/elearning/getRecord/' + studentId + '/' + year + '/' + week + '/' + set,
+        url: '${pageContext.request.contextPath}/elearning/getRecord/' + studentId + '/' + numericGrade + '/' + academicYear + '/' + academicWeek + '/' + set,
         type: 'GET',
         success: function(data) {
             $.each(data, function(index, record) {
@@ -303,7 +307,7 @@ function determineLiveOrRecordedLesson(index) {
         $('#micIcon' + index).removeClass('text-secondary').addClass('text-danger');
 		$('#onlineLesson'+index).css({'pointer-events': 'auto', 'cursor': 'pointer'});
     	// 2. show last week recorded lesson - to fill the gap between live updated time at next day 1 pm
-		getRecordedSession(studentId, academicYear, academicWeek, academicSet - 1, lessonDay, false);	
+		getRecordedSession(academicSet - 1, lessonDay, false);	
     } else if (now.getTime() < lessonStartDate) { // BEFORE AIR
         console.log("Before Onair");
 		// 1. disable live lesson
@@ -316,7 +320,7 @@ function determineLiveOrRecordedLesson(index) {
         liveBlock.css('cursor', 'not-allowed');
 		var selectedDay = $('#onlineLessonDayTitle' + index).text();
 		// 2. get recorded lesson
-        getRecordedSession(studentId, academicYear, academicWeek, academicSet - 1, selectedDay, true);
+        getRecordedSession(academicSet - 1, selectedDay, true);
     } else { // AFTER AIR
         console.log("After onair");
 		// 1. disable live lesson
@@ -329,7 +333,7 @@ function determineLiveOrRecordedLesson(index) {
         liveBlock.css('cursor', 'not-allowed');
 		var selectedDay = $('#onlineLessonDayTitle' + index).text();
         // 2. get recorded lesson
-		getRecordedSession(studentId, academicYear, academicWeek, academicSet, selectedDay, false);
+		getRecordedSession(academicSet, selectedDay, false);
     }
 }
 

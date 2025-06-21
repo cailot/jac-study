@@ -52,26 +52,35 @@ public class OnlineController {
 	private OnlineActivityService onlineActivityService;
 
 	// get online course url
-	@GetMapping("/getLive/{id}/{year}/{week}")
+	@GetMapping("/getLive/{grade}/{year}/{week}")
 	@ResponseBody
-	public List<OnlineSessionDTO> getOnlineLive(@PathVariable("id") long id, @PathVariable("year") int year, @PathVariable("week") int week) {	
-		// 1. get clazzId via Enrolment with parameters - studentId, year, week, online
-		List<Long> clazzIds = enrolmentService.findClazzId4OnlineSession(id, year, week);
-		// 2. get OnlineSession by clazzId, set (week-1)
+	public List<OnlineSessionDTO> getOnlineLive(@PathVariable("grade") String grade, @PathVariable("year") int year, @PathVariable("week") int week) {	
 		List<OnlineSessionDTO> dtos = new ArrayList<>();
-		for(Long clazzId : clazzIds){
-			List<OnlineSessionDTO> sessions = onlineSessionService.findSessionByClazzNWeek(clazzId, week-1);
-			dtos.addAll(sessions);
+		////////////////////////////////////////////////////////////////////////////////////////////////
+		// if week is first week of academic year, check student's register date is more than a month.
+		////////////////////////////////////////////////////////////////////////////////////////////////
+		if(week == JaeConstants.FIRST_WEEK){
+			// get last week of last year
+			int lastWeek = cycleService.lastAcademicWeek(year-1);
+			if ((JaeConstants.TT6_CODE.equals(grade))||(JaeConstants.TT8_CODE.equals(grade))) {
+				// get OnlineSession by grade, year, week, for example> 2024, 50th week
+				dtos = onlineSessionService.getOnlineSessionByGradeNSetNYear(grade, lastWeek, year-1);
+			}else{
+				String previousGrade = codeService.getPreviousGrade(grade);
+				dtos = onlineSessionService.getOnlineSessionByGradeNSetNYear(previousGrade, lastWeek, year-1);
+			}
+		}else{ // normal week
+			dtos = onlineSessionService.getOnlineSessionByGradeNSetNYear(grade, week-1, year);
 		}
-		// 4. return OnlineSessionDTO
+		// return OnlineSessionDTO
 		return dtos;
 	}
 
 	// get online course url
-	@GetMapping("/getRecord/{id}/{year}/{week}/{set}")
+	@GetMapping("/getRecord/{id}/{grade}/{year}/{week}/{set}")
 	@ResponseBody
-	public List<OnlineSessionDTO> getOnlineRecorded(@PathVariable("id") long id, @PathVariable("year") int year, @PathVariable("week") int week, @PathVariable("set") int set) {	
-		
+	public List<OnlineSessionDTO> getOnlineRecorded(@PathVariable("id") long id, @PathVariable("grade") String grade, @PathVariable("year") int year, @PathVariable("week") int week, @PathVariable("set") int set) {	
+		List<OnlineSessionDTO> dtos = new ArrayList<>();
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		// if week is first week of academic year, check student's register date is more than a month.
 		////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,44 +92,30 @@ public class OnlineController {
 			if (regDate.isBefore(oneMonthAgo)) {
 				// regDate is more than one month ago which means existing student so show last week of previous grade unless grade = TT8
 				// check grade is TT or not
-				String grade = std.getGrade(); // TT8's code is 12
 				// TT8 needs last week on TT8
+				int lastWeek = cycleService.lastAcademicWeek(year-1);
 				if ((JaeConstants.TT6_CODE.equals(grade))||(JaeConstants.TT8_CODE.equals(grade))) {
-					// get last week of last year
-					int lastWeek = cycleService.lastAcademicWeek(year-1);
 					// get OnlineSession by grade, year, week, for example> 2024, 50th week
-					List<OnlineSessionDTO> dtos = onlineSessionService.getOnlineSessionByGradeNSetNYear(grade, lastWeek, year-1);
-					return dtos;
+					dtos = onlineSessionService.getOnlineSessionByGradeNSetNYear(grade, lastWeek-1, year-1);
 				}else{
-					// get last week of previous grade
-					int lastWeek = cycleService.lastAcademicWeek(year-1);
 					// get previous grade
 					String previousGrade = codeService.getPreviousGrade(grade);
 					// check if previous grade = 0, it means no need to show
-					if(JaeConstants.NO_PREVIOUS_GRADE.equals(previousGrade)){
-						return new ArrayList(); // return empty OnlineSessionDTO to avoid NullPointerException
-					}else{
+					if(!JaeConstants.NO_PREVIOUS_GRADE.equals(previousGrade)){
 						// get OnlineSession by previous grade, last year, last week, for example> 2024, 50th week
-						List<OnlineSessionDTO> dtos = onlineSessionService.getOnlineSessionByGradeNSetNYear(previousGrade, lastWeek, year-1);
-						return dtos;
+						dtos = onlineSessionService.getOnlineSessionByGradeNSetNYear(previousGrade, lastWeek, year-1);
 					}
 				}
 
 			} else {
 				// regDate is within the last month, it means new student so no need to show 49th week of previous grade
 				System.out.println("Registration date is within the last month.");
-				return new ArrayList(); // return empty OnlineSessionDTO to avoid NullPointerException
+				// return new ArrayList(); // return empty OnlineSessionDTO to avoid NullPointerException
 			}
+		}else{ // normal week
+			dtos = onlineSessionService.getOnlineSessionByGradeNSetNYear(grade, week, set);
 		}
-		// 1. get clazzId via Enrolment with parameters - studentId, year, week, online
-		List<Long> clazzIds = enrolmentService.findClazzId4OnlineSession(id, year, week);
-		// 2. get OnlineSession by clazzId, set (week-1)
-		List<OnlineSessionDTO> dtos = new ArrayList<>();
-		for(Long clazzId : clazzIds){
-			List<OnlineSessionDTO> sessions = onlineSessionService.findSessionByClazzNWeek(clazzId, set);
-			dtos.addAll(sessions);
-		}
-		// 4. return OnlineSessionDTO
+		// return OnlineSessionDTO
 		return dtos;
 	}
 

@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -285,18 +283,49 @@ public class AssessmentController {
 		emailBodyBuilder.append("<html>")
             .append("<head>")
             .append("<style>")
+            .append("body {")
+            .append("  font-family: Arial, sans-serif;")
+            .append("  font-size: 14px;")
+            .append("  line-height: 1.8;")
+            .append("  color: #333;")
+            .append("  padding: 20px;")
+            .append("}")
+            .append("p {")
+            .append("  margin: 15px 0;")
+            .append("}")
+            .append("ul {")
+            .append("  list-style-type: disc;")
+            .append("  padding-left: 20px;")
+            .append("  margin: 25px 0;")
+            .append("}")
+            .append("li {")
+            .append("  margin-bottom: 12px;")
+            .append("  font-size: 14px;")
+            .append("}")
+            .append(".table-container {")
+            .append("  border: 2px solid #333;")
+            .append("  border-radius: 5px;")
+            .append("  margin-top: 30px;")
+            .append("  padding: 15px;")
+            .append("  background-color: #fff;")
+            .append("}")
+            .append(".table-container table {")
+            .append("  margin: 18px auto 18px auto;")
+            .append("  width: 95%;")
+            .append("}")
             .append("table {")
             .append("  border-collapse: collapse;")
-            .append("  width: 70%;")
-            .append("}")
-            .append("th, td {")
-            .append("  border: 1px solid #dddddd;")
-            .append("  text-align: left;")
-            .append("  padding: 8px;")
             .append("}")
             .append("th {")
             .append("  background-color: #f2f2f2;")
-            .append("  border-bottom: 2px solid #dddddd;")
+            .append("  border: 1px solid #dddddd;")
+            .append("  padding: 15px 12px;")
+            .append("  text-align: left;")
+            .append("  font-weight: bold;")
+            .append("}")
+            .append("td {")
+            .append("  border: 1px solid #dddddd;")
+            .append("  padding: 15px 12px;")
             .append("}")
             .append("tr:nth-child(even) {")
             .append("  background-color: #f9f9f9;")
@@ -304,44 +333,46 @@ public class AssessmentController {
             .append("tr:nth-child(odd) {")
             .append("  background-color: #ffffff;")
             .append("}")
-            .append("tr:hover {")
-            .append("  background-color: #f1f1f1;")
-            .append("}")
             .append("td.score {")
             .append("  text-align: center;")
+            .append("  font-weight: bold;")
             .append("}")
             .append("</style>")
             .append("</head>")
             .append("<body>")
-			.append("<p style='color: red; font-weight: bold;'>Please Do Not Reply to This Email. This email is intended for sending purposes only</p>")
+			.append("<p style='color: red; font-weight: bold;'>Please Do Not Reply to This Email. This email is intended for sending purposes only</p><br><br>")
             .append("<p>There is an assessment test submitted:</p>")
-            .append("<p><b>Name:</b> ").append(guest.getFirstName()).append(" ").append(guest.getLastName()).append("</p>")
-            .append("<p><b>Email:</b> ").append(guest.getEmail()).append("</p>")
-            .append("<p><b>Contact:</b> ").append(guest.getContactNo()).append("</p>")
-            .append("<br>")
-            .append("<table>")
+            .append("<ul>")
+            .append("<li><strong>Name:</strong> ").append(guest.getFirstName()).append(" ").append(guest.getLastName()).append("</li>")
+            .append("<li><strong>Email:</strong> ").append(guest.getEmail()).append("</li>")
+            .append("<li><strong>Contact:</strong> ").append(guest.getContactNo()).append("</li>")
+            .append("</ul><br>")
+            .append("<div class='table-container'>")
+            .append("<table border='1'>")
             .append("<tr>")
-            .append("<th>Title</th>")
-            .append("<th style='text-align: center;'>Score</th>")
+            .append("<th style='padding: 10px;background-color:#ccd1d1;'>Assessment Title</th>")
+            .append("<th style='text-align: center;padding: 10px;background-color:#ccd1d1;'>Score</th>")
 			.append("</tr>");
 		for (GuestStudentAssessmentDTO dto : gsas) {
 			String subject = dto.getSubject();
 			String grade = guest.getGrade();
-			int score = (int) ((20 * dto.getScore()) / 100); // Assuming dto.getScore() returns a number
+			double score = dto.getScore(); // This should be the percentage score
+			int correctAnswers = (int) Math.round((score * 20) / 100); // Convert percentage to number of correct answers out of 20
 			emailBodyBuilder.append("<tr>")
-				.append("<td>Assessment Test ").append(JaeUtils.getGradeYearName(grade)).append(" ").append(subject).append("</td>") // Assuming you want to use the grade here
-				.append("<td class='score'>").append(score).append(" / 20 (").append((score/20.0)*100).append("%)").append("</td>")
+				.append("<td style='padding: 10px;'>Assessment Test Year ").append(JaeUtils.getGradeYearName(grade)).append(" ").append(subject).append("</td>")
+				.append("<td style='padding: 10px;'>").append(correctAnswers).append(" / 20 (").append(String.format("%.1f", score)).append("%)").append("</td>")
 				.append("</tr>");
-				System.out.println(score);
 		}
 		
 		emailBodyBuilder.append("</table>")
+            .append("</div>")
 			.append("</body>")
 			.append("</html>");
 		
 		String emailBody = emailBodyBuilder.toString();
 		try {
-			emailService.emailReport(assessmentName, emailRecipient, emailBody, pdfData);
+			// emailService.emailReport(assessmentName, emailRecipient, emailBody, pdfData);
+			emailService.sendGridEmailWithPdf(assessmentName, emailRecipient, null, null, "Fwd: Assessment Submitted " + JaeUtils.getToday() ,emailBody, "assessment.pdf", pdfData);
 			return ResponseEntity.ok().body("{\"status\": \"success\", \"message\": \" Now You can close this browser.\"}");
 		}catch(Exception e){
 			String errorMessage = e.getMessage() != null ? e.getMessage() : "Unknown error occurred";

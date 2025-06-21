@@ -72,9 +72,16 @@ public class StudentAccount implements UserDetails{
 		return true;	
 	}
 
+	public void setGrade(String grade) {
+		// Clear existing authorities
+		this.authorities = new ArrayList<>();
+		// Add the grade as an authority
+		this.authorities.add(new SimpleGrantedAuthority(grade));
+	}
+
 	@Override
 	public boolean isEnabled() {
-		return true;
+		return enabled == 1;
 	}
 
 }

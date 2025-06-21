@@ -1,12 +1,17 @@
 package hyung.jin.seo.jae.service;
 
-import javax.mail.MessagingException;
-
 public interface EmailService {
 
 	// send report email
-	void emailReport(String to, String body, byte[] data) throws MessagingException;
+	// void emailReport(String to, String body, byte[] data) throws MessagingException;
 
 	// send report email with attachment
-	void emailReport(String from, String to, String body, byte[] data) throws MessagingException;
+	// void emailReport(String from, String to, String body, byte[] data) throws MessagingException;
+
+	// send combined email with attachment to multiple recipients with bcc
+	void sendGridEmailWithPdf(String from, String to, String cc, String bcc, String subject, String body, String fileName, byte[] pdfBytes);
+
+	// send combined email with attachment to multiple recipients with bcc
+	void sendGridEmailWithPdf(String from, String[] to, String[] cc, String[] bcc, String subject, String body, String fileName, byte[] pdfBytes);
+
 }

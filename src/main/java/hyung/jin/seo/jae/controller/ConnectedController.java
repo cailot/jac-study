@@ -571,8 +571,8 @@ public class ConnectedController {
 			LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
 			if(regDate.isBefore(oneMonthAgo)){
 				// if student's register date is more than a month, return 2 homework from previous grade
-				String stdGrade = std.getGrade();
-				String previousGrade = codeService.getPreviousGrade(stdGrade);
+				// String stdGrade = std.getGrade();
+				String previousGrade = codeService.getPreviousGrade(grade);
 				// get last week of last year
 				int lastWeek = cycleService.lastAcademicWeek(cycleService.academicYear()-1);
 
@@ -674,7 +674,8 @@ public class ConnectedController {
 		int answerCard = 0;	
 		// 1. get current LocalDateTime & current week
 		LocalDateTime now = LocalDateTime.now();
-		int currentWeek = cycleService.academicWeeks()-1; // -1 to get the previous week
+		int academicWeek = cycleService.academicWeeks();
+		int currentWeek = academicWeek-1; // -1 to get the previous week
 		// 2. get weeks from properties or schedule by checking database
 		HomeworkScheduleDTO schedule = connectedService.getHomeworkScheduleBySubjectAndGrade(subject, grade, now);
 		if(schedule == null){
@@ -691,16 +692,21 @@ public class ConnectedController {
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		// if week is first week of academic year, check student's register date is more than a month.
 		////////////////////////////////////////////////////////////////////////////////////////////////
-		if(currentWeek == JaeConstants.FIRST_WEEK){
+		if(academicWeek == JaeConstants.FIRST_WEEK){ // currentWeek is academicWeek-1
 
 			Student std = studentService.getStudent(student);
 			LocalDate regDate = std.getRegisterDate();
-			String stdGrade = std.getGrade();			
+			// String stdGrade = std.getGrade();
+			// if TT6 or TT8 then return
+			// if(StringUtils.equalsAnyIgnoreCase(grade, JaeConstants.TT6) || StringUtils.equalsAnyIgnoreCase(grade, JaeConstants.TT8)){
+			// 	return dtos;
+			// }
 			// check if regDate is less than last month compared with today
 			LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
-			if(regDate.isBefore(oneMonthAgo) && !stdGrade.equalsIgnoreCase("11") && !stdGrade.equalsIgnoreCase("12")){
+			// if TT6 or TT8 then return
+			if(regDate.isBefore(oneMonthAgo) && !grade.equalsIgnoreCase("11") && !grade.equalsIgnoreCase("12")){
 				// if student's register date is more than a month and NOT TT6 nor TT8, return 2 homework from previous grade
-				String previousGrade = codeService.getPreviousGrade(stdGrade);
+				String previousGrade = codeService.getPreviousGrade(grade);
 				// get last week of last year
 				int lastWeek = cycleService.lastAcademicWeek(cycleService.academicYear()-1);
 				
@@ -716,7 +722,7 @@ public class ConnectedController {
 				return dtos;
 			}
 
-		}else if(currentWeek == JaeConstants.SECOND_WEEK){
+		}else if(academicWeek == JaeConstants.SECOND_WEEK){
 
 			Student std = studentService.getStudent(student);
 			LocalDate regDate = std.getRegisterDate();

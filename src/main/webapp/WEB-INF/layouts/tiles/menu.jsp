@@ -192,19 +192,23 @@ function updatePassword() {
             <ul class="navbar-nav">
 				<!-- Homework -->
                 <c:choose>
-                    <c:when test="${grade == '[1]' || grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]' || grade == '[6]' || grade == '[7]' || grade == '[8]' || grade == '[9]' || grade == '[19]'}">
+                    <c:when test="${grade == '[1]' || grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]' || grade == '[6]' || grade == '[7]' || grade == '[8]' || grade == '[9]' || grade == '[11]'|| grade == '[12]'|| grade == '[19]'}">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="homeworkDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="bi bi-pencil-square custom-icon"></i>
                                 <span class="h4">Homework</span>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="homeworkDropdown">
-                                <a class="dropdown-item" href="${pageContext.request.contextPath}/connected/engHomework">English Homework</a>
-                                <a class="dropdown-item" href="${pageContext.request.contextPath}/connected/mathHomework">Mathematics Homework</a>
+								<c:if test="${grade == '[1]' || grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]' || grade == '[6]' || grade == '[7]' || grade == '[8]' || grade == '[9]'}">                                
+                                    <a class="dropdown-item" href="${pageContext.request.contextPath}/connected/engHomework">English Homework</a>
+                                    <a class="dropdown-item" href="${pageContext.request.contextPath}/connected/mathHomework">Mathematics Homework</a>
+								</c:if>
                                 <c:if test="${grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]'}">
                                     <a class="dropdown-item" href="${pageContext.request.contextPath}/connected/writeHomework">Writing Homework</a>
                                 </c:if>
-                                <a class="dropdown-item" href="${pageContext.request.contextPath}/connected/shortAnswer">Short Answer</a>
+								<c:if test="${grade == '[1]' || grade == '[2]' || grade == '[3]' || grade == '[4]' || grade == '[5]' || grade == '[6]' || grade == '[7]' || grade == '[8]' || grade == '[9]' || grade == '[11]'|| grade == '[12]'}">                                
+                                    <a class="dropdown-item" href="${pageContext.request.contextPath}/connected/shortAnswer">Short Answer</a>
+                                </c:if>
                             </div>
                         </li>
                     </c:when>
